@@ -146,6 +146,9 @@ Id flags: ${testflags}
       set(v Intel)
       set(ext vfproj)
       set(id_cl ifort.exe)
+    elseif(lang STREQUAL D)
+      set(v D)
+      set(ext visualdproj)
     elseif(NOT "${vs_version}" VERSION_LESS 10)
       set(v 10)
       set(ext vcxproj)
@@ -179,6 +182,7 @@ Id flags: ${testflags}
       set(id_subsystem 1)
     endif()
     set(id_dir ${CMAKE_${lang}_COMPILER_ID_DIR})
+    get_filename_component(id_dir_name "${id_dir}" NAME)
     get_filename_component(id_src "${src}" NAME)
     configure_file(${CMAKE_ROOT}/Modules/CompilerId/VS-${v}.${ext}.in
       ${id_dir}/CompilerId${lang}.${ext} @ONLY)

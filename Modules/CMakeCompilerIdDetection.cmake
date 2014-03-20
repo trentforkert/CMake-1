@@ -25,7 +25,7 @@ include(${CMAKE_CURRENT_LIST_DIR}/CMakeParseArguments.cmake)
 
 function(compiler_id_detection outvar lang)
 
-  if (NOT lang STREQUAL Fortran)
+  if (NOT lang STREQUAL D AND NOT lang STREQUAL Fortran)
     file(GLOB lang_files
       "${CMAKE_ROOT}/Modules/Compiler/*-DetermineCompiler.cmake")
     set(nonlang CXX)
@@ -74,6 +74,7 @@ function(compiler_id_detection outvar lang)
       PGI
       Cray
       TI
+      DigitalMars
     )
     if (lang STREQUAL C)
       list(APPEND ordered_compilers

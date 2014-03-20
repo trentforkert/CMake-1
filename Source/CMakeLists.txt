@@ -177,6 +177,8 @@ set(SRCS
   cmDepends.h
   cmDependsC.cxx
   cmDependsC.h
+  cmDependsD.cxx
+  cmDependsD.h
   cmDependsFortran.cxx
   cmDependsFortran.h
   cmDependsFortranLexer.cxx
