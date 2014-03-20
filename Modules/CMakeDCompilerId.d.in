@@ -1,0 +1,100 @@
+// Vendor names: VENDOR needs to map to a Compiler/VENDOR-D.cmake file,
+// which loads compiler-specific settings.
+version(DigitalMars)
+  enum VENDOR = "DigitalMars";
+else version(GNU)
+  enum VENDOR = "GNU";
+else version(LDC)
+  enum VENDOR = "LLVM";
+else
+  enum VENDOR = "";
+
+string VERSION()
+{
+  string str(int number)
+  {
+    return "" ~ [cast(char)( number % 10 + '0') ];
+  }
+
+  return str(__VERSION__ / 1000) ~ "." ~
+    str(__VERSION__ / 100) ~
+    str(__VERSION__ / 10) ~
+    str(__VERSION__);
+}
+
+// Platform names: Used for many things - names need to be known to
+// CMake to be useful. Refer to upstream language support files
+// for other platform names.
+version(linux)
+  enum PLATFORM_ID = "Linux";
+else version(Cygwin)
+  enum PLATFORM_ID = "Cygwin";
+else version(MinGW)
+  enum PLATFORM_ID = "MinGW";
+else version(OSX)
+  enum PLATFORM_ID = "Darwin";
+else version(Windows)
+  enum PLATFORM_ID = "Windows";
+else version(FreeBSD)
+  enum PLATFORM_ID = "FreeBSD";
+else version(NetBSD)
+  enum PLATFORM_ID = "NetBSD";
+else version(OpenBSD)
+  enum PLATFORM_ID = "OpenBSD";
+  // CMake doesn't recognize DragonFlyBSD or BSD
+else version(Solaris)
+  enum PLATFORM_ID = "SunOS";
+else version(AIX)
+  enum PLATFORM_ID = "AIX";
+  // D doesn't recognize IRIX, HP-UX
+else version(Haiku)
+  enum PLATFORM_ID = "Haiku";
+  // D doesn't recognize QNX, Tru64, RISCos, SINIX
+  // CMake doesn't recognize SkyOS
+else version(SysV3)
+  enum PLATFORM_ID = "UNIX_SV";
+else version(SysV4)
+  enum PLATFORM_ID = "UNIX_SV";
+  // D doesn't recognize BSDOS, MP-RAS, OSF1, SCO_SV, ULTRIX, Xenix
+  // CMake doesn't recognize Hurd, Android, Posix
+else
+  enum PLATFORM_ID = "";
+
+  // Architecture names: Like with the platform names, these are used
+  // for many things and must be known to CMake to be of use.
+  // CMake doesn't seem to support PPC, SPARC, etc.
+version(IA64)
+  enum ARCHITECTURE_ID = "IA64";
+else version(X86_64)
+  enum ARCHITECTURE_ID = "x64";
+else version(X86)
+  enum ARCHITECTURE_ID = "X86";
+else version(ARM)
+  enum ARCHITECTURE_ID = "ARM";
+else version(MIPS)
+  enum ARCHITECTURE_ID = "MIPS";
+else version(SH)
+  enum ARCHITECTURE_ID = "SHx";
+else
+  enum ARCHITECTURE_ID = "";
+
+
+enum BUF_SIZE = 64; // oversized to avoid array bounds issues
+                    // May need to grow if longer idents are introduced
+
+
+// Put the above symbols into CMake's desired form
+enum char[BUF_SIZE] info_compiler = "INFO:compiler[" ~ VENDOR ~ "]";
+enum char[BUF_SIZE] info_platform = "INFO:platform[" ~ PLATFORM_ID ~ "]";
+enum char[BUF_SIZE] info_arch = "INFO:arch[" ~ ARCHITECTURE_ID ~ "]";
+enum char[BUF_SIZE] info_version =  "INFO:compiler_version[" ~ VERSION() ~ "]";
+
+int main(string[] args)
+{
+  int require = 0;
+  require += info_version[args.length];
+  require += info_compiler[args.length];
+  require += info_platform[args.length];
+  require += info_arch[args.length];
+  return require;
+}

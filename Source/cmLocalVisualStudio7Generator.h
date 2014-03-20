@@ -96,6 +96,8 @@ private:
   void WriteProjectSCC(std::ostream& fout, cmTarget& target);
   void WriteProjectStart(std::ostream& fout, const std::string& libName,
                          cmTarget &tgt, std::vector<cmSourceGroup> &sgs);
+  void WriteProjectStartD(std::ostream& fout, const std::string& libname,
+                          cmTarget &tgt);
   void WriteProjectStartFortran(std::ostream& fout, const std::string& libName,
                                 cmTarget &tgt);
   void WriteVCProjBeginGroup(std::ostream& fout,
@@ -122,6 +124,7 @@ private:
 
   cmVS7FlagTable const* ExtraFlagTable;
   std::string ModuleDefinitionFile;
+  bool DProject;
   bool FortranProject;
   bool WindowsCEProject;
   std::string PlatformName; // Win32 or x64

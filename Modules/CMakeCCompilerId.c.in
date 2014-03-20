@@ -226,6 +226,12 @@
 #elif defined(__hpux) || defined(__hpua)
 # define COMPILER_ID "HP"
 
+#elif defined(__DMC__)
+# define COMPILER_ID "DigitalMars"
+ /* __DMC__ = VRR */
+# define COMPILER_VERSION_MAJOR HEX(__DMC__ >> 8)
+# define COMPILER_VERSION_MINOR HEX(__DMC__ & 0xFF)
+
 #else /* unknown compiler */
 # define COMPILER_ID ""
 

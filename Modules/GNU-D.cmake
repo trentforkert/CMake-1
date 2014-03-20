@@ -1,0 +1,27 @@
+set(__COMPILER_GNU 1)
+set(CMAKE_D_VERBOSE_FLAG "-v")
+set(CMAKE_D_COMPILE_OPTIONS_PIC "-fPIC")
+set(CMAKE_SHARED_LIBRARY_D_FLAGS "-fPIC")
+set(CMAKE_SHARED_LIBRARY_CREATE_D_FLAGS "-shared")
+
+set(CMAKE_D_FLAGS_INIT "")
+set(CMAKE_D_FLAGS_DEBUG_INIT "-g -fdebug")
+set(CMAKE_D_FLAGS_MINSIZEREL_INIT "-frelease -O3")
+set(CMAKE_D_FLAGS_RELEASE_INIT "-frelease -O3 -finline")
+set(CMAKE_D_FLGS_RELWITHDEBINFO_INIT "-frelease -O3 -finline -g")
+
+set(CMAKE_D_INCLUDE_FLAG "-I")
+set(CMAKE_D_DVERBOSE_FLAG "-fd-verbose")
+set(CMAKE_D_OUTPUT_FLAG "-o ")
+set(CMAKE_D_LINK_FLAG "-l")
+set(CMAKE_D_LINK_FILE_FLAG "-l:")
+set(CMAKE_D_VERSION_FLAG "-fversion=")
+set(CMAKE_D_TEXT_INCLUDE_FLAG "-J")
+set(CMAKE_D_UNITTEST_FLAG "-funittest")
+# GDC doesn't seem to support -cov
+# GDC doesn't seem to support -main
+set(CMAKE_D_DDOC_FILE_FLAG "-fdoc-file=")
+set(CMAKE_D_DDOC_MACRO_FLAG "-fdoc-inc=")
+set(CMAKE_D_DEPS_FILE_FLAG "-fdeps=")
+set(CMAKE_D_NO_OUTPUT_FLAG "-S ${CMAKE_D_OUTPUT_FLAG}\"${CMAKE_BINARY_DIR}/CMakeFiles/dmake_gdc_garbage\"")
+set(CMAKE_D_JSON_FILE_FLAG "-fXf=")

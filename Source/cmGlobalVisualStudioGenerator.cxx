@@ -810,6 +810,22 @@ void RegisterVisualStudioMacros(const std::string& macrosFile,
       }
     }
 }
+
+bool cmGlobalVisualStudioGenerator::TargetIsDOnly(cmTarget const& target)
+{
+  // check to see if this is a D build
+  std::set<std::string> languages;
+  target.GetLanguages(languages);
+  if(languages.size() == 1)
+    {
+    if(*languages.begin() == "D")
+      {
+      return true;
+      }
+    }
+  return false;
+}
+
 bool
 cmGlobalVisualStudioGenerator::TargetIsFortranOnly(cmTarget const& target)
 {
