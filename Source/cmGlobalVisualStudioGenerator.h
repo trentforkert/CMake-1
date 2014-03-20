@@ -59,6 +59,11 @@ public:
   virtual void CallVisualStudioMacro(MacroName m,
                                      const char* vsSolutionFile = 0);
 
+  /**
+   * Return true if target is D only.
+   */
+  bool TargetIsDOnly(cmTarget const& t);
+
   // return true if target is fortran only
   bool TargetIsFortranOnly(cmTarget const& t);
 

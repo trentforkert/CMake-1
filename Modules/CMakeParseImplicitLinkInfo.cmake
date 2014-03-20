@@ -32,6 +32,10 @@ function(CMAKE_PARSE_IMPLICIT_LINK_INFO text lib_var dir_var fwk_var log_var obj
   # whole line and just the command (argv[0]).
   set(linker_regex "^( *|.*[/\\])(${linker}|([^/\\]+-)?ld|collect2)[^/\\]*( |$)")
   set(linker_exclude_regex "collect2 version ")
+  # The LLVM D compiler is called 'ldc2', but it isn't a linker
+  if(CMAKE_D_COMPILER)
+    set(linker_exclude_regex "${linker_exclude_regex}|${CMAKE_D_COMPILER}")
+  endif()
   set(log "${log}  link line regex: [${linker_regex}]\n")
   string(REGEX REPLACE "\r?\n" ";" output_lines "${text}")
   foreach(line IN LISTS output_lines)

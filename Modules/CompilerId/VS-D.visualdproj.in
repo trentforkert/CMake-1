@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DProject>
+  <Config name="Debug" platform="@id_arch@">
+      <program>@CMAKE_D_COMPILER@</program>
+      <exefile>$(OutDir)\..\$(ProjectName).exe</exefile>
+  </Config>
+  <Folder name="@id_dir_name@">
+    <File path="@id_src@" />
+  </Folder>
+</DProject>

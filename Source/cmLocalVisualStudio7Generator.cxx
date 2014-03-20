@@ -66,6 +66,7 @@ void cmLocalVisualStudio7Generator::AddHelperCommands()
   lang.insert("RC");
   lang.insert("IDL");
   lang.insert("DEF");
+  lang.insert("D");
   lang.insert("Fortran");
   this->CreateCustomTargetsAndCommands(lang);
 
@@ -231,6 +232,9 @@ void cmLocalVisualStudio7Generator::WriteStampFiles()
 void cmLocalVisualStudio7Generator
 ::CreateSingleVCProj(const std::string& lname, cmTarget &target)
 {
+  this->DProject =
+    static_cast<cmGlobalVisualStudioGenerator*>(this->GlobalGenerator)
+    ->TargetIsDOnly(target);
   this->FortranProject =
     static_cast<cmGlobalVisualStudioGenerator*>(this->GlobalGenerator)
     ->TargetIsFortranOnly(target);
@@ -255,6 +259,10 @@ void cmLocalVisualStudio7Generator
   if(this->FortranProject)
     {
     fname += ".vfproj";
+    }
+  else if(this->DProject)
+    {
+    fname += ".visualdproj";
     }
   else
     {
@@ -341,13 +349,19 @@ void cmLocalVisualStudio7Generator::WriteConfigurations(std::ostream& fout,
     static_cast<cmGlobalVisualStudio7Generator *>
     (this->GlobalGenerator)->GetConfigurations();
 
-  fout << "\t<Configurations>\n";
+  if(!this->DProject)
+    {
+    fout << "\t<Configurations>\n";
+    }
   for( std::vector<std::string>::iterator i = configs->begin();
        i != configs->end(); ++i)
     {
     this->WriteConfiguration(fout, i->c_str(), libName, target);
     }
-  fout << "\t</Configurations>\n";
+  if(!this->DProject)
+    {
+    fout << "\t</Configurations>\n";
+    }
 }
 cmVS7FlagTable cmLocalVisualStudio7GeneratorFortranFlagTable[] =
 {
@@ -642,6 +656,12 @@ void cmLocalVisualStudio7Generator::WriteConfiguration(std::ostream& fout,
                                                 const std::string& libName,
                                                 cmTarget &target)
 {
+  if(this->DProject)
+    {
+    fout << "\t<Config name=\"" << configName << "\">\n";
+    return //TODO FIXME Should we really just bail out here?
+           //VisualD uses a vastly different schema than VisualStudio
+    }
   const char* mfcFlag = this->Makefile->GetDefinition("CMAKE_MFC_FLAG");
   if(!mfcFlag)
     {
@@ -1973,6 +1993,18 @@ void cmLocalVisualStudio7Generator::WriteProjectSCC(std::ostream& fout,
     }
 }
 
+void cmLocalVisualStudio7Generator::WriteProjectStartD(std::ostream* fout,
+                                                       const char *libName,
+                                                       cmTarget& target)
+{
+  cmGlobalVisualStudio7Generator* gg =
+    static_cast<cmGlobalVisualStudio7Generator*>(this->GlobalGenerator);
+
+  fout << "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
+      << "<DProject>\n"
+      << "\t<ProjectGUID>\"{" << gg->GetGUID(libName) << "}\">\n";
+}
+
 void
 cmLocalVisualStudio7Generator
 ::WriteProjectStartFortran(std::ostream& fout,
@@ -2041,6 +2073,11 @@ cmLocalVisualStudio7Generator::WriteProjectStart(std::ostream& fout,
                                                  cmTarget & target,
                                                  std::vector<cmSourceGroup> &)
 {
+  if(this->DProject)
+    {
+    this->WriteProjectStartD(fout, libName, target);
+    return;
+    }
   if(this->FortranProject)
     {
     this->WriteProjectStartFortran(fout, libName, target);
