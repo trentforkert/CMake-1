@@ -142,18 +142,12 @@
 enable_language(D)
 include(CMakeParseArguments)
 
-# Ground-up rewrite of AutoD, inspired by UseJava.cmake
-# Currently shorter by ~200 lines, more modular
-option(AUTOD_TESTING_ENABLED "" ${CMAKE_TESTING_ENABLED})
-option(AUTOD_DDOC_ENABLED "" false)
-option(AUTOD_INSTALL_ENABLED "" false)
-
 # Notable functions:
 #   create_ddoc                 done
 #   add_d_unittests             done
 #   examine_d_source            done
 #   add_d_conditions            done
-#   autod                       done?
+#   add_d_target                done?
 
 function(include_text_directories)
     cmake_parse_arguments(ARG "" "TARGET" "" ${ARGN})
@@ -406,43 +400,45 @@ function(examine_d_source _src_result _lib_result _exe_result)
     set(${_exe_result} "${IS_EXECUTABLE}" PARENT_SCOPE)
 endfunction()
 
-function(autod _target)
+function(add_d_target _target)
     set(options
         EXECUTABLE STATIC_LIBRARY SHARED_LIBRARY
         EXCLUDE_FROM_ALL
         STRICT # Warnings_are_errors, DEPRECATED ERROR, ENFORCE_PROPERTY
-        NO_TESTS NO_DOCS NO_INSTALL)
+        GENERATE_DDOC GENERATE_UNITTESTS GENERATE_INSTALL)
     set(oneValueArgs
         COVERAGE
         DEPRECATED # ALLOW || WARN || ERROR
         ENFORCE_PROPERTY # true || false
         WARNINGS_ARE_ERRORS # true || false
         )
-    set(multiValueArgs SOURCES VERSIONS DEBUG IMPORT_DIRS TEXT_IMPORT_DIRS DDOC_MACRO_FILES FLAGS)
+    set(multiValueArgs SOURCES VERSION_IDENTS DEBUG_IDENTS IMPORT_DIRS TEXT_IMPORT_DIRS DDOC_MACRO_FILES FLAGS)
     cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
     if(ARG_EXCLUDE_FROM_ALL)
         set(ARG_EXCLUDE_FROM_ALL "EXCLUDE_FROM_ALL")
+        set(ARG_GENERATE_INSTALL FALSE)
     else()
         set(ARG_EXCLUDE_FROM_ALL "")
     endif()
 
     if(ARG_STRICT)
-        d_set_strict(strict)
+        set(ARG_ENFORCE_PROPERTY TRUE)
+        set(ARG_WARNINGS_ARE_ERRORS TRUE)
+        set(ARG_DEPRECATED ERROR)
     endif()
 
-    if(ARG_ENFORCE_PROPERTY OR D_DEFAULT_ENFORCE_PROPERTY)
+    if(ARG_ENFORCE_PROPERTY)
         set(CMAKE_D_FLAGS "${CMAKE_D_FLAGS} ${CMAKE_D_PROPERTY_FLAG}")
     endif()
 
-    if(ARG_WARNINGS_ARE_ERRORS OR D_DEFAULT_WARNINGS_ARE_ERRORS)
+    if(ARG_WARNINGS_ARE_ERRORS)
         set(CMAKE_D_FLAGS "${CMAKE_D_FLAGS} ${CMAKE_D_WARNING_ERROR_FLAG}")
     endif()
 
-    if(NOT DEFINED ARG_DEPRECATED)
-        set(ARG_DEPRECATED ${D_DEFAULT_DEPRECATION})
+    if(DEFINED ARG_DEPRECATED)
+        set(CMAKE_D_FLAGS "${CMAKE_D_FLAGS} ${CMAKE_D_${ARG_DEPRECATED}_DEPRECATED_FLAG}")
     endif()
-    set(CMAKE_D_FLAGS "${CMAKE_D_FLAGS} ${CMAKE_D_${ARG_DEPRECATED}_DEPRECATED_FLAG}")
 
     add_d_conditions(VERSION ${ARG_VERSIONS} DEBUG ${ARG_DEBUG})
     include_directories(${ARG_IMPORT_DIRS})
@@ -479,9 +475,10 @@ function(autod _target)
         set_property(TARGET ${_target} APPEND_STRING PROPERTY COMPILE_FLAGS ${CMAKE_D_PROPERTY_FLAG})
     endif()
 
-    set_property(TARGET ${_target} APPEND_STRING PROPERTY COMPILE_FLAGS ${CMAKE_D_${ARG_DEPRECATED}_DEPRECATED_FLAG})
-    add_d_conditions(TARGET ${_target} VERSION ${ARG_VERSIONS} DEBUG ${ARG_DEBUG})
-    #set_property(TARGET ${_target} APPEND_STRING PROPERTY COMPILE_FLAGS ${D_VERSIONS})
+    if(ARG_DEPRECATED)
+        set_property(TARGET ${_target} APPEND_STRING PROPERTY COMPILE_FLAGS ${CMAKE_D_${ARG_DEPRECATED}_DEPRECATED_FLAG})
+    endif()
+    add_d_conditions(TARGET ${_target} VERSION ${ARG_VERSION_IDENTS} DEBUG ${ARG_DEBUG_IDENTS})
 
     foreach(dir IN LISTS ARG_IMPORT_DIRS)
         target_include_directories(${_target} PUBLIC ${dir})
@@ -492,31 +489,30 @@ function(autod _target)
     endforeach()
 
     # Add testing target
-    if(AUTOD_TESTING_ENABLED AND NOT ARG_NO_TESTS)
+    if(CMAKE_TESTING_ENABLED AND ARG_GENERATE_UNITTESTS)
         if(DEFINED ARG_COVERAGE)
             set(ARG_COVERAGE COVERAGE ${ARG_COVERAGE})
         else()
             set(ARG_COVERAGE)
         endif()
 
-        set(CMAKE_D_FLAGS "${CMAKE_D_FLAGS} ${CMAKE_D_UNITTEST_FLAG} ${_cov}")
         add_d_unittests(d_unittest_${_target}
             BASED_ON ${_target}
             ${ARG_COVERAGE}
         )
     endif()
 
-    if(AUTOD_DDOC_ENABLED AND NOT ARG_NO_DOCS)
+    if(ARG_GENERATE_DDOC)
         create_ddoc(ddoc_${_target}
             BASED_ON ${_target}
             MACRO_FILES ${ARG_DDOC_MACRO_FILES}
             )
-        #if(AUTOD_INSTALL_ENABLED)
-            #install(FILES ${CMAKE_CURRENT_BINARY_DIR}/ddoc/* DESTINATION share/doc/${CMAKE_PROJECT_NAME})
-        #endif()
+        if(ARG_GENERATE_DDOC)
+            install(FILES ${CMAKE_CURRENT_BINARY_DIR}/ddoc/* DESTINATION share/doc/${CMAKE_PROJECT_NAME})
+        endif()
     endif()
 
-    if(AUTOD_INSTALL_ENABLED AND NOT ARG_NO_INSTALL)
+    if(ARG_GENERATE_INSTALL)
         install(TARGETS ${_target}
             RUNTIME DESTINATION bin
             LIBRARY DESTINATION lib
