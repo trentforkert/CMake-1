@@ -4,7 +4,7 @@
 # The following commands are provided by this module:
 #   autod
 #   include_text_directories
-#   add_d_test
+#   add_d_unittests
 #   examine_d_source
 #   create_ddoc
 #   add_d_conditions
@@ -106,7 +106,7 @@
 # because different modules may be imported depending on whether or not
 # DDoc is being generated.
 #
-#   add_d_test(
+#   add_d_unittests(
 #       <target>
 #       SOURCES <source1> [<source2> ...]
 #       BASED_ON <target>
@@ -150,7 +150,7 @@ option(AUTOD_INSTALL_ENABLED "" false)
 
 # Notable functions:
 #   create_ddoc                 done
-#   add_d_test                  done
+#   add_d_unittests             done
 #   examine_d_source            done
 #   add_d_conditions            done
 #   autod                       done?
@@ -251,16 +251,17 @@ create_ddoc only works on sources that have been run through examine_d_source")
     add_dependencies(ddoc ${_target})
 endfunction()
 
-function(add_d_test _target)
-    cmake_parse_arguments(ARG "" "BASED_ON;COVERAGE" "SOURCES" ${ARGN})
+function(add_d_unittests _target)
+    cmake_parse_arguments(ARG "" "BASED_ON;COVERAGE" ${ARGN})
     if(DEFINED ARG_COVERAGE AND CMAKE_D_COVERAGE_FLAG)
         set(_cov ${CMAKE_D_COVERAGE_FLAG}${ARG_COVERAGE})
     else()
         unset(_cov)
     endif()
     get_target_property(flags "${ARG_BASED_ON}" COMPILE_FLAGS)
+    get_Target_property(sources "${ARG_BASED_ON}" SOURCES)
     set(CMAKE_D_FLAGS "${flags} ${CMAKE_D_UNITTEST_FLAG} ${_cov}")
-    examine_d_source(srcs libs isexe ${ARG_SOURCES})
+    examine_d_source(srcs libs isexe ${sources})
     if(NOT isexe)
         message(FATAL_ERROR "Trying to unittest ${_target}, but it isn't an executable")
     endif()
@@ -463,7 +464,7 @@ function(autod _target)
     endif()
     target_link_libraries(${_target} ${libs})
 
-    if(NOT ${_target} MATCHES "^test_" AND NOT isexe)
+    if(NOT ${_target} MATCHES "^d_unittest_" AND NOT isexe)
         set_property(GLOBAL APPEND PROPERTY D_ALL_LIBRARIES ${_target})
     endif()
 
@@ -497,14 +498,10 @@ function(autod _target)
         endif()
 
         set(CMAKE_D_FLAGS "${CMAKE_D_FLAGS} ${CMAKE_D_UNITTEST_FLAG} ${_cov}")
-        foreach(source IN LISTS srcs)
-            get_source_file_property(modname ${source} D_MODULE_NAME)
-            add_d_test(test_${_target}_${modname}
-                BASED_ON ${_target}
-                ${ARG_COVERAGE}
-                SOURCES ${source}
-            )
-        endforeach()
+        add_d_unittests(d_unittest_${_target}
+            BASED_ON ${_target}
+            ${ARG_COVERAGE}
+        )
     endif()
 
     if(AUTOD_DDOC_ENABLED AND NOT ARG_NO_DOCS)
