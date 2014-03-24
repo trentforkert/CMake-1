@@ -9,7 +9,7 @@ set(CMAKE_D_FLAGS_MINSIZEREL_INIT "-release -Oz")
 set(CMAKE_D_FLAGS_RELEASE_INIT "-release -O3 -enable-inlining")
 set(CMAKE_D_FLAGS_RELWITHDEBINFO_INIT "-release -O3 -enable-inlining -g")
 
-set(CMAKE_D_INCLUDE_FLAG "-I=")
+set(CMAKE_INCLUDE_FLAG_D "-I=")
 set(CMAKE_D_DVERBOSE_FLAG "-v")
 set(CMAKE_D_OUTPUT_FLAG "-of=")
 set(CMAKE_D_LINK_FLAG "-L=-l")
