@@ -1,20 +1,18 @@
-##module
-# - Use module for D
-# This module provides functions for D to complement core CMake functions.
-# The following commands are provided by this module:
-#   autod
-#   include_text_directories
-#   add_d_unittests
-#   examine_d_source
-#   create_ddoc
-#   add_d_conditions
-##end
+#.rst:
+# UseD
+# ----
 #
-#   autod(<target>
+# Use Module for D
+#
+# This module provides functions for D to complement core CMake functions.
+#
+# ::
+#
+#    add_d_target(<target>
 #      [EXECUTABLE | STATIC_LIBRARY | SHARED_LIBRARY]
 #      [SOURCES] <source1> [<source2> ...]
-#      [VERSIONS <ident1> [<ident2> ...]]
-#      [DEBUG <ident1> [<ident2> ...]]
+#      [VERSION_IDENTS <ident1> [<ident2> ...]]
+#      [DEBUG_IDENTS <ident1> [<ident2> ...]]
 #      [IMPORT_DIRS <dir1> [<dir2> ...]]
 #      [TEXT_IMPORT_DIRS <dir1> [<dir2> ...]]
 #      [FLAGS <flag1> [<flag2> ...]]
@@ -23,106 +21,87 @@
 #      [ENFORCE_PROPERTY TRUE|FALSE]
 #      [WARNINGS_ARE_ERRORS TRUE|FALSE]
 #      [STRICT]
-#      [NO_TESTS]
-#      [NO_DOCS]
-#      [NO_INSTALL]
+#      [GENERATE_UNITTESTS]
+#      [GENERATE_DDOC]
+#      [GENERATE_INSTALL]
 #      [EXCLUDE_FROM_ALL]
-#   )
-# This command adds a D target, using automatic dependency resolution.
-# It examines the given source files, determining the needed dependencies
-# (other D sources, or libraries) for compilation. Previously added
-# libraries containing D code will be used as appropriate, rather than
-# recompiling those modules unnecessarily.
+#    )
 #
-# If none of EXECUTABLE, STATIC_LIBRARY, or SHARED_LIBRARY are specified,
-# automatic detection will be attempted, based on whether or not the D
-# compiler reports presence of a main method.
+# In its simplest form,
 #
-# VERSIONS and DEBUG allow for conditional compilation blocks such as:
-#       version(ident)
-#       {
-#           //...
-#       }
-# and
-#       debug(ident)
-#       {
-#           //...
-#       }
-# respectively. What such identifiers are and what they do depends on
-# the D code being compiled.
+#    add_d_target(<target>)
 #
-# IMPORT_DIRS adds directories to the import search path. These should
-# be automatically determined under typical usage.
+# this command will create a target based on the source file <target>.d in
+# the current source directory. It will automatically compile as an
+# executable if it has a main method, or a static library otherwise.
+# It automatically infers needed sources and libraries based on information
+# from the D compiler.
 #
-# TEXT_IMPORT_DIRS adds directories to the text import search path.
+# ::
 #
-# COVERAGE will instruct the compiler to perform coverage tests, requiring
-# the given percentage of coverage. This will only influence test builds.
+# For automatic library dependency resolution to work, the library must
+# be referenced from the D source code with pragma(lib). The name specified
+# in the pragma must then be mapped to the libraries as follows:
 #
-# DEPRECATED ALLOW will specify that language deprecations are to be
-# silently ignored. DEPRECATED WARN makes those deprecations warnings.
-# DEPRECATED ERROR causes deprecations to be treated as errors.
+#    set(_d_link_target_<libname> ${LIBNAME_LIBRARIES})
 #
-# WARNINGS_ARE_ERRORS, if set, will cause all warnings to halt compilation.
+# This is not necessary for in-project libraries whose "pragma" name and
+# "target" name are the same.
 #
-# ENFORCE_PROPERTY, if set, will enforce D's property semantics.
+# ::
 #
-# If STRICT is given, it is considered equivalent to specifying
-# DEPRECATED ERROR, WARNINGS_ARE_ERRORS TRUE, and ENFORCE_PROPERTY TRUE.
-#
-# NO_TESTS, NO_DOCS, NO_INSTALL instruct autod to skip generating
-# test, documentation, and install targets, even if those are enabled
-# via AUTOD_*_ENABLED settings.
-#
-# FLAGS allows other flags to be passed directly to the compiler.
-#
-# EXCLUDE_FROM_ALL will omit this target from the ALL target.
-#
-#   include_text_directories(
+#    include_text_directories(
 #       <dir1> [<dir2> ...]
 #       [TARGET <target>]
-#   )
+#    )
+#
 # This command adds the specified directories to the text import search
 # path. If a target is specified, the directories will only be added for
-# that target.
+# that target. Otherwise, they follow usual CMake scope rules.
 #
-#   add_d_conditions(
+# ::
+#
+#    add_d_conditions(
 #       [TARGET <target>]
 #       [VERSION <ident1> [<ident2> ...] ]
 #       [DEBUG <ident1> [<ident2> ...] ]
-#   )
+#    )
+#
 # This command adds the specified identifiers to D's version/debug flags.
 # If a target is specified, the identifiers will only be added for that target.
+# Otherwise, they follow usual CMake scope rules.
 #
-#   create_ddoc(
+# ::
+#
+#    create_ddoc(
 #       <target>
-#       SOURCES <source1> [<source2> ...]
+#       BASED_ON <base_target>
 #       [OUTPUT_DIRECTORY <dir>]
 #       [MACRO_FILES <macro_file1> [<macro_file2> ...]]
-#   )
+#    )
+#
 # Adds a DDoc generating target for the specified target, and makes it a
-# dependency of the global ddoc target. Compiler parameters are derived
-# from the specified target. Sources are resolved separately from the target
-# because different modules may be imported depending on whether or not
-# DDoc is being generated.
+# dependency of a global ddoc target. Compiler parameters and initial
+# source list are derived from <base_target>. A DDoc file containing a
+# MODULES macro is automatically generated and used based on the modules
+# include in the target.
 #
-#   add_d_unittests(
+# Additional macro files can be specified to define more macros. The
+# default output directory, if that parameter is omitted, is
+# ${CMAKE_CURRENT_BINARY_DIR}/ddoc.
+#
+# ::
+#
+#    add_d_unittests(
 #       <target>
-#       SOURCES <source1> [<source2> ...]
-#       BASED_ON <target>
+#       BASED_ON <base_target>
 #       [COVERAGE <pct>]
-#   )
-# Adds a unittest target.
+#    )
 #
-#   examine_d_source(
-#       <src_result>
-#       <lib_result>
-#       <exe_result>
-#       <source1> [<source2> ...]
-#   )
-# Uses the D compiler to examine the specified sources. Yields a complete
-# list of sources, libraries to be linked, and whether or not it is an exe
-# in the variable names provided.
+# Adds a unittest target. This will use <base_target> to determine
+# the initial set of compiler flags and source files to include.
+# COVERAGE, if specified, will enforce that level of test coverage,
+# provided the compiler support it.
 #
 
 #=============================================================================
@@ -272,6 +251,7 @@ function(add_d_unittests _target)
     set_tests_properties(${_target}_run PROPERTIES DEPENDS ${_target}_build)
 endfunction()
 
+# Internal function
 function(examine_d_source _src_result _lib_result _exe_result)
     get_directory_property(imps DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} INCLUDE_DIRECTORIES)
     foreach(dir IN LISTS imps ITEMS ${CMAKE_CURRENT_SOURCE_DIR})
