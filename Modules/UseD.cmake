@@ -252,7 +252,7 @@ create_ddoc only works on sources that have been run through examine_d_source")
 endfunction()
 
 function(add_d_unittests _target)
-    cmake_parse_arguments(ARG "" "BASED_ON;COVERAGE" ${ARGN})
+    cmake_parse_arguments(ARG "" "BASED_ON;COVERAGE" "" ${ARGN})
     if(DEFINED ARG_COVERAGE AND CMAKE_D_COVERAGE_FLAG)
         set(_cov ${CMAKE_D_COVERAGE_FLAG}${ARG_COVERAGE})
     else()
