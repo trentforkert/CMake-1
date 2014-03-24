@@ -164,13 +164,6 @@ option(AUTOD_INSTALL_ENABLED "" false)
 #   set_d_debug                 nope - delayed
 #   autod                       done?
 
-if(NOT TARGET autorefresh)
-    add_custom_target(autorefresh
-        COMMAND ${CMAKE_COMMAND} "${CMAKE_BINARY_DIR}"
-        WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
-    )
-endif()
-
 function(include_text_directories)
     cmake_parse_arguments(ARG "" "TARGET" "" ${ARGN})
     foreach(dir IN LISTS ARG_UNPARSED_ARGUMENTS)
@@ -533,6 +526,4 @@ function(autod _target)
             ARCHIVE DESTINATION lib
         )
     endif()
-
-    add_dependencies(${_target} autorefresh)
 endfunction()
