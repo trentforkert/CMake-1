@@ -15,6 +15,7 @@ set(CMAKE_D_OUTPUT_FLAG "-of=")
 set(CMAKE_D_LINK_FLAG "-L=-l")
 set(CMAKE_D_LINK_FILE_FLAG "-L=-l:")
 set(CMAKE_D_VERSION_FLAG "-d-version=")
+set(CMAKE_D_DEBUG_FLAG "-d-debug=")
 set(CMAKE_D_TEXT_INCLUDE_FLAG "-J=")
 set(CMAKE_D_UNITTEST_FLAG "-unittest")
 # LDC doesn't seem to support -cov=nn

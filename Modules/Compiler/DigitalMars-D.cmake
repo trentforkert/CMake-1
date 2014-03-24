@@ -20,6 +20,7 @@ set(CMAKE_D_OUTPUT_FLAG "-of")
 set(CMAKE_D_LINK_FLAG "-L-l")
 set(CMAKE_D_LINK_FILE_FLAG "-L-l:")
 set(CMAKE_D_VERSION_FLAG "-version=")
+set(CMAKE_D_DEBUG_FLAG "-debug=")
 set(CMAKE_D_TEXT_INCLUDE_FLAG "-J")
 set(CMAKE_D_UNITTEST_FLAG "-unittest")
 # Features introduced to DMD in 2.063
