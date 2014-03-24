@@ -16,6 +16,7 @@ set(CMAKE_D_OUTPUT_FLAG "-o ")
 set(CMAKE_D_LINK_FLAG "-l")
 set(CMAKE_D_LINK_FILE_FLAG "-l:")
 set(CMAKE_D_VERSION_FLAG "-fversion=")
+set(CMAKE_D_DEBUG_FLAG "-fdebug=")
 set(CMAKE_D_TEXT_INCLUDE_FLAG "-J")
 set(CMAKE_D_UNITTEST_FLAG "-funittest")
 # GDC doesn't seem to support -cov
