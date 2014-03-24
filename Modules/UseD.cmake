@@ -4,11 +4,10 @@
 # The following commands are provided by this module:
 #   autod
 #   include_text_directories
-#   d_target_link_libraries
 #   add_d_test
 #   examine_d_source
 #   create_ddoc
-#   set_d_versions
+#   add_d_conditions
 ##end
 #
 #   autod(<target>
@@ -87,19 +86,13 @@
 # path. If a target is specified, the directories will only be added for
 # that target.
 #
-#   set_d_versions(
-#       <ident1> [<ident2> ...]
+#   add_d_conditions(
 #       [TARGET <target>]
+#       [VERSION <ident1> [<ident2> ...] ]
+#       [DEBUG <ident1> [<ident2> ...] ]
 #   )
-# This command adds the specified identifiers to D's version flags. If a
-# target is specified, the identifiers will only be added for that target.
-#
-#   d_target_link_libraries(
-#       <target>
-#       <library1> [<library2> ...]
-#   )
-# This command is a wrapper around target_link_libraries to properly support
-# some quirks, particularly with DMD.
+# This command adds the specified identifiers to D's version/debug flags.
+# If a target is specified, the identifiers will only be added for that target.
 #
 #   create_ddoc(
 #       <target>
@@ -158,10 +151,8 @@ option(AUTOD_INSTALL_ENABLED "" false)
 # Notable functions:
 #   create_ddoc                 done
 #   add_d_test                  done
-#   register_d_library          nope - not needed
 #   examine_d_source            done
-#   set_d_versions              done?
-#   set_d_debug                 nope - delayed
+#   add_d_conditions            done
 #   autod                       done?
 
 function(include_text_directories)
@@ -274,7 +265,7 @@ function(add_d_test _target)
         message(FATAL_ERROR "Trying to unittest ${_target}, but it isn't an executable")
     endif()
     add_executable(${_target} EXCLUDE_FROM_ALL ${srcs})
-    d_target_link_libraries(${_target} ${libs})
+    target_link_libraries(${_target} ${libs})
     set_property(TARGET ${_target} PROPERTY COMPILE_FLAGS "${CMAKE_D_FLAGS}")
     add_test(NAME ${_target}_build COMMAND ${CMAKE_COMMAND} --build "${CMAKE_BINARY_DIR}" --target ${_target})
     add_test(NAME ${_target}_run COMMAND ${_target})
@@ -470,7 +461,7 @@ function(autod _target)
     else()
         add_library(${_target} STATIC ${ARG_EXCLUDE_FROM_ALL} ${srcs})
     endif()
-    d_target_link_libraries(${_target} ${libs})
+    target_link_libraries(${_target} ${libs})
 
     if(NOT ${_target} MATCHES "^test_" AND NOT isexe)
         set_property(GLOBAL APPEND PROPERTY D_ALL_LIBRARIES ${_target})
