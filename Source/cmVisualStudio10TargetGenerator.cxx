@@ -221,7 +221,7 @@ void cmVisualStudio10TargetGenerator::Generate()
   this->PathToVcxproj = path;
   this->BuildFileStream->SetCopyIfDifferent(true);
 
-  if(ext == ".visualdproj")
+  if(strcmp(ext, ".visualdproj") == 0)
     {
     this->WriteDProj();
     return;
@@ -502,7 +502,8 @@ void cmVisualStudio10TargetGenerator::WriteDProj()
   this->WriteString("<Folder name=\"", 1);
   (*this->BuildFileStream) << this->Target->GetName() << "\">\n";
 
-  std::vector<cmSourceFile*> srcs = this->Target->GetSourceFiles();
+  std::vector<cmSourceFile*> srcs;
+  this->Target->GetSourceFiles(srcs);
   for(std::vector<cmSourceFile*>::const_iterator
       oi = srcs.begin(); oi != srcs.end(); ++oi)
     {

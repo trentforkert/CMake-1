@@ -169,7 +169,7 @@ cmGlobalVisualStudio71Generator::WriteProject(std::ostream& fout,
     ext = ".vfproj";
     project = "Project(\"{6989167D-11E4-40FE-8C1A-2192A86A7E90}\") = \"";
     }
-  else if(this->TargetIsDOnly(target))
+  else if(this->TargetIsDOnly(t))
     {
     ext = ".visualdproj";
     project = "Project(\"{002A2DE9-8BB6-484D-9802-7E4AD4084715}\") = \"";
