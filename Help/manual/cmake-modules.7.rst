@@ -223,6 +223,7 @@ All Modules
    /module/TestForANSIStreamHeaders
    /module/TestForSSTREAM
    /module/TestForSTDNamespace
+   /module/UseD
    /module/UseEcos
    /module/UseJavaClassFilelist
    /module/UseJava
