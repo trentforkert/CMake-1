@@ -1994,7 +1994,7 @@ void cmLocalVisualStudio7Generator
   cmGlobalVisualStudio7Generator* gg =
     static_cast<cmGlobalVisualStudio7Generator*>(this->GlobalGenerator);
 
-  fout << "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
+  fout
       << "<DProject>\n"
       << "\t<ProjectGUID>\"{" << gg->GetGUID(libName) << "}\">\n";
 }
