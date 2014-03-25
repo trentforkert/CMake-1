@@ -132,6 +132,16 @@ void NativeCompilerSetup::setCXXCompiler(const QString& s)
   this->CXXCompiler->setText(s);
 }
 
+QString NativeCompilerSetup::getDCompiler() const
+{
+  return this->DCompiler->text();
+}
+
+void NativeCompilerSetup::setDCompiler(const QString& s)
+{
+  this->DCompiler->setText(s);
+}
+
 QString NativeCompilerSetup::getFortranCompiler() const
 {
   return this->FortranCompiler->text();
@@ -152,7 +162,8 @@ CrossCompilerSetup::CrossCompilerSetup(QWidget* p)
   QWidget::setTabOrder(systemProcessor, CrossCompilers->CCompiler);
   QWidget::setTabOrder(CrossCompilers->CCompiler, CrossCompilers->CXXCompiler);
   QWidget::setTabOrder(CrossCompilers->CXXCompiler, CrossCompilers->FortranCompiler);
-  QWidget::setTabOrder(CrossCompilers->FortranCompiler, crossFindRoot);
+  QWidget::setTabOrder(CrossCompilers->FortranCompiler, CrossCompilers->DCompiler);
+  QWidget::setTabOrder(CrossCompilers->DCompiler, crossFindRoot);
   QWidget::setTabOrder(crossFindRoot, crossProgramMode);
   QWidget::setTabOrder(crossProgramMode, crossLibraryMode);
   QWidget::setTabOrder(crossLibraryMode, crossIncludeMode);
@@ -194,6 +205,16 @@ QString CrossCompilerSetup::getCXXCompiler() const
 void CrossCompilerSetup::setCXXCompiler(const QString& s)
 {
   this->CrossCompilers->CXXCompiler->setText(s);
+}
+
+QString CrossCompilerSetup::getDCompiler() const
+{
+  return this->CrossCompilers->DCompiler->text();
+}
+
+void CrossCompilerSetup::setDCompiler(const QString& s)
+{
+  this->CrossCompilers->DCompiler->setText(s);
 }
 
 QString CrossCompilerSetup::getFortranCompiler() const
@@ -349,6 +370,7 @@ void FirstConfigure::loadFromSettings()
   this->mNativeCompilerSetupPage->setCCompiler(settings.value("CCompiler").toString());
   this->mNativeCompilerSetupPage->setCXXCompiler(settings.value("CXXCompiler").toString());
   this->mNativeCompilerSetupPage->setFortranCompiler(settings.value("FortranCompiler").toString());
+  this->mNativeCompilerSetupPage->setDCompiler(settings.value("DCompiler").toString());
   settings.endGroup();
 
   // restore cross compiler setup
@@ -356,6 +378,7 @@ void FirstConfigure::loadFromSettings()
   this->mCrossCompilerSetupPage->setCCompiler(settings.value("CCompiler").toString());
   this->mCrossCompilerSetupPage->setCXXCompiler(settings.value("CXXCompiler").toString());
   this->mCrossCompilerSetupPage->setFortranCompiler(settings.value("FortranCompiler").toString());
+  this->mCrossCompilerSetupPage->setDCompiler(settings.value("DCompiler").toString());
   this->mToolchainCompilerSetupPage->setToolchainFile(settings.value("ToolChainFile").toString());
   this->mCrossCompilerSetupPage->setSystem(settings.value("SystemName").toString());
   this->mCrossCompilerSetupPage->setVersion(settings.value("SystemVersion").toString());
@@ -382,6 +405,7 @@ void FirstConfigure::saveToSettings()
   settings.setValue("CCompiler", this->mNativeCompilerSetupPage->getCCompiler());
   settings.setValue("CXXCompiler", this->mNativeCompilerSetupPage->getCXXCompiler());
   settings.setValue("FortranCompiler", this->mNativeCompilerSetupPage->getFortranCompiler());
+  settings.setValue("DCompiler", this->mNativeCompilerSetupPage->getDCompiler());
   settings.endGroup();
 
   // save cross compiler setup
@@ -389,6 +413,7 @@ void FirstConfigure::saveToSettings()
   settings.setValue("CCompiler", this->mCrossCompilerSetupPage->getCCompiler());
   settings.setValue("CXXCompiler", this->mCrossCompilerSetupPage->getCXXCompiler());
   settings.setValue("FortranCompiler", this->mCrossCompilerSetupPage->getFortranCompiler());
+  settings.setValue("DCompiler", this->mCrossCompilerSetupPage->getDCompiler());
   settings.setValue("ToolChainFile", this->getCrossCompilerToolChainFile());
   settings.setValue("SystemName", this->mCrossCompilerSetupPage->getSystem());
   settings.setValue("SystemVersion", this->mCrossCompilerSetupPage->getVersion());
@@ -452,6 +477,19 @@ QString FirstConfigure::getCXXCompiler() const
   else if(this->crossCompilerSetup())
     {
     return this->mCrossCompilerSetupPage->getCXXCompiler();
+    }
+  return QString();
+}
+
+QString FirstConfigure::getDCompiler() const
+{
+  if(this->compilerSetup())
+    {
+    return this->mNativeCompilerSetupPage->getDCompiler();
+    }
+  else if(this->crossCompilerSetup())
+    {
+    return this->mCrossCompilerSetupPage->getDCompiler();
     }
   return QString();
 }

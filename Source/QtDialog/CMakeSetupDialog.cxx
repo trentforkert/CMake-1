@@ -710,6 +710,12 @@ bool CMakeSetupDialog::setupFirstConfigure()
 
     if(dialog.compilerSetup())
       {
+      QString dCompiler = dialog.getDCompiler();
+      if(!dCompiler.isEmpty())
+        {
+        m->insertProperty(QCMakeProperty::FILEPATH, "CMAKE_D_COMPILER",
+                          "D compiler.", dCompiler, false);
+        }
       QString fortranCompiler = dialog.getFortranCompiler();
       if(!fortranCompiler.isEmpty())
         {
@@ -732,6 +738,12 @@ bool CMakeSetupDialog::setupFirstConfigure()
       }
     else if(dialog.crossCompilerSetup())
       {
+      QString dCompiler = dialog.getDCompiler();
+      if(!dCompiler.isEmpty())
+        {
+        m->insertProperty(QCMakeProperty::FILEPATH, "CMAKE_D_COMPILER",
+                          "D compiler.", dCompiler, false);
+        }
       QString fortranCompiler = dialog.getFortranCompiler();
       if(!fortranCompiler.isEmpty())
         {

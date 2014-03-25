@@ -70,6 +70,16 @@
       <item row="1" column="1" >
        <widget class="QCMakeFilePathEditor" name="FortranCompiler" />
       </item>
+      <item row="1" column="2" >
+       <widget class="QLabel" name="label_19" >
+        <property name="text" >
+         <string>D</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="3">
+        <widget class="QCMakeFilePathEditor" name="DCompiler" />
+      </item>
      </layout>
     </widget>
    </item>
