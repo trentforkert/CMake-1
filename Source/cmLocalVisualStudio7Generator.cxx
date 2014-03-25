@@ -658,7 +658,7 @@ void cmLocalVisualStudio7Generator::WriteConfiguration(std::ostream& fout,
   if(this->DProject)
     {
     fout << "\t<Config name=\"" << configName << "\">\n";
-    return //TODO FIXME Should we really just bail out here?
+    return; //TODO Should we really just bail out here?
            //VisualD uses a vastly different schema than VisualStudio
     }
   const char* mfcFlag = this->Makefile->GetDefinition("CMAKE_MFC_FLAG");
@@ -2001,9 +2001,10 @@ void cmLocalVisualStudio7Generator::WriteProjectSCC(std::ostream& fout,
     }
 }
 
-void cmLocalVisualStudio7Generator::WriteProjectStartD(std::ostream* fout,
-                                                       const char *libName,
-                                                       cmTarget& target)
+void cmLocalVisualStudio7Generator
+::WriteProjectStartD(std::ostream& fout,
+                     const std::string& libName,
+                     cmTarget& target)
 {
   cmGlobalVisualStudio7Generator* gg =
     static_cast<cmGlobalVisualStudio7Generator*>(this->GlobalGenerator);
