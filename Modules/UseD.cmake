@@ -9,25 +9,27 @@
 # ::
 #
 #    add_d_target(<target>
-#      [EXECUTABLE | STATIC_LIBRARY | SHARED_LIBRARY]
-#      [SOURCES] <source1> [<source2> ...]
-#      [VERSION_IDENTS <ident1> [<ident2> ...]]
-#      [DEBUG_IDENTS <ident1> [<ident2> ...]]
-#      [IMPORT_DIRS <dir1> [<dir2> ...]]
-#      [TEXT_IMPORT_DIRS <dir1> [<dir2> ...]]
-#      [FLAGS <flag1> [<flag2> ...]]
-#      [COVERAGE <pct>]
-#      [DEPRECATED ALLOW | WARN | ERROR]
-#      [ENFORCE_PROPERTY TRUE|FALSE]
-#      [WARNINGS_ARE_ERRORS TRUE|FALSE]
-#      [STRICT]
-#      [GENERATE_UNITTESTS]
-#      [GENERATE_DDOC]
-#      [GENERATE_INSTALL]
-#      [EXCLUDE_FROM_ALL]
+#        [EXECUTABLE | STATIC_LIBRARY | SHARED_LIBRARY]
+#        [SOURCES] <source1> [<source2> ...]
+#        [VERSION_IDENTS <ident1> [<ident2> ...]]
+#        [DEBUG_IDENTS <ident1> [<ident2> ...]]
+#        [IMPORT_DIRS <dir1> [<dir2> ...]]
+#        [TEXT_IMPORT_DIRS <dir1> [<dir2> ...]]
+#        [FLAGS <flag1> [<flag2> ...]]
+#        [COVERAGE <pct>]
+#        [DEPRECATED ALLOW | WARN | ERROR]
+#        [ENFORCE_PROPERTY TRUE|FALSE]
+#        [WARNINGS_ARE_ERRORS TRUE|FALSE]
+#        [STRICT]
+#        [GENERATE_UNITTESTS]
+#        [GENERATE_DDOC]
+#        [GENERATE_INSTALL]
+#        [EXCLUDE_FROM_ALL]
 #    )
 #
 # In its simplest form,
+#
+# ::
 #
 #    add_d_target(<target>)
 #
@@ -37,11 +39,11 @@
 # It automatically infers needed sources and libraries based on information
 # from the D compiler.
 #
-# ::
-#
 # For automatic library dependency resolution to work, the library must
 # be referenced from the D source code with pragma(lib). The name specified
 # in the pragma must then be mapped to the libraries as follows:
+#
+# ::
 #
 #    set(_d_link_target_<libname> ${LIBNAME_LIBRARIES})
 #
