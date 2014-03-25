@@ -63,6 +63,9 @@ class NativeCompilerSetup : public QWizardPage, protected Ui::Compilers
     QString getCXXCompiler() const;
     void setCXXCompiler(const QString&);
 
+    QString getDCompiler() const;
+    void setDCompiler(const QString&);
+
     QString getFortranCompiler() const;
     void setFortranCompiler(const QString&);
 
@@ -91,6 +94,9 @@ class CrossCompilerSetup : public QWizardPage, protected Ui::CrossCompiler
 
     QString getCXXCompiler() const;
     void setCXXCompiler(const QString&);
+
+    QString getDCompiler() const;
+    void setDCompiler(const QString&);
 
     QString getFortranCompiler() const;
     void setFortranCompiler(const QString&);
@@ -150,6 +156,7 @@ public:
 
   QString getCCompiler() const;
   QString getCXXCompiler() const;
+  QString getDCompiler() const;
   QString getFortranCompiler() const;
 
   QString getSystemName() const;
