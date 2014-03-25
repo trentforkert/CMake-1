@@ -5,7 +5,7 @@ Notice
 ======
 
 The documentation below is from upstream CMake. For information
-about this project, see `the wiki`.
+about this project, see `the wiki`_.
 
 .. _`the wiki`: https://github.com/trentforkert/cmake/wiki
 
