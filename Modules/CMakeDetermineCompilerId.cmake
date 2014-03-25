@@ -186,7 +186,7 @@ Id flags: ${testflags}
     get_filename_component(id_src "${src}" NAME)
     configure_file(${CMAKE_ROOT}/Modules/CompilerId/VS-${v}.${ext}.in
       ${id_dir}/CompilerId${lang}.${ext} @ONLY)
-    if(CMAKE_VS_MSBUILD_COMMAND AND NOT lang STREQUAL "Fortran")
+  if(CMAKE_VS_MSBUILD_COMMAND AND NOT (lang STREQUAL "Fortran" OR lang STREQUAL "D"))
       set(command "${CMAKE_VS_MSBUILD_COMMAND}" "CompilerId${lang}.${ext}"
         "/p:Configuration=Debug" "/p:Platform=${id_platform}" "/p:VisualStudioVersion=${vs_version}.0"
         )

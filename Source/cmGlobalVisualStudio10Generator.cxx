@@ -368,6 +368,12 @@ void cmGlobalVisualStudio10Generator::GenerateBuildCommand(
         {
         useDevEnv = true;
         }
+
+      if(proj.size() > 12 &&
+         proj.substr(proj.size()-12) == ".visualdproj")
+        {
+        useDevEnv = true;
+        }
       }
     }
   }
