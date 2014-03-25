@@ -10,6 +10,8 @@
 # See the License for more information.
 #=============================================================================
 
+set(D_SUPPORT "+dsupport.20140325")
+
 # If the cmake version includes cpack, use it
 if(EXISTS "${CMAKE_ROOT}/Modules/CPack.cmake")
   if(EXISTS "${CMAKE_ROOT}/Modules/InstallRequiredSystemLibraries.cmake")
@@ -30,9 +32,9 @@ if(EXISTS "${CMAKE_ROOT}/Modules/CPack.cmake")
   set(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/Copyright.txt")
   set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/Copyright.txt")
   set(CPACK_PACKAGE_NAME "${CMAKE_PROJECT_NAME}")
-  set(CPACK_PACKAGE_VERSION "${CMake_VERSION}")
+  set(CPACK_PACKAGE_VERSION "${CMake_VERSION}${D_SUPPORT}}")
   set(CPACK_PACKAGE_INSTALL_DIRECTORY "${CPACK_PACKAGE_NAME}")
-  set(CPACK_SOURCE_PACKAGE_FILE_NAME "cmake-${CMake_VERSION}")
+  set(CPACK_SOURCE_PACKAGE_FILE_NAME "cmake-${CMake_VERSION}${D_SUPPORT}")
 
   # Installers for 32- vs. 64-bit CMake:
   #  - Root install directory (displayed to end user at installer-run time)
