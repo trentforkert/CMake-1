@@ -1,4 +1,4 @@
-if(NOT Win32)
+if(NOT WIN32)
   set(CMAKE_D_VERBOSE_FLAG "-L-v")
 else()
   set(CMAKE_D_VERBOSE_FLAG "")
