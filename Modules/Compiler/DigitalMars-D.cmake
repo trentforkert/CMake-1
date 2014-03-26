@@ -12,7 +12,7 @@ set(CMAKE_D_FLAGS_INIT "")
 set(CMAKE_D_FLAGS_DEBUG_INIT "-g -debug")
 set(CMAKE_D_FLAGS_MINSIZEREL_INIT "-release -O")
 set(CMAKE_D_FLAGS_RELEASE_INIT "-release -O -inline")
-set(CMAKE_D_FLGS_RELWITHDEBINFO_INIT "-release -O -inline -g")
+set(CMAKE_D_FLAGS_RELWITHDEBINFO_INIT "-release -O -inline -g")
 
 set(CMAKE_INCLUDE_FLAG_D "-I")
 set(CMAKE_D_DVERBOSE_FLAG "-v")
