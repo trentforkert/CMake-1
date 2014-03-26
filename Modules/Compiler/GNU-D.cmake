@@ -8,7 +8,7 @@ set(CMAKE_D_FLAGS_INIT "")
 set(CMAKE_D_FLAGS_DEBUG_INIT "-g -fdebug")
 set(CMAKE_D_FLAGS_MINSIZEREL_INIT "-frelease -O3")
 set(CMAKE_D_FLAGS_RELEASE_INIT "-frelease -O3 -finline")
-set(CMAKE_D_FLGS_RELWITHDEBINFO_INIT "-frelease -O3 -finline -g")
+set(CMAKE_D_FLAGS_RELWITHDEBINFO_INIT "-frelease -O3 -finline -g")
 
 set(CMAKE_INCLUDE_FLAG_D "-I")
 set(CMAKE_D_DVERBOSE_FLAG "-fd-verbose")
