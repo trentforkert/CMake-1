@@ -15,17 +15,20 @@
 #define cmDependsD_h
 
 #include "cmDepends.h"
+#include "cmMakefile.h"
+#include "cmLocalGenerator.h"
 
 /** \class cmDependsD
  * \brief Dependency scanner for D object files.
  *
- * Purposefully not implemented, as anything we could do here
- * short of compiling the D code wouldn't be useful.
+ * Calls D compiler to do the dirty work, as properly scanning
+ * D dependencies would otherwise require a nearly complete compiler
+ * be implemented inside CMake.
  */
 class cmDependsD: public cmDepends
 {
 public:
-  cmDependsD();
+  cmDependsD(cmLocalGenerator*);
   virtual ~cmDependsD();
 
 protected:
@@ -33,8 +36,6 @@ protected:
                                  const std::string& obj,
                                  std::ostream& makeDepends,
                                  std::ostream& internalDepends);
-  virtual bool CheckDependencies(std::istream&, const char*,
-                                 std::map<std::string, DependencyVector>&);
 };
 
 #endif

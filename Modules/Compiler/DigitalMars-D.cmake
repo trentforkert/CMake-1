@@ -37,6 +37,7 @@ endif()
 set(CMAKE_D_DDOC_FILE_FLAG "-Df")
 set(CMAKE_D_DDOC_MACRO_FLAG "")
 set(CMAKE_D_DEPS_FILE_FLAG "-deps=")
+set(CMAKE_D_PRINT_DEPS_FLAG "-deps")
 set(CMAKE_D_NO_OUTPUT_FLAG -c -o-)
 set(CMAKE_D_JSON_FILE_FLAG "-Xf")
 
