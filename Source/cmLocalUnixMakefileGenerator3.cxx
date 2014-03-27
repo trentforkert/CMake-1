@@ -2056,8 +2056,8 @@ void cmLocalUnixMakefileGenerator3
     if(l->first == "D")
       {
       // Read definitions from makefile
-      const char* dc =
-        this->Makefile->GetDefinition("CMAKE_D_COMPILER");
+      std::string dc =
+        this->Makefile->GetRequiredDefinition("CMAKE_D_COMPILER");
 
       const char* noOutputFlag =
         this->Makefile->GetDefinition("CMAKE_D_NO_OUTPUT_FLAG");
@@ -2083,7 +2083,7 @@ void cmLocalUnixMakefileGenerator3
       target.GetCompileOptions(options, this->ConfigurationName);
 
       // Only write CMAKE_D_DEPS_COMMAND if all variables are set
-      if(dc && noOutputFlag && printDepsFlag && iflag && ccsd)
+      if(noOutputFlag && printDepsFlag && iflag && ccsd)
         {
         cmakefileStream
           << "set(CMAKE_D_DEPS_COMMAND \""
