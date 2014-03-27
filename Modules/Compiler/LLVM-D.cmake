@@ -18,7 +18,6 @@ set(CMAKE_NINJA_DEPTYPE_D "dmd")
 set(CMAKE_INCLUDE_FLAG_D "-I=")
 set(CMAKE_INCLUDE_FLAG_D_SEP "")
 
-set(CMAKE_D_LINK_FLAGS "-L=-l")
 set(CMAKE_D_VERSION_FLAG "-d-version=")
 set(CMAKE_D_DEBUG_FLAG "-d-debug=")
 set(CMAKE_D_TEXT_INCLUDE_FLAG "-J=")

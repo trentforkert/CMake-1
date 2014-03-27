@@ -20,7 +20,6 @@ set(CMAKE_NINJA_DEPTYPE_D "gcc")
 set(CMAKE_INCLUDE_FLAG_D "-I")
 set(CMAKE_INCLUDE_FLAG_D_SEP "")
 
-set(CMAKE_D_LINK_FLAGS "-l")
 set(CMAKE_D_VERSION_FLAG "-fversion=")
 set(CMAKE_D_DEBUG_FLAG "-fdebug=")
 set(CMAKE_D_TEXT_INCLUDE_FLAG "-J")
