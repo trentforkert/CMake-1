@@ -82,6 +82,11 @@ bool cmDependsD::WriteDependencies(const std::set<std::string>& sources,
     std::getline(deps, line);
     lparen = line.find("(") + 1;
     rparen = line.find(")");
+    while( line[rparen - 1] == '\\' )
+      {
+      rparen = line.find(")", rparen + 1);
+      }
+
     if(lparen != std::string::npos && rparen != std::string::npos)
       {
       fromFile = line.substr(lparen, rparen-lparen);
@@ -91,7 +96,12 @@ bool cmDependsD::WriteDependencies(const std::set<std::string>& sources,
       continue;
       }
 
-    lparen = line.rfind("(") + 1;
+    lparen = line.rfind("(");
+    while( line[lparen - 1] == '\\' )
+      {
+      lparen = line.rfind("(", lparen - 1);
+      }
+    lparen ++;
     rparen = line.rfind(")");
     if(lparen != std::string::npos && rparen != std::string::npos)
       {
@@ -102,6 +112,12 @@ bool cmDependsD::WriteDependencies(const std::set<std::string>& sources,
       continue;
       }
 
+    // Unescape parentheses
+    UnescapeParens(fromFile);
+    UnescapeParens(toFile);
+
+    // Spaces are unescaped in sources, so wait to escape them
+    // TODO: Should they be?
     if(sources.find(fromFile) != sources.end()
         && sources.find(toFile) == sources.end())
       {
@@ -115,14 +131,18 @@ bool cmDependsD::WriteDependencies(const std::set<std::string>& sources,
     for(std::set<std::string>::iterator it = sources.begin();
         it != sources.end(); it++)
       {
-      makeDepends << obj << ": " << *it << "\n";
-      internalDepends << " " << *it << "\n";
+      std::string filename = *it;
+      EscapeSpaces(filename);
+      makeDepends << obj << ": " << filename << "\n";
+      internalDepends << " " << filename << "\n";
       }
     for(std::set<std::string>::iterator it = dependencies.begin();
         it != dependencies.end(); it++)
       {
-      makeDepends << obj << ": " << *it << "\n";
-      internalDepends << " " << *it << "\n";
+      std::string filename = *it;
+      EscapeSpaces(filename);
+      makeDepends << obj << ": " << filename << "\n";
+      internalDepends << " " << filename << "\n";
       }
 
     makeDepends << "\n";
@@ -130,4 +150,35 @@ bool cmDependsD::WriteDependencies(const std::set<std::string>& sources,
     }
 
   return true;
+}
+
+void cmDependsD::EscapeSpaces(std::string& str)
+{
+  for(std::size_t i = str.find(" ");
+      i != std::string::npos;
+      i = str.find(" ", i+1))
+    {
+    if(str[i-1] != '\\')
+      {
+      str.replace(i, 1, "\\ ");
+      i++;
+      }
+    }
+}
+
+void cmDependsD::UnescapeParens(std::string& str)
+{
+  std::size_t i;
+  for(  i = str.find("\\(");
+        i != std::string::npos;
+        i = str.find("\\("))
+    {
+    str.replace(i, 2, "(");
+    }
+  for(  i = str.find("\\)");
+        i != std::string::npos;
+        i = str.find("\\)"))
+    {
+    str.replace(i, 2, ")");
+    }
 }
