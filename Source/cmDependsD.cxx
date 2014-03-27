@@ -15,9 +15,9 @@
 #include "cmSystemTools.h"
 
 //----------------------------------------------------------------------------
-cmDependsD::cmDependsD()
+cmDependsD::cmDependsD(cmLocalGenerator* lg): cmDepends(lg)
 {
-
+  this->SetIncludePathFromLanguage("D");
 }
 
 //----------------------------------------------------------------------------
@@ -44,12 +44,90 @@ bool cmDependsD::WriteDependencies(const std::set<std::string>& sources,
     return false;
     }
 
-  return true;
-}
+  std::set<std::string> dependencies;
+  cmMakefile* mf = this->LocalGenerator->GetMakefile();
+  if(!mf->IsDefinitionSet("CMAKE_D_DEPS_COMMAND"))
+    {
+    return false;
+    }
+  std::vector<std::string> cmd;
+  cmSystemTools::ExpandListArgument(
+      mf->GetDefinition("CMAKE_D_DEPS_COMMAND"),
+      cmd);
 
-//----------------------------------------------------------------------------
-bool cmDependsD::CheckDependencies(std::istream&, const char*,
-                         std::map<std::string, DependencyVector >&)
-{
+  cmd.insert(cmd.end(), sources.begin(), sources.end());
+
+  std::string deps_listing;
+  if(!cmSystemTools::RunSingleCommand(cmd,
+        &deps_listing, 0, 0, cmSystemTools::OUTPUT_NONE))
+    {
+    return false;
+    }
+
+  // deps_listing format is:
+  // depsImport module_name (filepath) : visibility : dep_module (filepath)
+  // depsLib module_name (filepath) : lib
+  // depsFile module_name (filepath) : shortFileName (filepath)
+  // depsVersion module_name (filepath) : ident
+  // depsDebug module_name (filepath) : ident
+  //
+  // We only deal with depsImport and depsFile varieties
+  std::istringstream deps(deps_listing);
+
+  std::string fromFile, toFile;
+  std::size_t lparen, rparen;
+  while(!deps.eof())
+    {
+    std::string line;
+    std::getline(deps, line);
+    lparen = line.find("(") + 1;
+    rparen = line.find(")");
+    if(lparen != std::string::npos && rparen != std::string::npos)
+      {
+      fromFile = line.substr(lparen, rparen-lparen);
+      }
+    else
+      {
+      continue;
+      }
+
+    lparen = line.rfind("(") + 1;
+    rparen = line.rfind(")");
+    if(lparen != std::string::npos && rparen != std::string::npos)
+      {
+      toFile = line.substr(lparen, rparen-lparen);
+      }
+    else
+      {
+      continue;
+      }
+
+    if(sources.find(fromFile) != sources.end()
+        && sources.find(toFile) == sources.end())
+      {
+      dependencies.insert(toFile);
+      }
+    }
+
+  if(dependencies.size() > 0)
+    {
+    internalDepends << obj << "\n";
+    for(std::set<std::string>::iterator it = sources.begin();
+        it != sources.end(); it++)
+      {
+      makeDepends << obj << ": " << *it << "\n";
+      internalDepends << " " << *it << "\n";
+      }
+    for(std::set<std::string>::iterator it = dependencies.begin();
+        it != dependencies.end(); it++)
+      {
+      makeDepends << obj << ": " << *it << "\n";
+      internalDepends << " " << *it << "\n";
+      }
+
+    makeDepends << "\n";
+    internalDepends << "\n";
+    }
+
   return true;
 }

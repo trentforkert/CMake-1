@@ -27,6 +27,7 @@
 #ifdef CMAKE_BUILD_WITH_CMAKE
 # include "cmDependsFortran.h"
 # include "cmDependsJava.h"
+# include "cmDependsD.h"
 # include <cmsys/Terminal.h>
 #endif
 
@@ -1665,6 +1666,10 @@ cmLocalUnixMakefileGenerator3
       scanner = new cmDependsC(this, targetDir, lang, &validDeps);
       }
 #ifdef CMAKE_BUILD_WITH_CMAKE
+    else if(lang == "D")
+      {
+      scanner = new cmDependsD(this);
+      }
     else if(lang == "Fortran")
       {
       scanner = new cmDependsFortran(this);
@@ -2037,6 +2042,60 @@ void cmLocalUnixMakefileGenerator3
       cmakefileStream
         << "set(CMAKE_" << l->first << "_COMPILER_ID \""
         << cid << "\")\n";
+      }
+
+    // We use the D compiler itself to perform dependency analysis
+    // So, we need additional information made available
+    if(l->first == "D")
+      {
+      // Read definitions from makefile
+      const char* dc =
+        this->Makefile->GetDefinition("CMAKE_D_COMPILER");
+
+      const char* noOutputFlag =
+        this->Makefile->GetDefinition("CMAKE_D_NO_OUTPUT_FLAG");
+
+      // We use the printed deps rather than the ones written to a file, as
+      // The printed ones contain more information (namely, text imports)
+      const char* printDepsFlag =
+        this->Makefile->GetDefinition("CMAKE_D_PRINT_DEPS_FLAG");
+
+      const char* iflag =
+        this->Makefile->GetDefinition("CMAKE_INCLUDE_FLAG_D");
+
+      // Make sure current source dir is included
+      const char* ccsd =
+        this->Makefile->GetDefinition("CMAKE_CURRENT_SOURCE_DIR");
+
+      // Read target's include directories
+      std::vector<std::string> includes =
+        target.GetIncludeDirectories(this->ConfigurationName);
+
+      // Read target's compile options
+      std::vector<std::string> options;
+      target.GetCompileOptions(options, this->ConfigurationName);
+
+      // Only write CMAKE_D_DEPS_COMMAND if all variables are set
+      if(dc && noOutputFlag && printDepsFlag && iflag && ccsd)
+        {
+        cmakefileStream
+          << "set(CMAKE_D_DEPS_COMMAND \""
+          << dc
+          << ";" << noOutputFlag
+          << ";" << printDepsFlag
+          << ";" << iflag << ccsd;
+        for(std::vector<std::string>::iterator it = includes.begin();
+            it != includes.end(); it++ )
+          {
+          cmakefileStream << ";" << iflag << *it;
+          }
+        for(std::vector<std::string>::iterator it = options.begin();
+            it != options.end(); it++)
+          {
+          cmakefileStream << ";" << *it;
+          }
+        cmakefileStream << "\")\n";
+        }
       }
     }
 

@@ -30,6 +30,7 @@ set(CMAKE_D_UNITTEST_FLAG "-funittest")
 set(CMAKE_D_DDOC_FILE_FLAG "-fdoc-file=")
 set(CMAKE_D_DDOC_MACRO_FLAG "-fdoc-inc=")
 set(CMAKE_D_DEPS_FILE_FLAG "-fdeps=")
+set(CMAKE_D_PRINT_DEPS_FLAG "-fdeps")
 set(CMAKE_D_NO_OUTPUT_FLAG -S -o ${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/cmake_gdc_garbage)
 set(CMAKE_D_JSON_FILE_FLAG "-fXf=")
 
