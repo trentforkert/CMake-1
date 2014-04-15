@@ -295,11 +295,21 @@ cmComputeLinkInformation
     }
 
   // Get options needed to link libraries.
-  this->LibLinkFlag =
+  const char* langLibLinkFlag =
+    this->Makefile->GetDefinition(
+        "CMAKE_" + this->LinkLanguage + "_LINK_LIBRARY_FLAG");
+  const char* langLibLinkFileFlag =
+    this->Makefile->GetDefinition(
+        "CMAKE_" + this->LinkLanguage + "_LINK_LIBRARY_FILE_FLAG");
+  const char* langLibLinkSuffix =
+    this->Makefile->GetDefinition(
+        "CMAKE_" + this->LinkLanguage + "_LINK_LIBRARY_SUFFIX");
+
+  this->LibLinkFlag = langLibLinkFlag ? langLibLinkFlag :
     this->Makefile->GetSafeDefinition("CMAKE_LINK_LIBRARY_FLAG");
-  this->LibLinkFileFlag =
+  this->LibLinkFileFlag = langLibLinkFileFlag ? langLibLinkFileFlag :
     this->Makefile->GetSafeDefinition("CMAKE_LINK_LIBRARY_FILE_FLAG");
-  this->LibLinkSuffix =
+  this->LibLinkSuffix = langLibLinkSuffix ? langLibLinkSuffix :
     this->Makefile->GetSafeDefinition("CMAKE_LINK_LIBRARY_SUFFIX");
 
   // Get options needed to specify RPATHs.
