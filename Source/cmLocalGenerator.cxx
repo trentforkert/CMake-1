@@ -1830,9 +1830,17 @@ void cmLocalGenerator::OutputLinkLibraries(std::string& linkLibraries,
 
   std::string linkLanguage = cli.GetLinkLanguage();
 
-  std::string libPathFlag =
+  const char* langLibPathFlag =
+    this->Makefile->GetDefinition(
+      "CMAKE_" + linkLanguage + "_LIBRARY_PATH_FLAG");
+  const char* langLibPathTerminator =
+    this->Makefile->GetDefinition(
+      "CMAKE_" + linkLanguage + "_LIBRARY_PATH_TERMINATOR");
+
+  std::string libPathFlag = langLibPathFlag ? langLibPathFlag :
     this->Makefile->GetRequiredDefinition("CMAKE_LIBRARY_PATH_FLAG");
-  std::string libPathTerminator =
+  std::string libPathTerminator = langLibPathTerminator ?
+    langLibPathTerminator :
     this->Makefile->GetSafeDefinition("CMAKE_LIBRARY_PATH_TERMINATOR");
 
   // Flags to link an executable to shared libraries.

@@ -43,6 +43,7 @@ Variables that Provide Information
    /variable/CMAKE_IMPORT_LIBRARY_SUFFIX
    /variable/CMAKE_JOB_POOL_COMPILE
    /variable/CMAKE_JOB_POOL_LINK
+   /variable/CMAKE_LANG_LINK_LIBRARY_SUFFIX
    /variable/CMAKE_LINK_LIBRARY_SUFFIX
    /variable/CMAKE_MAJOR_VERSION
    /variable/CMAKE_MAKE_PROGRAM
@@ -215,6 +216,9 @@ Variables that Control the Build
    /variable/CMAKE_INSTALL_NAME_DIR
    /variable/CMAKE_INSTALL_RPATH
    /variable/CMAKE_INSTALL_RPATH_USE_LINK_PATH
+   /variable/CMAKE_LANG_LINK_LIBRARY_FILE_FLAG
+   /variable/CMAKE_LANG_LINK_LIBRARY_FLAG
+   /variable/CMAKE_LANG_LIBRARY_PATH_FLAG
    /variable/CMAKE_LANG_VISIBILITY_PRESET
    /variable/CMAKE_LIBRARY_OUTPUT_DIRECTORY
    /variable/CMAKE_LIBRARY_PATH_FLAG
