@@ -1967,6 +1967,17 @@ void cmMakefileTargetGenerator::AddIncludeFlags(std::string& flags,
   std::string includeFlags =
     this->LocalGenerator->GetIncludeFlags(includes, this->GeneratorTarget,
                                           lang, useResponseFile);
+
+  // Register text include flags here, too
+  std::vector<std::string> textIncludes;
+  this->LocalGenerator->GetTextIncludeDirectories(textIncludes,
+                                              this->GeneratorTarget,
+                                              lang, config);
+  includeFlags +=
+      this->LocalGenerator->GetTextIncludeFlags(textIncludes,
+                                                this->GeneratorTarget,
+                                                lang,
+                                                useResponseFile);
   if(includeFlags.empty())
     {
     return;

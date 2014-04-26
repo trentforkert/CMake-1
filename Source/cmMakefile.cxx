@@ -122,6 +122,7 @@ cmMakefile::cmMakefile(const cmMakefile& mf): Internal(new Internals)
   this->Tests = mf.Tests;
   this->LinkDirectories = mf.LinkDirectories;
   this->SystemIncludeDirectories = mf.SystemIncludeDirectories;
+  this->SystemTextIncludeDirectories = mf.SystemTextIncludeDirectories;
   this->ListFiles = mf.ListFiles;
   this->OutputFiles = mf.OutputFiles;
   this->LinkLibraries = mf.LinkLibraries;
@@ -1576,6 +1577,13 @@ void cmMakefile::InitializeFromParent()
                                          parentIncludes.begin(),
                                          parentIncludes.end());
 
+  const std::vector<cmValueWithOrigin>& parentTextIncludes =
+                                    parent->GetTextIncludeDirectoriesEntries();
+  this->TextIncludeDirectoriesEntries.insert(
+                                    this->TextIncludeDirectoriesEntries.end(),
+                                    parentTextIncludes.begin(),
+                                    parentTextIncludes.end());
+
   const std::vector<cmValueWithOrigin>& parentOptions =
                                         parent->GetCompileOptionsEntries();
   this->CompileOptionsEntries.insert(this->CompileOptionsEntries.end(),
@@ -1589,6 +1597,7 @@ void cmMakefile::InitializeFromParent()
                                          parentDefines.end());
 
   this->SystemIncludeDirectories = parent->SystemIncludeDirectories;
+  this->SystemTextIncludeDirectories = parent->SystemTextIncludeDirectories;
 
   // define flags
   this->DefineFlags = parent->DefineFlags;
@@ -1767,6 +1776,62 @@ cmMakefile::AddSystemIncludeDirectories(const std::set<std::string> &incs)
     {
     cmTarget &t = l->second;
     t.AddSystemIncludeDirectories(incs);
+    }
+}
+
+//----------------------------------------------------------------------------
+void
+cmMakefile::AddTextIncludeDirectories(const std::vector<std::string> &incs,
+                                      bool before)
+{
+  if (incs.empty())
+    {
+    return;
+    }
+
+  std::string incString;
+  std::string sep;
+
+  for(std::vector<std::string>::const_iterator li = incs.begin();
+      li != incs.end(); ++li)
+    {
+    incString += sep + *li;
+    sep = ";";
+    }
+
+  std::vector<cmValueWithOrigin>::iterator position =
+                        before ? this->TextIncludeDirectoriesEntries.begin()
+                               : this->TextIncludeDirectoriesEntries.end();
+
+  cmListFileBacktrace lfbt;
+  this->GetBacktrace(lfbt);
+  cmValueWithOrigin entry(incString, lfbt);
+  this->TextIncludeDirectoriesEntries.insert(position, entry);
+
+  // Property on each target:
+  for (cmTargets::iterator l = this->Targets.begin();
+       l != this->Targets.end(); ++l)
+    {
+    cmTarget &t = l->second;
+    t.InsertTextInclude(entry, before);
+    }
+}
+
+//----------------------------------------------------------------------------
+void
+cmMakefile::AddSystemTextIncludeDirectories(const std::set<std::string> &incs)
+{
+  for(std::set<std::string>::const_iterator li = incs.begin();
+      li != incs.end(); ++li)
+    {
+    this->SystemTextIncludeDirectories.insert(*li);
+    }
+
+  for (cmTargets::iterator l = this->Targets.begin();
+       l != this->Targets.end(); ++l)
+    {
+    cmTarget &t = l->second;
+    t.AddSystemTextIncludeDirectories(incs);
     }
 }
 
@@ -3592,6 +3657,19 @@ void cmMakefile::SetProperty(const std::string& prop, const char* value)
                                         cmValueWithOrigin(value, lfbt));
     return;
     }
+  if (prop == "TEXT_INCLUDE_DIRECTORIES")
+    {
+    this->TextIncludeDirectoriesEntries.clear();
+      if(!value)
+        {
+        return;
+        }
+    cmListFileBacktrace lfbt;
+    this->GetBacktrace(lfbt);
+    this->TextIncludeDirectoriesEntries.push_back(
+                                        cmValueWithOrigin(value, lfbt));
+    return;
+    }
   if (prop == "COMPILE_OPTIONS")
     {
     this->CompileOptionsEntries.clear();
@@ -3646,6 +3724,14 @@ void cmMakefile::AppendProperty(const std::string& prop,
     cmListFileBacktrace lfbt;
     this->GetBacktrace(lfbt);
     this->IncludeDirectoriesEntries.push_back(
+                                        cmValueWithOrigin(value, lfbt));
+    return;
+    }
+  if (prop == "TEXT_INCLUDE_DIRECTORIES")
+    {
+    cmListFileBacktrace lfbt;
+    this->GetBacktrace(lfbt);
+    this->TextIncludeDirectoriesEntries.push_back(
                                         cmValueWithOrigin(value, lfbt));
     return;
     }
@@ -3769,6 +3855,20 @@ const char *cmMakefile::GetProperty(const std::string& prop,
     for (std::vector<cmValueWithOrigin>::const_iterator
         it = this->IncludeDirectoriesEntries.begin(),
         end = this->IncludeDirectoriesEntries.end();
+        it != end; ++it)
+      {
+      output += sep;
+      output += it->Value;
+      sep = ";";
+      }
+    return output.c_str();
+    }
+  else if (prop == "TEXT_INCLUDE_DIRECTORIES")
+    {
+    std::string sep;
+    for (std::vector<cmValueWithOrigin>::const_iterator
+        it = this->TextIncludeDirectoriesEntries.begin(),
+        end = this->TextIncludeDirectoriesEntries.end();
         it != end; ++it)
       {
       output += sep;

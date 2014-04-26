@@ -599,6 +599,12 @@ void cmLocalGenerator::AddCustomCommandToCreateObject(const char* ofname,
     this->GetIncludeDirectories(includes, &target, lang);
     flags += this->GetIncludeFlags(includes, &target, lang);
     }
+  flags += " ";
+    {
+    std::vector<std::string> textIncludes;
+    this->GetTextIncludeDirectories(textIncludes, &target, lang);
+    flags += this->GetTextIncludeFlags(textIncludes, &target, lang);
+    }
   flags += this->Makefile->GetDefineFlags();
 
   // Construct the command lines.
@@ -1405,6 +1411,77 @@ std::string cmLocalGenerator::GetIncludeFlags(
 }
 
 //----------------------------------------------------------------------------
+std::string cmLocalGenerator::GetTextIncludeFlags(
+                                     const std::vector<std::string> &includes,
+                                     cmGeneratorTarget* target,
+                                     const std::string& lang,
+                                     bool forResponseFile,
+                                     const std::string& config)
+{
+  if(lang.empty())
+    {
+    return "";
+    }
+
+  OutputFormat shellFormat = forResponseFile? RESPONSE : SHELL;
+  cmOStringStream includeFlags;
+
+  std::string flagVar = "CMAKE_TEXT_INCLUDE_FLAG_";
+  flagVar += lang;
+  const char* textIncludeFlag =
+    this->Makefile->GetSafeDefinition(flagVar);
+  flagVar = "CMAKE_INCLUDE_FLAG_SEP_";
+  flagVar += lang;
+  const char* sep = this->Makefile->GetDefinition(flagVar);
+  bool quotePaths = false;
+  if(this->Makefile->GetDefinition("CMAKE_QUOTE_INCLUDE_PATHS"))
+    {
+    quotePaths = true;
+    }
+  bool repeatFlag = true;
+  // should the text include flag be repeated like ie. -JA -JB
+  if(!sep)
+    {
+    sep = " ";
+    }
+  else
+    {
+    repeatFlag = false;
+    }
+
+  bool flagUsed = false;
+  std::vector<std::string>::const_iterator i;
+  for(i = includes.begin(); i != includes.end(); ++i)
+    {
+    if(!flagUsed || repeatFlag)
+      {
+        includeFlags << textIncludeFlag;
+        flagUsed = true;
+      }
+
+    std::string includePath =
+      this->ConvertToIncludeReference(*i, shellFormat);
+    if(quotePaths && includePath.size() && includePath[0] != '\"')
+      {
+      includeFlags << "\"";
+      }
+    includeFlags << includePath;
+    if(quotePaths && includePath.size() && includePath[0] != '\"')
+      {
+      includeFlags << "\"";
+      }
+    includeFlags << sep;
+    }
+  std::string flags = includeFlags.str();
+  // remove trailing seperators
+  if((sep[0] != ' ') && flags.size()>0 && flags[flags.size()-1] == sep[0])
+    {
+    flags[flags.size()-1] = ' ';
+    }
+  return flags;
+}
+
+//----------------------------------------------------------------------------
 void cmLocalGenerator::AddCompileDefinitions(std::set<std::string>& defines,
                                              cmTarget const* target,
                                              const std::string& config)
@@ -1544,6 +1621,133 @@ void cmLocalGenerator::GetIncludeDirectories(std::vector<std::string>& dirs,
   std::vector<std::string> includes;
 
   includes = target->GetIncludeDirectories(config);
+
+  // Support putting all the in-project include directories first if
+  // it is requested by the project.
+  if(this->Makefile->IsOn("CMAKE_INCLUDE_DIRECTORIES_PROJECT_BEFORE"))
+    {
+    const char* topSourceDir = this->Makefile->GetHomeDirectory();
+    const char* topBinaryDir = this->Makefile->GetHomeOutputDirectory();
+    for(std::vector<std::string>::const_iterator i = includes.begin();
+        i != includes.end(); ++i)
+      {
+      // Emit this directory only if it is a subdirectory of the
+      // top-level source or binary tree.
+      if(cmSystemTools::ComparePath(i->c_str(), topSourceDir) ||
+         cmSystemTools::ComparePath(i->c_str(), topBinaryDir) ||
+         cmSystemTools::IsSubDirectory(i->c_str(), topSourceDir) ||
+         cmSystemTools::IsSubDirectory(i->c_str(), topBinaryDir))
+        {
+        if(emitted.insert(*i).second)
+          {
+          dirs.push_back(*i);
+          }
+        }
+      }
+    }
+
+  // Construct the final ordered include directory list.
+  for(std::vector<std::string>::const_iterator i = includes.begin();
+      i != includes.end(); ++i)
+    {
+    if(emitted.insert(*i).second)
+      {
+      dirs.push_back(*i);
+      }
+    }
+
+  for(std::vector<std::string>::const_iterator i = implicitDirs.begin();
+      i != implicitDirs.end(); ++i)
+    {
+    if(std::find(includes.begin(), includes.end(), *i) != includes.end())
+      {
+      dirs.push_back(*i);
+      }
+    }
+}
+
+//----------------------------------------------------------------------------
+void cmLocalGenerator::GetTextIncludeDirectories(
+                                             std::vector<std::string>& dirs,
+                                             cmGeneratorTarget* target,
+                                             const std::string& lang,
+                                             const std::string& config,
+                                             bool stripImplicitInclDirs
+                                            )
+{
+  // Need to decide whether to automatically include the source and
+  // binary directories at the beginning of the include path.
+  bool includeSourceDir = false;
+  bool includeBinaryDir = false;
+
+  // When automatic include directories are requested for a build then
+  // include the source and binary directories at the beginning of the
+  // include path to approximate include file behavior for an
+  // in-source build.  This does not account for the case of a source
+  // file in a subdirectory of the current source directory but we
+  // cannot fix this because not all native build tools support
+  // per-source-file include paths.
+  if(this->Makefile->IsOn("CMAKE_INCLUDE_CURRENT_DIR"))
+    {
+    includeSourceDir = true;
+    includeBinaryDir = true;
+    }
+
+  // Do not repeat an include path.
+  std::set<std::string> emitted;
+
+  // Store the automatic include paths.
+  if(includeBinaryDir)
+    {
+    if(emitted.find(
+                this->Makefile->GetStartOutputDirectory()) == emitted.end())
+      {
+      dirs.push_back(this->Makefile->GetStartOutputDirectory());
+      emitted.insert(this->Makefile->GetStartOutputDirectory());
+      }
+    }
+  if(includeSourceDir)
+    {
+    if(emitted.find(this->Makefile->GetStartDirectory()) == emitted.end())
+      {
+      dirs.push_back(this->Makefile->GetStartDirectory());
+      emitted.insert(this->Makefile->GetStartDirectory());
+      }
+    }
+
+  if(!target)
+    {
+    return;
+    }
+
+  std::string rootPath = this->Makefile->GetSafeDefinition("CMAKE_SYSROOT");
+
+  std::vector<std::string> implicitDirs;
+  // Load implicit include directories for this language.
+  std::string impDirVar = "CMAKE_";
+  impDirVar += lang;
+  impDirVar += "_IMPLICIT_INCLUDE_DIRECTORIES";
+  if(const char* value = this->Makefile->GetDefinition(impDirVar))
+    {
+    std::vector<std::string> impDirVec;
+    cmSystemTools::ExpandListArgument(value, impDirVec);
+    for(std::vector<std::string>::const_iterator i = impDirVec.begin();
+        i != impDirVec.end(); ++i)
+      {
+      std::string d = rootPath + *i;
+      cmSystemTools::ConvertToUnixSlashes(d);
+      emitted.insert(d);
+      if (!stripImplicitInclDirs)
+        {
+        implicitDirs.push_back(*i);
+        }
+      }
+    }
+
+  // Get the target-specific include directories.
+  std::vector<std::string> includes;
+
+  includes = target->GetTextIncludeDirectories(config);
 
   // Support putting all the in-project include directories first if
   // it is requested by the project.

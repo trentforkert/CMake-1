@@ -72,6 +72,10 @@ public:
   std::vector<std::string> GetIncludeDirectories(
       const std::string& config) const;
 
+  /** Get the text include directories for this target. */
+  std::vector<std::string> GetTextIncludeDirectories(
+      const std::string& config) const;
+
   bool IsSystemIncludeDirectory(const std::string& dir,
                                 const std::string& config) const;
 

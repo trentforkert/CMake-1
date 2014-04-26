@@ -5,7 +5,7 @@ Add include directories to the build.
 
 ::
 
-  include_directories([AFTER|BEFORE] [SYSTEM] dir1 [dir2 ...])
+  include_directories([AFTER|BEFORE] [SYSTEM] [TEXT] dir1 [dir2 ...])
 
 Add the given directories to those the compiler uses to search for
 include files.  Relative paths are interpreted as relative to the
@@ -28,6 +28,10 @@ directories are meant as system include directories on some platforms.
 Signalling this setting might achieve effects such as the compiler
 skipping warnings, or these fixed-install system files not being
 considered in dependency calculations - see compiler docs.
+
+If the ``TEXT`` option is given, the directories will be used for text-based
+includes in languages which differentiate between text-based includes
+and module-based includes. Currently, this is only relevant to D targets.
 
 Arguments to ``include_directories`` may use "generator expressions" with
 the syntax "$<...>".  See the :manual:`cmake-generator-expressions(7)`

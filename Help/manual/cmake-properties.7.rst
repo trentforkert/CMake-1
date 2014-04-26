@@ -67,6 +67,7 @@ Properties on Directories
    /prop_dir/RULE_LAUNCH_CUSTOM
    /prop_dir/RULE_LAUNCH_LINK
    /prop_dir/TEST_INCLUDE_FILE
+   /prop_dir/TEXT_INCLUDE_DIRECTORIES
    /prop_dir/VARIABLES
    /prop_dir/VS_GLOBAL_SECTION_POST_section
    /prop_dir/VS_GLOBAL_SECTION_PRE_section
@@ -214,6 +215,7 @@ Properties on Targets
    /prop_tgt/STATIC_LIBRARY_FLAGS_CONFIG
    /prop_tgt/STATIC_LIBRARY_FLAGS
    /prop_tgt/SUFFIX
+   /prop_tgt/TEXT_INCLUDE_DIRECTORIES
    /prop_tgt/TYPE
    /prop_tgt/VERSION
    /prop_tgt/VISIBILITY_INLINES_HIDDEN
