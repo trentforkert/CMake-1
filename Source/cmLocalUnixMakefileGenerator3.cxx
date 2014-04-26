@@ -2070,6 +2070,9 @@ void cmLocalUnixMakefileGenerator3
       const char* iflag =
         this->Makefile->GetDefinition("CMAKE_INCLUDE_FLAG_D");
 
+      const char* jflag =
+        this->Makefile->GetDefinition("CMAKE_TEXT_INCLUDE_FLAG_D");
+
       // Make sure current source dir is included
       const char* ccsd =
         this->Makefile->GetDefinition("CMAKE_CURRENT_SOURCE_DIR");
@@ -2078,12 +2081,16 @@ void cmLocalUnixMakefileGenerator3
       std::vector<std::string> includes =
         target.GetIncludeDirectories(this->ConfigurationName);
 
+      // Read target's text includes
+      std::vector<std::string> text_includes =
+        target.GetTextIncludeDirectories(this->ConfigurationName);
+
       // Read target's compile options
       std::vector<std::string> options;
       target.GetCompileOptions(options, this->ConfigurationName);
 
       // Only write CMAKE_D_DEPS_COMMAND if all variables are set
-      if(noOutputFlag && printDepsFlag && iflag && ccsd)
+      if(noOutputFlag && printDepsFlag && iflag && jflag && ccsd)
         {
         cmakefileStream
           << "set(CMAKE_D_DEPS_COMMAND \""
@@ -2095,6 +2102,11 @@ void cmLocalUnixMakefileGenerator3
             it != includes.end(); it++ )
           {
           cmakefileStream << ";" << iflag << *it;
+          }
+        for(std::vector<std::string>::iterator it = text_includes.begin();
+            it != text_includes.end(); it++ )
+          {
+          cmakefileStream << ";" << jflag << *it;
           }
         for(std::vector<std::string>::iterator it = options.begin();
             it != options.end(); it++)

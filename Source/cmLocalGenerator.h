@@ -162,6 +162,11 @@ public:
                               const std::string& lang,
                               bool forResponseFile = false,
                               const std::string& config = "");
+  std::string GetTextIncludeFlags(const std::vector<std::string> &includes,
+                              cmGeneratorTarget* target,
+                              const std::string& lang,
+                              bool forResponseFile = false,
+                              const std::string& config = "");
 
   /**
    * Encode a list of preprocessor definitions for the compiler
@@ -229,6 +234,11 @@ public:
 
   /** Get the include flags for the current makefile and language.  */
   void GetIncludeDirectories(std::vector<std::string>& dirs,
+                             cmGeneratorTarget* target,
+                             const std::string& lang = "C",
+                             const std::string& config = "",
+                             bool stripImplicitInclDirs = true);
+  void GetTextIncludeDirectories(std::vector<std::string>& dirs,
                              cmGeneratorTarget* target,
                              const std::string& lang = "C",
                              const std::string& config = "",
