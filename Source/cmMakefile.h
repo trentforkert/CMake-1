@@ -283,6 +283,12 @@ public:
                              bool before = false);
 
   /**
+   * Add a text include directory to the build.
+   */
+  void AddTextIncludeDirectories(const std::vector<std::string> &incs,
+                                 bool before = false);
+
+  /**
    * Add a variable definition to the build. This variable
    * can be used in CMake to refer to lists, directories, etc.
    */
@@ -543,6 +549,11 @@ public:
    * Mark include directories as system directories.
    */
   void AddSystemIncludeDirectories(const std::set<std::string> &incs);
+
+  /**
+   * Mark text include directories as system directories.
+   */
+  void AddSystemTextIncludeDirectories(const std::set<std::string> &incs);
 
   /** Expand out any arguements in the vector that have ; separated
    *  strings into multiple arguements.  A new vector is created
@@ -865,6 +876,10 @@ public:
   {
     return this->IncludeDirectoriesEntries;
   }
+  const std::vector<cmValueWithOrigin>& GetTextIncludeDirectoriesEntries() const
+  {
+    return this->TextIncludeDirectoriesEntries;
+  }
   const std::vector<cmValueWithOrigin>& GetCompileOptionsEntries() const
   {
     return this->CompileOptionsEntries;
@@ -882,6 +897,9 @@ public:
 
   std::set<std::string> const & GetSystemIncludeDirectories() const
     { return this->SystemIncludeDirectories; }
+
+  std::set<std::string> const & GetSystemTextIncludeDirectories() const
+    { return this->SystemTextIncludeDirectories; }
 
   bool PolicyOptionalWarningEnabled(std::string const& var);
 
@@ -922,6 +940,7 @@ protected:
   // The set of include directories that are marked as system include
   // directories.
   std::set<std::string> SystemIncludeDirectories;
+  std::set<std::string> SystemTextIncludeDirectories;
 
   std::vector<std::string> ListFiles; // list of command files loaded
   std::vector<std::string> OutputFiles; // list of command files loaded
@@ -939,6 +958,7 @@ protected:
   std::string DefineFlags;
 
   std::vector<cmValueWithOrigin> IncludeDirectoriesEntries;
+  std::vector<cmValueWithOrigin> TextIncludeDirectoriesEntries;
   std::vector<cmValueWithOrigin> CompileOptionsEntries;
   std::vector<cmValueWithOrigin> CompileDefinitionsEntries;
 

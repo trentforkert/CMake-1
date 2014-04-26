@@ -24,6 +24,7 @@ bool cmIncludeDirectoryCommand
 
   bool before = this->Makefile->IsOn("CMAKE_INCLUDE_DIRECTORIES_BEFORE");
   bool system = false;
+  bool text = false;
 
   if ((*i) == "BEFORE")
     {
@@ -45,6 +46,11 @@ bool cmIncludeDirectoryCommand
     if(*i == "SYSTEM")
       {
       system = true;
+      continue;
+      }
+    if(*i == "TEXT")
+      {
+      text = true;
       continue;
       }
     if(i->size() == 0)
@@ -80,9 +86,18 @@ bool cmIncludeDirectoryCommand
     }
   std::reverse(beforeIncludes.begin(), beforeIncludes.end());
 
-  this->Makefile->AddIncludeDirectories(afterIncludes);
-  this->Makefile->AddIncludeDirectories(beforeIncludes, before);
-  this->Makefile->AddSystemIncludeDirectories(systemIncludes);
+  if(text)
+    {
+    this->Makefile->AddTextIncludeDirectories(afterIncludes);
+    this->Makefile->AddTextIncludeDirectories(beforeIncludes, before);
+    this->Makefile->AddSystemTextIncludeDirectories(systemIncludes);
+    }
+  else
+    {
+    this->Makefile->AddIncludeDirectories(afterIncludes);
+    this->Makefile->AddIncludeDirectories(beforeIncludes, before);
+    this->Makefile->AddSystemIncludeDirectories(systemIncludes);
+    }
 
   return true;
 }

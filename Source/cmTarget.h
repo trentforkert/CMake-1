@@ -537,7 +537,11 @@ public:
 
   std::vector<std::string> GetIncludeDirectories(
                      const std::string& config) const;
+  std::vector<std::string> GetTextIncludeDirectories(
+                     const std::string& config) const;
   void InsertInclude(const cmValueWithOrigin &entry,
+                     bool before = false);
+  void InsertTextInclude(const cmValueWithOrigin &entry,
                      bool before = false);
   void InsertCompileOption(const cmValueWithOrigin &entry,
                      bool before = false);
@@ -580,6 +584,11 @@ public:
   std::set<std::string> const & GetSystemIncludeDirectories() const
     { return this->SystemIncludeDirectories; }
 
+  void AddSystemTextIncludeDirectories(const std::set<std::string> &incs);
+  void AddSystemTextIncludeDirectories(const std::vector<std::string> &incs);
+  std::set<std::string> const & GetSystemTextIncludeDirectories() const
+    { return this->SystemTextIncludeDirectories; }
+
   bool LinkLanguagePropagatesToDependents() const
   { return this->TargetTypeValue == STATIC_LIBRARY; }
 
@@ -594,6 +603,8 @@ private:
   // The set of include directories that are marked as system include
   // directories.
   std::set<std::string> SystemIncludeDirectories;
+
+  std::set<std::string> SystemTextIncludeDirectories;
 
   std::vector<std::pair<TLLSignature, cmListFileBacktrace> > TLLCommands;
 

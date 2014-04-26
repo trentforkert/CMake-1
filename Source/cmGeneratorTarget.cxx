@@ -969,6 +969,13 @@ cmGeneratorTarget::GetIncludeDirectories(const std::string& config) const
 }
 
 //----------------------------------------------------------------------------
+std::vector<std::string>
+cmGeneratorTarget::GetTextIncludeDirectories(const std::string& config) const
+{
+  return this->Target->GetTextIncludeDirectories(config);
+}
+
+//----------------------------------------------------------------------------
 void cmGeneratorTarget::GenerateTargetManifest(
                                               const std::string& config) const
 {

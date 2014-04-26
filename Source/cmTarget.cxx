@@ -152,6 +152,7 @@ public:
     const std::string TargetName;
   };
   std::vector<TargetPropertyEntry*> IncludeDirectoriesEntries;
+  std::vector<TargetPropertyEntry*> TextIncludeDirectoriesEntries;
   std::vector<TargetPropertyEntry*> CompileOptionsEntries;
   std::vector<TargetPropertyEntry*> CompileFeaturesEntries;
   std::vector<TargetPropertyEntry*> CompileDefinitionsEntries;
@@ -376,6 +377,14 @@ void cmTarget::SetMakefile(cmMakefile* mf)
       {
       this->InsertInclude(*it);
       }
+    const std::vector<cmValueWithOrigin> parentTextIncludes =
+                            this->Makefile->GetTextIncludeDirectoriesEntries();
+
+    for (std::vector<cmValueWithOrigin>::const_iterator it
+            = parentTextIncludes.begin(); it != parentTextIncludes.end(); ++it)
+      {
+      this->InsertTextInclude(*it);
+      }
     const std::set<std::string> parentSystemIncludes =
                                 this->Makefile->GetSystemIncludeDirectories();
 
@@ -384,6 +393,15 @@ void cmTarget::SetMakefile(cmMakefile* mf)
           it != parentSystemIncludes.end(); ++it)
       {
       this->SystemIncludeDirectories.insert(*it);
+      }
+    const std::set<std::string> parentSystemTextIncludes =
+                            this->Makefile->GetSystemTextIncludeDirectories();
+
+    for (std::set<std::string>::const_iterator it
+          = parentSystemTextIncludes.begin();
+          it != parentSystemTextIncludes.end(); ++it)
+      {
+      this->SystemTextIncludeDirectories.insert(*it);
       }
 
     const std::vector<cmValueWithOrigin> parentOptions =
@@ -1443,6 +1461,28 @@ cmTarget::AddSystemIncludeDirectories(const std::vector<std::string> &incs)
 
 //----------------------------------------------------------------------------
 void
+cmTarget::AddSystemTextIncludeDirectories(const std::set<std::string> &incs)
+{
+  for(std::set<std::string>::const_iterator li = incs.begin();
+      li != incs.end(); ++li)
+    {
+    this->SystemTextIncludeDirectories.insert(*li);
+    }
+}
+
+//----------------------------------------------------------------------------
+void
+cmTarget::AddSystemTextIncludeDirectories(const std::vector<std::string> &incs)
+{
+  for(std::vector<std::string>::const_iterator li = incs.begin();
+      li != incs.end(); ++li)
+    {
+    this->SystemTextIncludeDirectories.insert(*li);
+    }
+}
+
+//----------------------------------------------------------------------------
+void
 cmTarget::AnalyzeLibDependencies( const cmMakefile& mf )
 {
   // There are two key parts of the dependency analysis: (1)
@@ -1800,6 +1840,17 @@ void cmTarget::SetProperty(const std::string& prop, const char* value)
                           new cmTargetInternals::TargetPropertyEntry(cge));
     return;
     }
+  if(prop == "TEXT_INCLUDE_DIRECTORIES")
+    {
+    cmListFileBacktrace lfbt;
+    this->Makefile->GetBacktrace(lfbt);
+    cmGeneratorExpression ge(lfbt);
+    deleteAndClear(this->Internal->TextIncludeDirectoriesEntries);
+    cmsys::auto_ptr<cmCompiledGeneratorExpression> cge = ge.Parse(value);
+    this->Internal->TextIncludeDirectoriesEntries.push_back(
+                          new cmTargetInternals::TargetPropertyEntry(cge));
+    return;
+    }
   if(prop == "COMPILE_OPTIONS")
     {
     cmListFileBacktrace lfbt;
@@ -1900,6 +1951,15 @@ void cmTarget::AppendProperty(const std::string& prop, const char* value,
     this->Makefile->GetBacktrace(lfbt);
     cmGeneratorExpression ge(lfbt);
     this->Internal->IncludeDirectoriesEntries.push_back(
+              new cmTargetInternals::TargetPropertyEntry(ge.Parse(value)));
+    return;
+    }
+  if(prop == "TEXT_INCLUDE_DIRECTORIES")
+    {
+    cmListFileBacktrace lfbt;
+    this->Makefile->GetBacktrace(lfbt);
+    cmGeneratorExpression ge(lfbt);
+    this->Internal->TextIncludeDirectoriesEntries.push_back(
               new cmTargetInternals::TargetPropertyEntry(ge.Parse(value)));
     return;
     }
@@ -2032,6 +2092,20 @@ void cmTarget::InsertInclude(const cmValueWithOrigin &entry,
                          : this->Internal->IncludeDirectoriesEntries.end();
 
   this->Internal->IncludeDirectoriesEntries.insert(position,
+      new cmTargetInternals::TargetPropertyEntry(ge.Parse(entry.Value)));
+}
+
+//----------------------------------------------------------------------------
+void cmTarget::InsertTextInclude(const cmValueWithOrigin &entry,
+                     bool before)
+{
+  cmGeneratorExpression ge(entry.Backtrace);
+
+  std::vector<cmTargetInternals::TargetPropertyEntry*>::iterator position
+          = before ? this->Internal->TextIncludeDirectoriesEntries.begin()
+                   : this->Internal->TextIncludeDirectoriesEntries.end();
+
+  this->Internal->TextIncludeDirectoriesEntries.insert(position,
       new cmTargetInternals::TargetPropertyEntry(ge.Parse(entry.Value)));
 }
 
@@ -2356,6 +2430,47 @@ cmTarget::GetIncludeDirectories(const std::string& config) const
                                                                       = true;
     }
 
+  return includes;
+}
+
+//----------------------------------------------------------------------------
+std::vector<std::string>
+cmTarget::GetTextIncludeDirectories(const std::string& config) const
+{
+  std::vector<std::string> includes;
+  std::set<std::string> uniqueIncludes;
+  cmListFileBacktrace lfbt;
+
+  cmGeneratorExpressionDAGChecker dagChecker(lfbt,
+                                             this->GetName(),
+                                             "TEXT_INCLUDE_DIRECTORIES", 0, 0);
+
+  std::vector<std::string> debugProperties;
+  const char *debugProp =
+              this->Makefile->GetDefinition("CMAKE_DEBUG_TARGET_PROPERTIES");
+  if (debugProp)
+    {
+    cmSystemTools::ExpandListArgument(debugProp, debugProperties);
+    }
+
+  bool debugIncludes = !this->DebugIncludesDone
+                    && std::find(debugProperties.begin(),
+                                 debugProperties.end(),
+                                 "TEXT_INCLUDE_DIRECTORIES")
+                        != debugProperties.end();
+
+  if (this->Makefile->IsGeneratingBuildSystem())
+    {
+    this->DebugIncludesDone = true;
+    }
+
+  processIncludeDirectories(this,
+                            this->Internal->TextIncludeDirectoriesEntries,
+                            includes,
+                            uniqueIncludes,
+                            &dagChecker,
+                            config,
+                            debugIncludes);
   return includes;
 }
 
@@ -3304,6 +3419,24 @@ const char *cmTarget::GetProperty(const std::string& prop,
     for (std::vector<TargetPropertyEntry*>::const_iterator
         it = this->Internal->IncludeDirectoriesEntries.begin(),
         end = this->Internal->IncludeDirectoriesEntries.end();
+        it != end; ++it)
+      {
+      output += sep;
+      output += (*it)->ge->GetInput();
+      sep = ";";
+      }
+    return output.c_str();
+    }
+  if(prop == "TEXT_INCLUDE_DIRECTORIES")
+    {
+    static std::string output;
+    output = "";
+    std::string sep;
+    typedef cmTargetInternals::TargetPropertyEntry
+                                TargetPropertyEntry;
+    for (std::vector<TargetPropertyEntry*>::const_iterator
+        it = this->Internal->TextIncludeDirectoriesEntries.begin(),
+        end = this->Internal->TextIncludeDirectoriesEntries.end();
         it != end; ++it)
       {
       output += sep;
@@ -7144,6 +7277,7 @@ cmTargetInternalPointer
 cmTargetInternalPointer::~cmTargetInternalPointer()
 {
   deleteAndClear(this->Pointer->IncludeDirectoriesEntries);
+  deleteAndClear(this->Pointer->TextIncludeDirectoriesEntries);
   deleteAndClear(this->Pointer->CompileOptionsEntries);
   deleteAndClear(this->Pointer->CompileFeaturesEntries);
   deleteAndClear(this->Pointer->CompileDefinitionsEntries);
