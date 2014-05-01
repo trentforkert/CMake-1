@@ -187,20 +187,41 @@ void cmMakefileExecutableTargetGenerator::WriteExecutableRule(bool relink)
   std::string linkFlags;
 
   // Add flags to create an executable.
-  this->LocalGenerator->
-    AddConfigVariableFlags(linkFlags, "CMAKE_EXE_LINKER_FLAGS",
+  // Use language override if it exists
+  this->LocalGenerator->AddConfigVariableFlags(linkFlags,
+                           "CMAKE_" + linkLanguage + "_EXE_LINKER_FLAGS",
                            this->ConfigName);
+  if(linkFlags.length() == 0)
+    {
+    this->LocalGenerator->AddConfigVariableFlags(linkFlags,
+                             "CMAKE_EXE_LINKER_FLAGS",
+                             this->ConfigName);
+    }
 
 
   if(this->Target->GetPropertyAsBool("WIN32_EXECUTABLE"))
     {
-    this->LocalGenerator->AppendFlags
-      (linkFlags, this->Makefile->GetDefinition("CMAKE_CREATE_WIN32_EXE"));
+    const char* langCreateWin32ExeFlags =
+      this->Makefile->GetDefinition(
+        "CMAKE_" + linkLanguage + "_CREATE_WIN32_EXE");
+
+    const char* createWin32ExeFlags =
+      langCreateWin32ExeFlags ? langCreateWin32ExeFlags :
+        this->Makefile->GetDefinition("CMAKE_CREATE_WIN32_EXE");
+
+    this->LocalGenerator->AppendFlags(linkFlags, createWin32ExeFlags);
     }
   else
     {
-    this->LocalGenerator->AppendFlags
-      (linkFlags, this->Makefile->GetDefinition("CMAKE_CREATE_CONSOLE_EXE"));
+    const char* langCreateConsoleExeFlags =
+      this->Makefile->GetDefinition(
+        "CMAKE_" + linkLanguage + "_CREATE_CONSOLE_EXE");
+
+    const char* createConsoleExeFlags =
+      langCreateConsoleExeFlags ? langCreateConsoleExeFlags :
+        this->Makefile->GetDefinition("CMAKE_CREATE_CONSOLE_EXE");
+
+    this->LocalGenerator->AppendFlags(linkFlags, createConsoleExeFlags);
     }
 
   // Add symbol export flags if necessary.
