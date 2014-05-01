@@ -216,6 +216,7 @@ Variables that Control the Build
    /variable/CMAKE_INSTALL_NAME_DIR
    /variable/CMAKE_INSTALL_RPATH
    /variable/CMAKE_INSTALL_RPATH_USE_LINK_PATH
+   /variable/CMAKE_LANG_EXE_LINKER_FLAGS
    /variable/CMAKE_LANG_LINK_LIBRARY_FILE_FLAG
    /variable/CMAKE_LANG_LINK_LIBRARY_FLAG
    /variable/CMAKE_LANG_LIBRARY_PATH_FLAG
