@@ -52,17 +52,6 @@
 #
 # ::
 #
-#    include_text_directories(
-#       <dir1> [<dir2> ...]
-#       [TARGET <target>]
-#    )
-#
-# This command adds the specified directories to the text import search
-# path. If a target is specified, the directories will only be added for
-# that target. Otherwise, they follow usual CMake scope rules.
-#
-# ::
-#
 #    add_d_conditions(
 #       [TARGET <target>]
 #       [VERSION <ident1> [<ident2> ...] ]
@@ -129,19 +118,6 @@ include(CMakeParseArguments)
 #   examine_d_source            done
 #   add_d_conditions            done
 #   add_d_target                done?
-
-function(include_text_directories)
-    cmake_parse_arguments(ARG "" "TARGET" "" ${ARGN})
-    foreach(dir IN LISTS ARG_UNPARSED_ARGUMENTS)
-        get_filename_component(dir "${dir}" ABSOLUTE)
-        if(ARG_TARGET)
-            set_property(TARGET ${ARG_TARGET} APPEND_STRING PROPERTY COMPILE_FLAGS " ${CMAKE_TEXT_INCLUDE_FLAG_D}${dir}")
-        else()
-            set(CMAKE_D_FLAGS "${CMAKE_D_FLAGS} ${CMAKE_TEXT_INCLUDE_FLAG_D}${dir}")
-        endif()
-    endforeach()
-    set(CMAKE_D_FLAGS "${CMAKE_D_FLAGS}" PARENT_SCOPE)
-endfunction()
 
 function(add_d_conditions)
     cmake_parse_arguments(ARG "" "TARGET" "VERSION;DEBUG" ${ARGN})
@@ -428,7 +404,7 @@ function(add_d_target _target)
 
     add_d_conditions(VERSION ${ARG_VERSIONS} DEBUG ${ARG_DEBUG})
     include_directories(${ARG_IMPORT_DIRS})
-    include_text_directories(${ARG_TEXT_IMPORT_DIRS})
+    include_directories(TEXT ${ARG_TEXT_IMPORT_DIRS})
 
     foreach(flag IN LISTS ARG_FLAGS)
         set(CMAKE_D_FLAGS "${CMAKE_D_FLAGS} ${flag}")
@@ -469,7 +445,7 @@ function(add_d_target _target)
     foreach(dir IN LISTS ARG_IMPORT_DIRS)
         target_include_directories(${_target} PUBLIC ${dir})
     endforeach()
-    include_text_directories(TARGET ${_target} ${ARG_TEXT_IMPORT_DIRS})
+    include_directories(TEXT ${ARG_TEXT_IMPORT_DIRS})
     foreach(flag IN LISTS ARG_FLAGS)
         set_property(TARGET ${_target} APPEND PROPERTY COMPILE_FLAGS "${flag}")
     endforeach()
