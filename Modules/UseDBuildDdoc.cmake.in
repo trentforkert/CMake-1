@@ -1,0 +1,32 @@
+# UseD script to generate Ddoc for target @_target@
+
+# Our list of assets files
+set(ddoc_assets "@ddoc_assets@")
+
+# Read cmds and mods
+file(READ "@confdir@/modulelist.tmp" mods)
+file(READ "@confdir@/cmdlist.tmp" cmds)
+
+# Add cmds to copy assets
+foreach(asset IN LISTS ddoc_assets)
+    get_filename_component(name "${asset}" NAME)
+    if(IS_DIRECTORY "${asset}")
+        set(copy copy_directory)
+    else()
+        set(copy copy)
+    endif()
+    list(APPEND cmds COMMAND "@CMAKE_COMMAND@" -E ${copy} "${asset}" "@ARG_OUTPUT_DIRECTORY@/${name}")
+endforeach()
+
+# Generate modules.ddoc
+list(SORT mods)
+file(WRITE "@confdir@/modules.ddoc" "MODULES =\n")
+foreach(mod IN LISTS mods)
+    file(APPEND "@confdir@/modules.ddoc" "\t$(MODULE ${mod})\n")
+endforeach()
+
+# Run all the commands to generate Ddoc
+execute_process(
+    ${cmds}
+    COMMAND "@CMAKE_COMMAND@" -E touch "@confdir@/@_target@_build_ddoc.stamp"
+)

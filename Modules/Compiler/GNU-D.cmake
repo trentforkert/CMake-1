@@ -24,17 +24,9 @@ set(CMAKE_D_LINK_LIBRARY_FLAG "-l")
 set(CMAKE_D_LINK_LIBRARY_FILE_FLAG "-l:")
 set(CMAKE_D_LINK_PATH_FLAG "-L")
 
-set(CMAKE_D_VERSION_FLAG "-fversion=")
-set(CMAKE_D_DEBUG_FLAG "-fdebug=")
-set(CMAKE_D_UNITTEST_FLAG "-funittest")
-# GDC doesn't seem to support -cov
-# GDC doesn't seem to support -main
-set(CMAKE_D_DDOC_FILE_FLAG "-fdoc-file=")
-set(CMAKE_D_DDOC_MACRO_FLAG "-fdoc-inc=")
 set(CMAKE_D_DEPS_FILE_FLAG "-fdeps=")
 set(CMAKE_D_PRINT_DEPS_FLAG "-fdeps")
 set(CMAKE_D_NO_OUTPUT_FLAG -S -o ${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/cmake_gdc_garbage)
-set(CMAKE_D_JSON_FILE_FLAG "-fXf=")
 
 set(CMAKE_D_COMPILE_OBJECT
     "<CMAKE_D_COMPILER> <DEFINES> <FLAGS> -o <OBJECT> -c <SOURCE>")
