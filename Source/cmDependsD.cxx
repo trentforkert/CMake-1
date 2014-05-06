@@ -45,38 +45,46 @@ bool cmDependsD::WriteDependencies(const std::set<std::string>& sources,
     }
 
   std::set<std::string> dependencies;
-  cmMakefile* mf = this->LocalGenerator->GetMakefile();
-  if(!mf->IsDefinitionSet("CMAKE_D_DEPS_COMMAND"))
+
+  // Build the path to the d_deps file
+  const char* fn = (this->TargetDirectory + "/depends.d_deps").c_str();
+
+  // Only run the command if it hasn't already been run
+  if(!cmSystemTools::FileExists(fn))
+    {
+    std::vector<std::string> cmd;
+    cmMakefile* mf = this->LocalGenerator->GetMakefile();
+    if(!mf->IsDefinitionSet("CMAKE_D_DEPS_COMMAND"))
+      {
+      return false;
+      }
+    cmSystemTools::ExpandListArgument(
+        mf->GetDefinition("CMAKE_D_DEPS_COMMAND"),
+        cmd);
+    if(!cmSystemTools::RunSingleCommand(cmd))
+      {
+      return false;
+      }
+    else
+      {
+      // For some reason, fn doesn't show as written until
+      // we exit this method. A spot of recursion gets around
+      // this oddity.
+      return WriteDependencies(sources, obj, makeDepends, internalDepends);
+      }
+    }
+
+  // d_deps format is:
+  // module_name (filepath) : visibility : dep_module (filepath)
+  std::ifstream deps(fn);
+  if(!deps.good())
     {
     return false;
     }
-  std::vector<std::string> cmd;
-  cmSystemTools::ExpandListArgument(
-      mf->GetDefinition("CMAKE_D_DEPS_COMMAND"),
-      cmd);
-
-  cmd.insert(cmd.end(), sources.begin(), sources.end());
-
-  std::string deps_listing;
-  if(!cmSystemTools::RunSingleCommand(cmd,
-        &deps_listing, 0, 0, cmSystemTools::OUTPUT_NONE))
-    {
-    return false;
-    }
-
-  // deps_listing format is:
-  // depsImport module_name (filepath) : visibility : dep_module (filepath)
-  // depsLib module_name (filepath) : lib
-  // depsFile module_name (filepath) : shortFileName (filepath)
-  // depsVersion module_name (filepath) : ident
-  // depsDebug module_name (filepath) : ident
-  //
-  // We only deal with depsImport and depsFile varieties
-  std::istringstream deps(deps_listing);
 
   std::string fromFile, toFile;
   std::size_t lparen, rparen;
-  while(!deps.eof())
+  while(deps.good())
     {
     std::string line;
     std::getline(deps, line);
@@ -147,6 +155,21 @@ bool cmDependsD::WriteDependencies(const std::set<std::string>& sources,
 
     makeDepends << "\n";
     internalDepends << "\n";
+    }
+
+  return true;
+}
+
+bool cmDependsD::Finalize(std::ostream& makeDepends,
+                          std::ostream& internalDepends)
+{
+  //Build path to d_deps file
+  const char* fn = (this->TargetDirectory + "/depends.d_deps").c_str();
+
+  // Remove the d_deps file so that it can be recreated
+  if(cmSystemTools::FileExists(fn))
+    {
+    cmSystemTools::RemoveFile(fn);
     }
 
   return true;

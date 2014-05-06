@@ -23,7 +23,6 @@ set(CMAKE_D_LINK_LIBRARY_FILE_FLAG "-L=-l:")
 set(CMAKE_D_LINK_PATH_FLAG "-L=-L")
 
 set(CMAKE_D_DEPS_FILE_FLAG "-deps=")
-# LDC doesn't seem to support printed deps
 set(CMAKE_D_NO_OUTPUT_FLAG -c -o-)
 
 set(CMAKE_D_COMPILE_OBJECT
