@@ -8,92 +8,178 @@
 #
 # ::
 #
-#    add_d_target(<target>
-#        [EXECUTABLE | STATIC_LIBRARY | SHARED_LIBRARY]
-#        [SOURCES] <source1> [<source2> ...]
-#        [VERSION_IDENTS <ident1> [<ident2> ...]]
-#        [DEBUG_IDENTS <ident1> [<ident2> ...]]
-#        [IMPORT_DIRS <dir1> [<dir2> ...]]
-#        [TEXT_IMPORT_DIRS <dir1> [<dir2> ...]]
-#        [FLAGS <flag1> [<flag2> ...]]
-#        [COVERAGE <pct>]
-#        [DEPRECATED ALLOW | WARN | ERROR]
-#        [ENFORCE_PROPERTY TRUE|FALSE]
-#        [WARNINGS_ARE_ERRORS TRUE|FALSE]
-#        [STRICT]
-#        [GENERATE_UNITTESTS]
-#        [GENERATE_DDOC]
-#        [GENERATE_INSTALL]
-#        [EXCLUDE_FROM_ALL]
-#    )
-#
-# In its simplest form,
-#
-# ::
-#
-#    add_d_target(<target>)
-#
-# this command will create a target based on the source file <target>.d in
-# the current source directory. It will automatically compile as an
-# executable if it has a main method, or a static library otherwise.
-# It automatically infers needed sources and libraries based on information
-# from the D compiler.
-#
-# For automatic library dependency resolution to work, the library must
-# be referenced from the D source code with pragma(lib). The name specified
-# in the pragma must then be mapped to the libraries as follows:
-#
-# ::
-#
-#    set(_d_link_target_<libname> ${LIBNAME_LIBRARIES})
-#
-# This is not necessary for in-project libraries whose "pragma" name and
-# "target" name are the same.
-#
-# ::
-#
 #    add_d_conditions(
-#       [TARGET <target>]
+#       [TARGETS <target1> [<target2> ...] ]
 #       [VERSION <ident1> [<ident2> ...] ]
 #       [DEBUG <ident1> [<ident2> ...] ]
 #    )
 #
 # This command adds the specified identifiers to D's version/debug flags.
-# If a target is specified, the identifiers will only be added for that target.
-# Otherwise, they follow usual CMake scope rules.
+# These are used to control conditional compilation similar to (but distinct
+# from) C's -Dfoo=bar flags. If any targets are specified, the identifiers
+# will only be added for those targets. Otherwise, they follow usual CMake
+# scope rules.
 #
 # ::
 #
-#    create_ddoc(
-#       <target>
-#       BASED_ON <base_target>
+#    add_d_unittests(<unittest_target>
+#       TARGET <target>
+#       [PARAMETERS <param_string1> [<param_string2> ...] ]
+#       [SOURCES <extra_source1> [<extra_source2> ...] ]
+#    )
+#
+# Adds a unittest target. The executable target will be named
+# ``<unittest_target>``, so that you can add additional flags
+# or link libraries to it as needed.
+#
+# The set of sources, flags and libraries used for ``<unittest_target>``
+# is determined by those on the provided ``<target>``. At least two
+# test targets are added, called ``<unittest_target>_build`` and
+# ``<unittest_target>_run``, which build and run the target respectively.
+#
+# By providing strings to ``PARAMETERS``, you can specify that the
+# ``<unittest_target>`` should be run with said flags. Each set of flags
+# must be its own string, so if you want multiple flags on a single
+# test call, you need to write them as follows:
+#
+#    add_d_unittests(test_example
+#       TARGET example
+#       PARAMETERS
+#           "--run-test 1 --quiet"
+#           "--run-test 2 --quiet"
+#           "--run-test 3 --quiet"
+#    )
+#
+# This will produce three tests which call ``test_example``, once for each
+# of the sets of parameters. Without the double-quotes, this would be
+# interpreted as 9 tests which call ``test_example``.
+#
+# All test running targets are name ``<unittest_target>_run_<num>`` where
+# ``<num>`` is an integer that begins at zero, and increments for each test
+# added within this command. No attempt to pad the number with leading
+# zeroes is made.
+#
+# ``SOURCES`` allows you to specify additional source files needed to build
+# ``<unittest_target>``, if any. You may instead wish to add a library
+# containing these sources, and link ``<unittest_target>`` to it
+# using :command:`target_link_libraries`.
+#
+# Note: the executable target will be generated as long as this
+# function is called, but the test targets will only be enabled
+# if testing is enabled (for example, by calling :command:`enable_testing`).
+# Tests will also not be generated when cross compiling.
+#
+# ::
+#
+#    add_ddoc(<doc_target>
+#       TARGETS <target> [<target2> ...]
+#       [EXCLUDE_FROM_ALL]
 #       [OUTPUT_DIRECTORY <dir>]
-#       [MACRO_FILES <macro_file1> [<macro_file2> ...]]
+#       [PACKAGE_SEPARATOR <sep>]
+#       [EXTENSION <ext>]
+#       [MACROS <macro_file1> [<macro_file2> ...] ]
+#       [ASSETS <asset_file1> [<asset_file2> ...] ]
+#       [SOURCES <extra_source1> [<extra_source2> ...] ]
+#       [VERSION <ident1> [<ident2> ...] ]
+#       [EXCLUDE_SOURCES <source1> [<source2> ...] ]
+#       [EXCLUDE_MODULES <regex>]
 #    )
 #
-# Adds a DDoc generating target for the specified target, and makes it a
-# dependency of a global ddoc target. Compiler parameters and initial
-# source list are derived from <base_target>. A DDoc file containing a
-# MODULES macro is automatically generated and used based on the modules
-# include in the target.
+# Adds a Ddoc generating target (named ``<doc_target>``) for the specified
+# targets. Compiler parameters and initial source list are derived from
+# ``<target>``. A Ddoc file containing a ``MODULES`` macro is automatically
+# generated and used based on the modules include in the target.
 #
-# Additional macro files can be specified to define more macros. The
-# default output directory, if that parameter is omitted, is
-# ${CMAKE_CURRENT_BINARY_DIR}/ddoc.
+# Additional targets, if specified, will be generated as part of the same
+# documentation target. That is, all D modules from each listed target
+# will be included in the same generated ``MODULES`` macro file.
+# from the default target.
+#
+# By default, ``add_ddoc`` adds ``<doc_target>`` to the default build.
+# This can be prevented by specifying ``EXCLUDE_FROM_ALL``. Note that
+# if ``EXCLUDE_FROM_ALL`` is set, the documentation cannot be installed.
+# It is recommended to configure this such that it is an option for
+# the user whether or not to generate (and install) documentation.
+#
+# The output directory can be specified via ``OUTPUT_DIRECTORY``.
+# The default output directory, if that parameter is omitted, is
+# ``${PROJECT_BINARY_DIR}/ddoc``.
+#
+# The separator used in the names of the generated files can be specified
+# via ``PACKAGE_SEPARATOR``. If left unspecified, it defaults to a period.
+# For example, given a module ``pkg.sub.mod`` (in file ``pkg/sub/mod.d``),
+# The default is to generate a ``pkg.sub.mod.<ext>`` file. Providing
+# a ``PACKAGE_SEPARATOR`` of "_" would put the same file in
+# ``pkg_sub_mod.<ext>``. This also determines the names used in the
+# generated ``MODULES`` macro file. This should be set to the same thing your
+# other Ddoc macros expect.
+#
+# The generated file extension can be specified via the ``EXTENSION`` argument.
+# It defaults to "html", which is the usual output format for Ddoc.
+# Note that this only determines the output extension; the contents
+# of the file depend on how your macros are defined.
+#
+# With the ``MACROS`` flag, additional macro files can be specified to define
+# more macros. This is useful, for instance, to generate Ddoc using bootDoc:
+# simply point to the ``bootdoc.ddoc`` and ``settings.ddoc`` files.
+# These files must have an extension of "ddoc". Remember that a macro file
+# containing a definition of ``MODULES`` is automatically generated and used.
+#
+# Asset files and directories can be specified via ``ASSETS``. The files
+# will be copied to the ``OUTPUT_DIRECTORY`` as is, from where they can
+# be installed easily. These files can then be used by the generated
+# Ddoc. For instance, you might add JavaScript, CSS and images with this.
+#
+# If needed, additional sources may be processed alongside the targets'
+# sources by providing the ``SOURCES`` argument. This is primarily useful
+# if you have a D source that only contains documentation, and that you
+# do not include in any of your targets' sources. These sources will
+# take on the same flags as the first specified target.
+#
+# Additional conditional compilation flags may be passed to via ``VERSION``.
+# This works by calling ``add_d_conditions(VERSION ...)``, and thus will
+# apply to every D compiler call by add_ddoc.
+#
+# If desired, modules can be excluded from Ddoc generation, either by
+# giving sources manually to ``EXCLUDE_SOURCES``, or a regex against module
+# names provided to ``EXCLUDE_MODULES``. The module names here are the
+# canonical form before the separator is modified.
+#
+# This command can be called multiple times on the same targets, so that
+# you can generate different forms of documentation (HTML, man pages, etc.)
+# Further processing (such as compiling generated LaTeX to a PDF) is
+# beyond the scope of this command. Note, however, that different
+# ``<doc_target>`` will be needed for each call to ``add_ddoc``.
 #
 # ::
 #
-#    add_d_unittests(
-#       <target>
-#       BASED_ON <base_target>
-#       [COVERAGE <pct>]
+#    add_d_headers(
+#       TARGETS <target> [<target2> ...]
+#       [OUTPUT_DIRECTORY <dir>]
 #    )
 #
-# Adds a unittest target. This will use <base_target> to determine
-# the initial set of compiler flags and source files to include.
-# COVERAGE, if specified, will enforce that level of test coverage,
-# provided the compiler support it.
+# Adds rules responsible for generating D headers from the sources
+# of all the specified targets. These rules are added to the targets
+# themselves as a post-build step. When using this, remember that
+# this is not always a bug-free process. For instance, DMD v2.065 does
+# not properly handle "auto" functions, instead dropping the return
+# type all together. Older versions of D will leave implementations
+# intact. These are also not appropriate for documentation,
+# as all comments are stripped. Use ``add_ddoc`` for creating documentation.
 #
+# The output directory can be specified via ``OUTPUT_DIRECTORY``. If not
+# specified, it defaults to ``${PROJECT_BINARY_DIR}/import``.
+#
+# ::
+#
+#    d_enforce_property(
+#       [TARGETS <target1> [<target2> ...] ]
+#    )
+#
+# Instructs the D compiler to enforce D's property semantics. This is
+# (currently) disabled by default in D, and makes it so that methods
+# annotated with ``@property`` are the only methods that can be used
+# as properties.
 
 #=============================================================================
 # Copyright 2013-2014 Kitware, Inc.
@@ -112,373 +198,268 @@
 enable_language(D)
 include(CMakeParseArguments)
 
-# Notable functions:
-#   create_ddoc                 done
-#   add_d_unittests             done
-#   examine_d_source            done
-#   add_d_conditions            done
-#   add_d_target                done?
+# Set compiler-specific flags this module will use
+# Not intended for use outside this module
+if(CMAKE_D_COMPILER_ID MATCHES "DigitalMars")
+    set(_USED_DDOC_FILE_FLAG "-Df")
+    set(_USED_DDOC_MACRO_FLAG "")
+
+    set(_USED_HEADER_FILE_FLAG "-Hf")
+
+    set(_USED_UNITTEST_FLAG "-unittest")
+
+    set(_USED_VERSION_FLAG "-version=")
+    set(_USED_DEBUG_FLAG "-debug=")
+
+    set(_USED_ENFORCE_PROPERTY_FLAG "-property")
+elseif(CMAKE_D_COMPILER_ID MATCHES "GNU")
+    set(_USED_DDOC_FILE_FLAG "-fdoc-file=")
+    set(_USED_DDOC_MACRO_FLAG "-fdoc-inc=")
+
+    set(_USED_HEADER_FILE_FLAG "-fintfc-file=")
+
+    set(_USED_UNITTEST_FLAG "-funittest")
+
+    set(_USED_VERSION_FLAG "-fversion=")
+    set(_USED_DEBUG_FLAG "-fdebug=")
+
+    set(_USED_ENFORCE_PROPERTY_FLAG "-fproperty")
+elseif(CMAKE_D_COMPILER_ID MATCHES "LLVM")
+    set(_USED_DDOC_FILE_FLAG "-Df=")
+    set(_USED_DDOC_MACRO_FLAG "")
+
+    set(_USED_HEADER_FILE_FLAG "-Hf=")
+
+    set(_USED_UNITTEST_FLAG "-unittest")
+
+    set(_USED_VERSION_FLAG "-d-version=")
+    set(_USED_DEBUG_FLAG "-d-debug=")
+
+    set(_USED_ENFORCE_PROPERTY_FLAG "-property")
+else()
+    message(FATAL_ERROR "UseD does not support ${CMAKE_D_COMPILER_ID} ${CMAKE_D_COMPILER_VERSION}: ${CMAKE_D_COMPILER}")
+endif()
+
 
 function(add_d_conditions)
-    cmake_parse_arguments(ARG "" "TARGET" "VERSION;DEBUG" ${ARGN})
+    cmake_parse_arguments(ARG "" "" "TARGETS;VERSION;DEBUG;" ${ARGN})
     foreach(vers IN LISTS ARG_VERSION)
-        if(ARG_TARGET)
-            set_property(TARGET ${ARG_TARGET} APPEND_STRING PROPERTY COMPILE_FLAGS " ${CMAKE_D_VERSION_FLAG}${vers}")
+        if(ARG_TARGETS)
+            foreach(tgt IN LISTS ARG_TARGETS)
+                set_property(TARGET ${tgt} APPEND_STRING PROPERTY COMPILE_FLAGS "${_USED_VERSION_FLAG}${vers} ")
+            endforeach()
         else()
-            set(CMAKE_D_FLAGS "${CMAKE_D_FLAGS} ${CMAKE_D_VERSION_FLAG}${vers}")
+            set(CMAKE_D_FLAGS "${CMAKE_D_FLAGS} ${_USED_VERSION_FLAG}${vers}")
         endif()
     endforeach()
 
     foreach(dbg IN LISTS ARG_DEBUG)
-        if(ARG_TARGET)
-            set_property(TARGET ${ARG_TARGET} APPEND_STRING PROPERTY COMPILE_FLAGS " ${CMAKE_D_DEBUG_FLAG}${dbg}")
+        if(ARG_TARGETS)
+            foreach(tgt IN LISTS ARG_TARGETS)
+                set_property(TARGET ${tgt} APPEND_STRING PROPERTY COMPILE_FLAGS "${_USED_DEBUG_FLAG}${dbg} ")
+            endforeach()
         else()
-            set(CMAKE_D_FLAGS "${CMAKE_D_FLAGS} ${CMAKE_D_DEBUG_FLAG}${dbg}")
+            set(CMAKE_D_FLAGS "${CMAKE_D_FLAGS} ${_USED_DEBUG_FLAG}${dbg}")
         endif()
     endforeach()
 
     set(CMAKE_D_FLAGS "${CMAKE_D_FLAGS}" PARENT_SCOPE)
 endfunction()
 
-function(create_ddoc _target)
-    if(NOT TARGET ddoc)
-        add_custom_target(ddoc)
-    endif()
-    cmake_parse_arguments(ARG "" "BASED_ON;OUTPUT_DIRECTORY" "MACRO_FILES" ${ARGN})
-    if(NOT ARG_BASED_ON)
-        message(FATAL_ERROR "create_ddoc called without BASED_ON target specified")
-    endif()
-
-    get_target_property(flags "${ARG_BASED_ON}" COMPILE_FLAGS)
-    get_target_property(sources "${ARG_BASED_ON}" SOURCES)
-
-    if(NOT ARG_OUTPUT_DIRECTORY)
-        set(ARG_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/ddoc)
-    endif()
-    file(MAKE_DIRECTORY "${ARG_OUTPUT_DIRECTORY}")
-    list(APPEND ARG_MACRO_FILES "${ARG_OUTPUT_DIRECTORY}/${ARG_BASED_ON}_modules.ddoc")
-
-    get_directory_property(imps DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} INCLUDE_DIRECTORIES)
-    foreach(dir IN LISTS imps ITEMS ${CMAKE_CURRENT_SOURCE_DIR})
-        get_filename_component(loc "${dir}" ABSOLUTE)
-        list(APPEND _includes "${CMAKE_INCLUDE_FLAG_D}${loc}")
-    endforeach()
-
-    if(flags)
-        set(CMAKE_D_FLAGS "${flags} ${CMAKE_D_FLAGS}")
-    endif()
-    examine_d_source(srcs libs isexe ${sources})
-
-    separate_arguments(d_flags UNIX_COMMAND "${CMAKE_D_FLAGS}")
-
-    add_custom_target(${_target})
-    foreach(srcfile IN LISTS srcs)
-        get_source_file_property(modname "${srcfile}" D_MODULE_NAME)
-        if(NOT modname OR modname STREQUAL "NOTFOUND")
-            message(FATAL_ERROR "${srcfile} didn't parse properly. Report bug, please!")
-        endif()
-
-        foreach(mf IN LISTS ARG_MACRO_FILES)
-            list(APPEND macro_flags ${CMAKE_D_DDOC_MACRO_FLAG}${mf})
+function(d_enforce_property)
+    cmake_parse_arguments(ARG "" "" "TARGETS" ${ARGN})
+    if(ARG_TARGETS)
+        foreach(tgt IN LISTS ARG_TARGETS)
+            set_property(TARGET ${tgt} APPEND_STRING PROPERTY COMPILE_FLAGS "${_USED_ENFORCE_PROPERTY_FLAG} ")
         endforeach()
-
-        add_custom_command(TARGET ${_target}
-            POST_BUILD
-            COMMAND ${CMAKE_D_COMPILER}
-            ${d_flags}
-            ${_includes}
-            ${CMAKE_D_NO_OUTPUT_FLAG}
-            "${CMAKE_D_DDOC_FILE_FLAG}${modname}.html"
-            "${srcfile}"
-            ${macro_flags}
-            WORKING_DIRECTORY ${ARG_OUTPUT_DIRECTORY}
-            )
-        set_property(SOURCE ${ARG_OUTPUT_DIRECTORY}/${ARG_BASED_ON}_modules.ddoc APPEND PROPERTY DDOC_MODULES ${modname})
-    endforeach()
-    get_source_file_property(mods ${ARG_OUTPUT_DIRECTORY}/${ARG_BASED_ON}_modules.ddoc DDOC_MODULES)
-    list(SORT mods)
-    file(WRITE "${ARG_OUTPUT_DIRECTORY}/${ARG_BASED_ON}_modules.ddoc" "MODULES = \n")
-    foreach(mod IN LISTS mods)
-        file(APPEND "${ARG_OUTPUT_DIRECTORY}/${ARG_BASED_ON}_modules.ddoc" "\t$(MODULE ${mod})\n")
-    endforeach()
-    add_dependencies(ddoc ${_target})
-endfunction()
-
-function(add_d_unittests _target)
-    cmake_parse_arguments(ARG "" "BASED_ON;COVERAGE" "" ${ARGN})
-    if(DEFINED ARG_COVERAGE AND CMAKE_D_COVERAGE_FLAG)
-        set(_cov ${CMAKE_D_COVERAGE_FLAG}${ARG_COVERAGE})
     else()
-        unset(_cov)
+        set(CMAKE_D_FLAGS "${CMAKE_D_FLAGS} ${_USED_ENFORCE_PROPERTY_FLAG}")
     endif()
-    get_target_property(flags "${ARG_BASED_ON}" COMPILE_FLAGS)
-    if(flags)
-        set(CMAKE_D_FLAGS "${CMAKE_D_FLAGS} ${flags}")
-    endif()
-    get_target_property(sources "${ARG_BASED_ON}" SOURCES)
-    set(CMAKE_D_FLAGS "${CMAKE_D_FLAGS} ${CMAKE_D_UNITTEST_FLAG} ${_cov}")
-    examine_d_source(srcs libs isexe ${sources})
-    if(NOT ${isexe})
-        message(FATAL_ERROR "Trying to unittest ${_target}, but it isn't an executable")
-    endif()
-    add_executable(${_target} EXCLUDE_FROM_ALL ${srcs})
-    target_link_libraries(${_target} ${libs})
-    set_property(TARGET ${_target} PROPERTY COMPILE_FLAGS "${CMAKE_D_FLAGS}")
-    add_test(NAME ${_target}_build COMMAND ${CMAKE_COMMAND} --build "${CMAKE_CURRENT_BINARY_DIR}" --target ${_target})
-    add_test(NAME ${_target}_run COMMAND ${CMAKE_CURRENT_BINARY_DIR}/${_target})
-    set_tests_properties(${_target}_run PROPERTIES DEPENDS ${_target}_build)
+
+    set(CMAKE_D_FLAGS "${CMAKE_D_FLAGS}" PARENT_SCOPE)
 endfunction()
 
-# Internal function
-function(examine_d_source _src_result _lib_result _exe_result)
-    get_directory_property(imps DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} INCLUDE_DIRECTORIES)
-    foreach(dir IN LISTS imps ITEMS ${CMAKE_CURRENT_SOURCE_DIR})
-        get_filename_component(loc "${dir}" ABSOLUTE)
-        list(APPEND _includes "${CMAKE_INCLUDE_FLAG_D}${loc}")
-    endforeach()
-
-    foreach(source IN LISTS ARGN)
-        get_filename_component(loc "${source}" ABSOLUTE)
-        list(APPEND RESOLVED_SRCS "${loc}")
-    endforeach()
-
-    separate_arguments(d_flags UNIX_COMMAND "${CMAKE_D_FLAGS}")
-
-    if(CMAKE_D_COMPILER_ID MATCHES "LLVM")
-        set(_json_output "${CMAKE_D_JSON_FILE_FLAG}temporary.json")
-    endif()
-
-    execute_process(COMMAND ${CMAKE_D_COMPILER}
-        ${d_flags}
-        ${_includes}
-        ${CMAKE_D_DVERBOSE_FLAG}
-        ${CMAKE_D_NO_OUTPUT_FLAG}
-        ${CMAKE_D_DEPS_FILE_FLAG}temporary.deps
-        ${_json_output}
-        ${RESOLVED_SRCS}
-        WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles"
-        RESULT_VARIABLE _success
-        OUTPUT_VARIABLE dep_listing
-        ERROR_VARIABLE err_listing
-        )
-
-    string(REPLACE "\n" ";" verbose_listing "${dep_listing}\n${err_listing}")
-    foreach(item IN LISTS verbose_listing)
-        if(item MATCHES "^library[ ]+([^\n]+)$")
-            set(libname "${CMAKE_MATCH_1}")
-            if(NOT libname MATCHES "advapi32|shell32")
-                if(_d_link_target_${libname})
-                    list(APPEND RESOLVED_LIBS ${_d_link_target_${libname}})
-                elseif(TARGET ${libname})
-                    list(APPEND RESOLVED_LIBS ${libname})
-                else()
-                    message(FATAL_ERROR
-                        "D source \"${sourcefile}\" wants to link \"${libname}\"")
-                endif()
-            endif()
-        elseif(item MATCHES "^file[ ]+[^()]+\\(([^()]+)\\)$")
-            set_property(SOURCE ${RESOLVED_SRCS} APPEND PROPERTY OBJECT_DEPENDS ${CMAKE_MATCH_1})
-        elseif(item MATCHES "^entry[ ]+" OR item MATCHES "^function[ ]+D main$")
-            set(IS_EXECUTABLE true)
-        endif()
-    endforeach()
-
-    file(STRINGS "${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/temporary.deps" moddeps)
-    get_property(_d_all_libraries GLOBAL PROPERTY D_ALL_LIBRARIES)
-    foreach(mod IN LISTS moddeps)
-        if(mod MATCHES "([^ \n]+) \\(([^()]+)\\) : (private|public|package|protected) : ([^ ]+) \\(([^()]+)\\)")
-            set(srcmod "${CMAKE_MATCH_1}")
-            set(src "${CMAKE_MATCH_2}")
-            set(depmod "${CMAKE_MATCH_4}")
-            set(dep "${CMAKE_MATCH_5}")
-
-            # Don't consider standard library / runtime modules as sources
-            if(NOT srcmod MATCHES "^(__main|object|std\\.|core\\.|etc\\.|ldc\\.|gcc\\.)")
-                get_property(named SOURCE "${src}" PROPERTY D_MODULE_NAME SET)
-                if(NOT named)
-                    set_property(SOURCE "${src}" PROPERTY D_MODULE_NAME "${srcmod}")
-                endif()
-                set_property(SOURCE "${src}" APPEND PROPERTY OBJECT_DEPENDS "${dep}")
-                list(FIND RESOLVED_SRCS "${src}" idx)
-                if(idx EQUAL -1)
-                    set(src_in_lib FALSE)
-                    foreach(lib IN LISTS _d_all_libraries)
-                        get_target_property(lib_srcs ${lib} SOURCES)
-                        list(FIND lib_srcs "${src}" idx2)
-                        if(idx2 GREATER -1)
-                            set(src_in_lib TRUE)
-                            list(FIND RESOLVED_LIBS ${lib} lib_idx)
-                            if(lib_idx EQUAL -1)
-                                list(APPEND RESOLVED_LIBS ${lib})
-                            endif()
-                            break()
-                        endif()
-                    endforeach()
-                    if(NOT src_in_lib)
-                        file(TO_CMAKE_PATH "${src}" cmsrc)
-                        list(APPEND RESOLVED_SRCS "${cmsrc}")
-                    endif()
-                endif()
-            endif()
-        endif()
-    endforeach()
-
-    # LDC doesn't expose "entry" line in DVERBOSE output
-    # So, we get json output for all sources and check that for a main function
-    if(EXISTS "${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/temporary.json")
-        file(READ "${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/temporary.json" jsonstr)
-        if(jsonstr MATCHES "\"name\" : \"main\",[ \n\r\t]*\"kind\" : \"function\"")
-            set(IS_EXECUTABLE true)
-        endif()
-    endif()
-
-    # Instead of depending on objects (we can't), we recursively depend
-    # on the whole source tree in question
-    function(recurse_deps src)
-        list(FIND recursed "${src}" idx)
-        if(idx EQUAL -1)
-            list(APPEND recursed "${src}")
-            get_source_file_property(deps "${src}" OBJECT_DEPENDS)
-            foreach(dep IN LISTS deps)
-                if(NOT dep STREQUAL "NOTFOUND")
-                    recurse_deps("${dep}")
-                    get_source_file_property(redep "${dep}" OBJECT_DEPENDS)
-                    if(NOT redep STREQUAL "NOTFOUND")
-                        list(APPEND deps "${redep}")
-                    endif()
-                endif()
-            endforeach()
-            list(REMOVE_DUPLICATES deps)
-            set_property(SOURCE "${src}" PROPERTY OBJECT_DEPENDS "${deps}")
-        endif()
-        set(recursed "${recursed}" PARENT_SCOPE)
-    endfunction()
-    foreach(src IN LISTS ${_target})
-        recurse_deps("${src}")
-    endforeach()
-
-    set(${_src_result} "${RESOLVED_SRCS}" PARENT_SCOPE)
-    set(${_lib_result} "${RESOLVED_LIBS}" PARENT_SCOPE)
-    set(${_exe_result} "${IS_EXECUTABLE}" PARENT_SCOPE)
-endfunction()
-
-function(add_d_target _target)
-    set(options
-        EXECUTABLE STATIC_LIBRARY SHARED_LIBRARY
-        EXCLUDE_FROM_ALL
-        STRICT # Warnings_are_errors, DEPRECATED ERROR, ENFORCE_PROPERTY
-        GENERATE_DDOC GENERATE_UNITTESTS GENERATE_INSTALL)
-    set(oneValueArgs
-        COVERAGE
-        DEPRECATED # ALLOW || WARN || ERROR
-        ENFORCE_PROPERTY # true || false
-        WARNINGS_ARE_ERRORS # true || false
-        )
-    set(multiValueArgs SOURCES VERSION_IDENTS DEBUG_IDENTS IMPORT_DIRS TEXT_IMPORT_DIRS DDOC_MACRO_FILES FLAGS)
-    cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
-
-    if(ARG_EXCLUDE_FROM_ALL)
-        set(ARG_EXCLUDE_FROM_ALL "EXCLUDE_FROM_ALL")
-        set(ARG_GENERATE_INSTALL FALSE)
+function(add_ddoc _target)
+    cmake_parse_arguments(ARG
+        "EXCLUDE_FROM_ALL"
+        "OUTPUT_DIRECTORY;PACKAGE_SEPARATOR;EXTENSION;EXCLUDE_MODULES"
+        "TARGETS;MACROS;ASSETS;SOURCES;EXCLUDE_SOURCES;VERSION"
+        ${ARGN})
+    if(NOT ARG_EXCLUDE_FROM_ALL)
+        set(ARG_EXCLUDE_FROM_ALL ALL)
     else()
         set(ARG_EXCLUDE_FROM_ALL "")
     endif()
 
-    if(ARG_STRICT)
-        set(ARG_ENFORCE_PROPERTY TRUE)
-        set(ARG_WARNINGS_ARE_ERRORS TRUE)
-        set(ARG_DEPRECATED ERROR)
+    if(NOT DEFINED ARG_OUTPUT_DIRECTORY)
+        set(ARG_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/ddoc")
     endif()
 
-    if(ARG_ENFORCE_PROPERTY)
-        set(CMAKE_D_FLAGS "${CMAKE_D_FLAGS} ${CMAKE_D_PROPERTY_FLAG}")
+    if(NOT DEFINED ARG_EXTENSION)
+        set(ARG_EXTENSION "html")
     endif()
 
-    if(ARG_WARNINGS_ARE_ERRORS)
-        set(CMAKE_D_FLAGS "${CMAKE_D_FLAGS} ${CMAKE_D_WARNING_ERROR_FLAG}")
+    if(NOT DEFINED ARG_PACKAGE_SEPARATOR)
+        set(ARG_PACKAGE_SEPARATOR .)
     endif()
 
-    if(DEFINED ARG_DEPRECATED)
-        set(CMAKE_D_FLAGS "${CMAKE_D_FLAGS} ${CMAKE_D_${ARG_DEPRECATED}_DEPRECATED_FLAG}")
+    if(NOT DEFINED ARG_EXCLUDE_SOURCES)
+        set(ARG_EXCLUDE_SOURCES)
     endif()
 
-    add_d_conditions(VERSION ${ARG_VERSIONS} DEBUG ${ARG_DEBUG})
-    include_directories(${ARG_IMPORT_DIRS})
-    include_directories(TEXT ${ARG_TEXT_IMPORT_DIRS})
+    if(NOT DEFINED ARG_EXCLUDE_MODULES)
+        set(ARG_EXCLUDE_MODULES "")
+    endif()
 
-    foreach(flag IN LISTS ARG_FLAGS)
-        set(CMAKE_D_FLAGS "${CMAKE_D_FLAGS} ${flag}")
+    if(DEFINED ARG_VERSION)
+        add_d_conditions(VERSION ${ARG_VERSION})
+    endif()
+
+    foreach(src IN LISTS ARG_SOURCES)
+        get_filename_component(loc "${src}" ABSOLUTE)
+        list(APPEND abs_srcs "${loc}")
     endforeach()
 
-    list(LENGTH ARG_SOURCES len)
-    if(len EQUAL 0)
-        list(APPEND ARG_SOURCES "${_target}.d")
-    endif()
-
-    examine_d_source(srcs libs isexe ${ARG_SOURCES})
-
-    if(isexe)
-        add_executable(${_target} ${ARG_EXCLUDE_FROM_ALL} ${srcs})
-    else()
-        add_library(${_target} STATIC ${ARG_EXCLUDE_FROM_ALL} ${srcs})
-    endif()
-    target_link_libraries(${_target} ${libs})
-
-    if(NOT ${_target} MATCHES "^d_unittest_" AND NOT isexe)
-        set_property(GLOBAL APPEND PROPERTY D_ALL_LIBRARIES ${_target})
-    endif()
-
-    # Persist flags
-    if(ARG_WARNINGS_ARE_ERRORS)
-        set_property(TARGET ${_target} APPEND_STRING PROPERTY COMPILE_FLAGS ${CMAKE_D_WARNING_ERROR_FLAG})
-    endif()
-
-    if(ARG_ENFORCE_PROPERTY)
-        set_property(TARGET ${_target} APPEND_STRING PROPERTY COMPILE_FLAGS ${CMAKE_D_PROPERTY_FLAG})
-    endif()
-
-    if(ARG_DEPRECATED)
-        set_property(TARGET ${_target} APPEND_STRING PROPERTY COMPILE_FLAGS ${CMAKE_D_${ARG_DEPRECATED}_DEPRECATED_FLAG})
-    endif()
-    add_d_conditions(TARGET ${_target} VERSION ${ARG_VERSION_IDENTS} DEBUG ${ARG_DEBUG_IDENTS})
-
-    foreach(dir IN LISTS ARG_IMPORT_DIRS)
-        target_include_directories(${_target} PUBLIC ${dir})
-    endforeach()
-    include_directories(TEXT ${ARG_TEXT_IMPORT_DIRS})
-    foreach(flag IN LISTS ARG_FLAGS)
-        set_property(TARGET ${_target} APPEND PROPERTY COMPILE_FLAGS "${flag}")
+    foreach(ddoc_macro IN LISTS ARG_MACROS)
+        get_filename_component(loc "${ddoc_macro}" ABSOLUTE)
+        list(APPEND ddoc_files "${_USED_DDOC_MACRO_FLAG}${loc}")
     endforeach()
 
-    # Add testing target
-    if(CMAKE_TESTING_ENABLED AND ARG_GENERATE_UNITTESTS)
-        if(DEFINED ARG_COVERAGE)
-            set(ARG_COVERAGE COVERAGE ${ARG_COVERAGE})
-        else()
-            set(ARG_COVERAGE)
-        endif()
+    foreach(asset IN LISTS ARG_ASSETS)
+        get_filename_component(loc "${asset}" ABSOLUTE)
+        list(APPEND ddoc_assets "${loc}")
+    endforeach()
 
-        add_d_unittests(d_unittest_${_target}
-            BASED_ON ${_target}
-            ${ARG_COVERAGE}
-        )
-    endif()
+    set(confdir "${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/${_target}.dir")
+    foreach(tgt IN LISTS ARG_TARGETS)
+        _process_flags(${tgt} srcs abs_srcs lst)
 
-    if(ARG_GENERATE_DDOC)
-        create_ddoc(ddoc_${_target}
-            BASED_ON ${_target}
-            MACRO_FILES ${ARG_DDOC_MACRO_FILES}
+        # Create configure script
+        configure_file(
+            "${CMAKE_ROOT}/Modules/UseDConfigureDdoc.cmake.in"
+            "${confdir}/${tgt}_configure_ddoc.cmake"
+            @ONLY)
+
+        # Tell our target to generate the depsfile and run the script
+        add_custom_command(OUTPUT "${confdir}/${tgt}_configure_ddoc.stamp"
+            COMMAND ${CMAKE_D_COMPILER} ${lst} ${CMAKE_D_NO_OUTPUT_FLAG} "${CMAKE_D_DEPS_FILE_FLAG}${confdir}/${tgt}.srcdeps" ${abs_srcs}
+            COMMAND ${CMAKE_COMMAND} -P "${confdir}/${tgt}_configure_ddoc.cmake"
+            COMMENT "Configuring Ddoc target ${_target} (${tgt})"
             )
-        if(ARG_GENERATE_DDOC)
-            install(FILES ${CMAKE_CURRENT_BINARY_DIR}/ddoc/* DESTINATION share/doc/${CMAKE_PROJECT_NAME})
-        endif()
+
+        list(APPEND conf_files "${confdir}/${tgt}_configure_ddoc.stamp")
+
+        # Cleanup
+        set(srcs)
+        set(abs_srcs)
+        set(lst)
+    endforeach()
+
+    # Produce and call the script that actually generates the Ddoc.
+    configure_file(
+        "${CMAKE_ROOT}/Modules/UseDBuildDdoc.cmake.in"
+        "${confdir}/${_target}_build_ddoc.cmake"
+        @ONLY)
+    add_custom_command(OUTPUT "${confdir}/${_target}_build_ddoc.stamp"
+        COMMAND ${CMAKE_COMMAND} -P "${confdir}/${_target}_build_ddoc.cmake"
+        COMMENT "Building Ddoc target ${_target}"
+        DEPENDS ${conf_files}
+        )
+    add_custom_target(${_target} ${ARG_EXCLUDE_FROM_ALL} DEPENDS "${confdir}/${_target}_build_ddoc.stamp")
+
+    # Remove documentation dir on make clean
+    set_property(
+        DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+        APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES "${ARG_OUTPUT_DIRECTORY}")
+endfunction()
+
+function(add_d_headers)
+    cmake_parse_arguments(ARG "" "OUTPUT_DIRECTORY" "TARGETS" ${ARGN})
+    if(NOT DEFINED ARG_OUTPUT_DIRECTORY)
+        set(ARG_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/import")
     endif()
 
-    if(ARG_GENERATE_INSTALL)
-        install(TARGETS ${_target}
-            RUNTIME DESTINATION bin
-            LIBRARY DESTINATION lib
-            ARCHIVE DESTINATION lib
-        )
+    foreach(tgt IN LISTS ARG_TARGETS)
+        _process_flags(${tgt} srcs abs_srcs lst)
+        foreach(src IN LISTS srcs)
+            get_filename_component(loc "${src}" ABSOLUTE)
+            add_custom_command(TARGET ${tgt} POST_BUILD
+                COMMAND "${CMAKE_D_COMPILER}" ${lst} ${CMAKE_D_NO_OUTPUT_FLAG} "${_USED_HEADER_FILE_FLAG}${ARG_OUTPUT_DIRECTORY}/${src}i" "${loc}"
+            )
+
+            # Remove generated header files on clean
+            set_property(
+                DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+                APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES "${ARG_OUTPUT_DIRECTORY}/${src}i")
+        endforeach()
+    endforeach()
+endfunction()
+
+function(add_d_unittests _target)
+    cmake_parse_arguments(ARG "" "TARGET;OUTPUT_DIRECTORY" "PARAMETERS;SOURCES" ${ARGN})
+    get_target_property(flags ${ARG_TARGET} COMPILE_FLAGS)
+    if(flags)
+        set(CMAKE_D_FLAGS "${CMAKE_D_FLAGS} ${flags}")
     endif()
+
+    set(CMAKE_D_FLAGS "${CMAKE_D_FLAGS} ${_USED_UNITTEST_FLAG}")
+    get_target_property(sources ${ARG_TARGET} SOURCES)
+    get_target_property(libs ${ARG_TARGET} LINK_LIBRARIES)
+    add_executable(${_target} EXCLUDE_FROM_ALL ${sources} ${ARG_SOURCES})
+    if(libs)
+        target_link_libraries(${_target} ${libs})
+    endif()
+    set_property(TARGET ${_target} PROPERTY COMPILE_FLAGS "${CMAKE_D_FLAGS}")
+
+    if(CMAKE_TESTING_ENABLED AND NOT CROSS_COMPILING)
+        add_test(NAME "${_target}_build" COMMAND ${CMAKE_COMMAND} --build "${CMAKE_CURRENT_BINARY_DIR}" --target ${_target})
+
+        if(NOT DEFINED ARG_PARAMETERS)
+            set(ARG_PARAMETERS " ")
+        endif()
+        set(num 0)
+        foreach(param IN LISTS ARG_PARAMETERS)
+            separate_arguments(paramlist UNIX_COMMAND "${param}")
+            add_test(NAME "${_target}_run_${num}" COMMAND ${CMAKE_CURRENT_BINARY_DIR}/${_target} ${paramlist})
+            set_tests_properties(${_target}_run_${num} PROPERTIES DEPENDS ${_target}_build)
+            math(EXPR num "${num}+1")
+        endforeach()
+    endif()
+endfunction()
+
+
+# Internal
+function(_process_flags _target sources_var abs_sources_var flags_var)
+    get_target_property(srcs ${_target} SOURCES)
+    foreach(src IN LISTS srcs)
+        get_filename_component(pth "${src}" ABSOLUTE)
+        list(APPEND abs_srcs "${pth}")
+    endforeach()
+
+    get_target_property(flags ${_target} COMPILE_FLAGS)
+    if(flags)
+        separate_arguments(lst UNIX_COMMAND "${flags}")
+    else()
+        set(lst)
+    endif()
+
+    get_target_property(imps ${_target} INCLUDE_DIRECTORIES)
+    if(imps)
+        foreach(imp IN LISTS imps)
+            get_filename_component(loc "${imp}" ABSOLUTE)
+            list(APPEND lst "${CMAKE_INCLUDE_FLAG_D}${loc}")
+        endforeach()
+    endif()
+
+    get_target_property(jimps ${_target} TEXT_INCLUDE_DIRECTORIES)
+    if(jimps)
+        foreach(jimp IN LISTS jimps)
+            get_filename_component(loc "${jimp}" ABSOLUTE)
+            list(APPEND lst "${CMAKE_TEXT_INCLUDE_FLAG_D}${loc}")
+        endforeach()
+    endif()
+
+    set(${sources_var} "${srcs}" PARENT_SCOPE)
+    set(${abs_sources_var} "${abs_srcs}" PARENT_SCOPE)
+    set(${flags_var} "${lst}" PARENT_SCOPE)
 endfunction()
