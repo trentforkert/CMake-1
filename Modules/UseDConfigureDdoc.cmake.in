@@ -1,0 +1,60 @@
+# UseD script to do pre-build legwork for generating Ddoc
+# D target: @tgt@
+# Ddoc target: @_target@
+
+# Our list of source files
+set(abs_srcs "@abs_srcs@")
+
+# Read modules up to now
+if(EXISTS "@confdir@/modulelist.tmp")
+    file(READ "@confdir@/modulelist.tmp" mods)
+endif()
+
+# Read commands up now
+if(EXISTS "@confdir@/cmdlist.tmp")
+    file(READ "@confdir@/cmdlist.tmp" cmds)
+endif()
+
+# Get module names and cmds for each of the sources
+file(STRINGS "@confdir@/@tgt@.srcdeps" deps_lines)
+foreach(line IN LISTS deps_lines)
+    if(line MATCHES "([^ \n]+) \\(([^()]+)\\) : (private|public|package|protected) : ([^ ]+) \\(([^()]+)\\)")
+        set(srcmod "${CMAKE_MATCH_1}")
+        set(src "${CMAKE_MATCH_2}")
+        set(depmod "${CMAKE_MATCH_4}")
+        set(dep "${CMAKE_MATCH_5}")
+
+        string(REPLACE "." "@ARG_PACKAGE_SEPARATOR@" srcmod_with_sep ${srcmod})
+
+        list(FIND abs_srcs "${src}" _at)
+        if(_at GREATER -1)
+            list(FIND ARG_EXCLUDE_SOURCES "${src}" _at2)
+            if(_at2 EQUAL -1
+                    AND (
+                        "@ARG_EXCLUDE_MODULES@" STREQUAL ""
+                        OR NOT "${srcmod}" MATCHES "@ARG_EXCLUDE_MODULES@"
+                        ))
+                list(APPEND cmds COMMAND
+                    "@CMAKE_D_COMPILER@" @lst@ @CMAKE_D_NO_OUTPUT_FLAG@
+                    "@_USED_DDOC_FILE_FLAG@@ARG_OUTPUT_DIRECTORY@/${srcmod_with_sep}.@ARG_EXTENSION@"
+                    "${src}"
+                    "@_USED_DDOC_MACRO_FLAG@@confdir@/modules.ddoc"
+                    @ddoc_files@)
+                list(APPEND mods "${srcmod_with_sep}")
+            endif()
+            list(REMOVE_AT abs_srcs _at)
+            list(LENGTH abs_srcs len)
+            if(len EQUAL 0)
+                break()
+            endif()
+        endif()
+    endif()
+endforeach()
+
+# Save cmds and modules so far
+file(WRITE "@confdir@/modulelist.tmp" "${mods}")
+file(WRITE "@confdir@/cmdlist.tmp" "${cmds}")
+
+execute_process(COMMAND "@CMAKE_COMMAND@" -E touch "@confdir@/@tgt@_configure_ddoc.stamp")
+
+

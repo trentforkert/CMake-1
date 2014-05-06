@@ -22,17 +22,9 @@ set(CMAKE_D_LINK_LIBRARY_FLAG "-L=-l")
 set(CMAKE_D_LINK_LIBRARY_FILE_FLAG "-L=-l:")
 set(CMAKE_D_LINK_PATH_FLAG "-L=-L")
 
-set(CMAKE_D_VERSION_FLAG "-d-version=")
-set(CMAKE_D_DEBUG_FLAG "-d-debug=")
-set(CMAKE_D_UNITTEST_FLAG "-unittest")
-# LDC doesn't seem to support -cov=nn
-# LDC doesn't seem to support -main
-set(CMAKE_D_DDOC_FILE_FLAG "-Df=")
-set(CMAKE_D_DDOC_MACRO_FLAG "")
 set(CMAKE_D_DEPS_FILE_FLAG "-deps=")
 # LDC doesn't seem to support printed deps
 set(CMAKE_D_NO_OUTPUT_FLAG -c -o-)
-set(CMAKE_D_JSON_FILE_FLAG "-Xf=")
 
 set(CMAKE_D_COMPILE_OBJECT
   "<CMAKE_D_COMPILER> <DEFINES> <FLAGS> -of=<OBJECT> -c <SOURCE>")
