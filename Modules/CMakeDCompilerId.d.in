@@ -13,7 +13,7 @@ string VERSION()
 {
   string str(int number)
   {
-    return "" ~ [cast(char)( number % 10 + '0') ];
+    return cast(string) ("" ~ [cast(char)( number % 10 + '0') ]);
   }
 
   return str(__VERSION__ / 1000) ~ "." ~
