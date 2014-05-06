@@ -2055,10 +2055,8 @@ void cmLocalUnixMakefileGenerator3
       const char* noOutputFlag =
         this->Makefile->GetDefinition("CMAKE_D_NO_OUTPUT_FLAG");
 
-      // We use the printed deps rather than the ones written to a file, as
-      // The printed ones contain more information (namely, text imports)
-      const char* printDepsFlag =
-        this->Makefile->GetDefinition("CMAKE_D_PRINT_DEPS_FLAG");
+      const char* depsFileFlag =
+        this->Makefile->GetDefinition("CMAKE_D_DEPS_FILE_FLAG");
 
       const char* iflag =
         this->Makefile->GetDefinition("CMAKE_INCLUDE_FLAG_D");
@@ -2083,13 +2081,13 @@ void cmLocalUnixMakefileGenerator3
       target.GetCompileOptions(options, this->ConfigurationName);
 
       // Only write CMAKE_D_DEPS_COMMAND if all variables are set
-      if(noOutputFlag && printDepsFlag && iflag && jflag && ccsd)
+      if(noOutputFlag && depsFileFlag && iflag && jflag && ccsd)
         {
         cmakefileStream
           << "set(CMAKE_D_DEPS_COMMAND \""
           << dc
           << ";" << noOutputFlag
-          << ";" << printDepsFlag
+          << ";" << depsFileFlag << target.GetSupportDirectory() << "/depends.d_deps"
           << ";" << iflag << ccsd;
         for(std::vector<std::string>::iterator it = includes.begin();
             it != includes.end(); it++ )
@@ -2106,6 +2104,13 @@ void cmLocalUnixMakefileGenerator3
           {
           cmakefileStream << ";" << *it;
           }
+        std::vector<cmSourceFile*> srcs;
+        target.GetSourceFiles(srcs);
+        for(std::vector<cmSourceFile*>::iterator it = srcs.begin();
+                it != srcs.end(); ++it)
+        {
+            cmakefileStream << ";" << (*it)->GetFullPath();
+        }
         cmakefileStream << "\")\n";
         }
       }
