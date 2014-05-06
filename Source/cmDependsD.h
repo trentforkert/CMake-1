@@ -37,6 +37,9 @@ protected:
                                  std::ostream& makeDepends,
                                  std::ostream& internalDepends);
 
+  virtual bool Finalize(std::ostream& makeDepends,
+                        std::ostream& internalDepends);
+
 private:
   static void EscapeSpaces(std::string&);
   static void UnescapeParens(std::string&);
