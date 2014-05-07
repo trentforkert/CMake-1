@@ -2105,7 +2105,7 @@ void cmLocalUnixMakefileGenerator3
           cmakefileStream << ";" << *it;
           }
         std::vector<cmSourceFile*> srcs;
-        target.GetSourceFiles(srcs);
+        target.GetSourceFiles(srcs, this->ConfigurationName);
         for(std::vector<cmSourceFile*>::iterator it = srcs.begin();
                 it != srcs.end(); ++it)
         {
