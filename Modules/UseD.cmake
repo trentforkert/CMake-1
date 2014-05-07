@@ -341,13 +341,14 @@ function(add_ddoc _target)
         configure_file(
             "${CMAKE_ROOT}/Modules/UseDConfigureDdoc.cmake.in"
             "${confdir}/${tgt}_configure_ddoc.cmake"
-            @ONLY)
+            @ONLY ESCAPE_QUOTES)
 
         # Tell our target to generate the depsfile and run the script
         add_custom_command(OUTPUT "${confdir}/${tgt}_configure_ddoc.stamp"
             COMMAND ${CMAKE_D_COMPILER} ${lst} ${CMAKE_D_NO_OUTPUT_FLAG} "${CMAKE_D_DEPS_FILE_FLAG}${confdir}/${tgt}.srcdeps" ${abs_srcs}
             COMMAND ${CMAKE_COMMAND} -P "${confdir}/${tgt}_configure_ddoc.cmake"
             COMMENT "Configuring Ddoc target ${_target} (${tgt})"
+            VERBATIM
             )
 
         list(APPEND conf_files "${confdir}/${tgt}_configure_ddoc.stamp")
@@ -362,11 +363,12 @@ function(add_ddoc _target)
     configure_file(
         "${CMAKE_ROOT}/Modules/UseDBuildDdoc.cmake.in"
         "${confdir}/${_target}_build_ddoc.cmake"
-        @ONLY)
+        @ONLY ESCAPE_QUOTES)
     add_custom_command(OUTPUT "${confdir}/${_target}_build_ddoc.stamp"
         COMMAND ${CMAKE_COMMAND} -P "${confdir}/${_target}_build_ddoc.cmake"
         COMMENT "Building Ddoc target ${_target}"
         DEPENDS ${conf_files}
+        VERBATIM
         )
     add_custom_target(${_target} ${ARG_EXCLUDE_FROM_ALL} DEPENDS "${confdir}/${_target}_build_ddoc.stamp")
 
@@ -388,6 +390,7 @@ function(add_d_headers)
             get_filename_component(loc "${src}" ABSOLUTE)
             add_custom_command(TARGET ${tgt} POST_BUILD
                 COMMAND "${CMAKE_D_COMPILER}" ${lst} ${CMAKE_D_NO_OUTPUT_FLAG} "${_USED_HEADER_FILE_FLAG}${ARG_OUTPUT_DIRECTORY}/${src}i" "${loc}"
+                VERBATIM
             )
 
             # Remove generated header files on clean
