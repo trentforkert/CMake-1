@@ -171,6 +171,22 @@ cmNinjaTargetGenerator::ComputeFlagsForObject(cmSourceFile const* source,
 
     this->LocalGenerator->AppendFlags(languageFlags, includeFlags.c_str());
 
+    std::vector<std::string> textIncludes;
+    this->LocalGenerator->GetTextIncludeDirectories(textIncludes,
+                                                    this->GeneratorTarget,
+                                                    language,
+                                                    this->GetConfigName());
+    // Add text include directory flags.
+    std::string textIncludeFlags =
+        this->LocalGenerator->GetTextIncludeFlags(textIncludes,
+                                                  this->GeneratorTarget,
+                                                  language);
+    if(cmGlobalNinjaGenerator::IsMinGW())
+      cmSystemTools::ReplaceString(textIncludeFlags, "\\", "/");
+
+    this->LocalGenerator->AppendFlags(languageFlags,
+                                      textIncludeFlags.c_str());
+
     // Append old-style preprocessor definition flags.
     this->LocalGenerator->AppendFlags(languageFlags,
                                       this->Makefile->GetDefineFlags());
