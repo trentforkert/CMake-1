@@ -192,6 +192,9 @@
 # As such, linking to a library target that uses property enforcement
 # will automatically instruct the linking target to also use property
 # enforcement.
+#
+# This may cause compilation to fail on versions of D older than 2.057,
+# due to a bug in Phobos, D's standard library.
 
 #=============================================================================
 # Copyright 2013-2014 Kitware, Inc.
