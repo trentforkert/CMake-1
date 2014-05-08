@@ -32,6 +32,9 @@ foreach(line IN LISTS deps_lines)
 
         string(REPLACE "\\(" "(" src "${src}")
         string(REPLACE "\\)" ")" src "${src}")
+        if(WIN32)
+            string(REPLACE "\\\\" "/" src "${src}")
+        endif()
         string(REPLACE "." "@ARG_PACKAGE_SEPARATOR@" srcmod_with_sep ${srcmod})
 
         list(FIND abs_srcs "${src}" _at)
