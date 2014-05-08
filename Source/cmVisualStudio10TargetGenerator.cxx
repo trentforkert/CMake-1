@@ -607,7 +607,7 @@ void cmVisualStudio10TargetGenerator::WriteDProj()
   (*this->BuildFileStream) << this->Target->GetName() << "\">\n";
 
   std::vector<cmSourceFile*> srcs;
-  this->Target->GetSourceFiles(srcs);
+  this->Target->GetConfigCommonSourceFiles(srcs);
   for(std::vector<cmSourceFile*>::const_iterator
       oi = srcs.begin(); oi != srcs.end(); ++oi)
     {
