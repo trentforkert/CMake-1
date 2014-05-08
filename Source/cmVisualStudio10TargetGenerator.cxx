@@ -496,11 +496,15 @@ void cmVisualStudio10TargetGenerator::WriteDProj()
       this->WriteString("<optimize>1</optimize>\n", 2);
       this->WriteString("<noboundscheck>1</noboundscheck>\n", 2);
       this->WriteString("<useInline>1</useInline>\n", 2);
+      // Use the Dynamic C Runtime (MSVCRT)
+      this->WriteString("<cRuntime>3</cRuntime>\n", 2);
       }
     else if(strcmp(i->c_str(), "Debug") == 0)
       {
       this->WriteString("<symdebug>1</symdebug>\n", 2);
       this->WriteString("<debuglevel>1</debuglevel>\n", 2);
+      // Use the Dynamic Debug C Runtime (MSVCRTD)
+      this->WriteString("<cRuntime>4</cRuntime>\n", 2);
       }
     else if(strcmp(i->c_str(), "RelWithDebInfo") == 0)
       {
@@ -508,6 +512,16 @@ void cmVisualStudio10TargetGenerator::WriteDProj()
       this->WriteString("<release>1</release>\n", 2);
       this->WriteString("<optimize>1</optimize>\n", 2);
       this->WriteString("<noboundscheck>1</noboundscheck>\n", 2);
+      // Use the Dynamic C Runtime (MSVCRT)
+      this->WriteString("<cRuntime>3</cRuntime>\n", 2);
+      }
+    else if(strcmp(i->c_str(), "MinSizeRel") == 0)
+      {
+      this->WriteString("<release>1</release>\n", 2);
+      this->WriteString("<optimize>1</optimize>\n", 2);
+      this->WriteString("<noboundscheck>1</noboundscheck>\n", 2);
+      // Use the Dynamic C Runtime (MSVCRT)
+      this->WriteString("<cRuntime>3</cRuntime>\n", 2);
       }
 
     // Directory Property INCLUDE_DIRECTORIES
