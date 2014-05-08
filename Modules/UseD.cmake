@@ -20,6 +20,12 @@
 # will only be added for those targets. Otherwise, they follow usual CMake
 # scope rules.
 #
+# These conditions are added to :prop_tgt:`COMPILE_OPTIONS` for targets
+# or :prop_dir:`COMPILE_OPTIONS` if no target is specified. This allows
+# an executable target to link to a library target that required version
+# flags, with the executable automatically picking up the version flags
+# so that the D compiler can generate code correctly.
+#
 # ::
 #
 #    add_d_unittests(<unittest_target>
@@ -180,6 +186,12 @@
 # (currently) disabled by default in D, and makes it so that methods
 # annotated with ``@property`` are the only methods that can be used
 # as properties.
+#
+# As with ``add_d_conditions``, this appends to :prop_tgt:`COMPILE_OPTIONS`
+# for targets and :prop_dir:`COMPILE_OPTIONS` if no targets are specified.
+# As such, linking to a library target that uses property enforcement
+# will automatically instruct the linking target to also use property
+# enforcement.
 
 #=============================================================================
 # Copyright 2013-2014 Kitware, Inc.
@@ -246,10 +258,9 @@ function(add_d_conditions)
     foreach(vers IN LISTS ARG_VERSION)
         if(ARG_TARGETS)
             foreach(tgt IN LISTS ARG_TARGETS)
-                set_property(TARGET ${tgt} APPEND_STRING PROPERTY COMPILE_FLAGS "${_USED_VERSION_FLAG}${vers} ")
+                target_compile_options(${tgt} PUBLIC "$<$<STREQUAL:$<TARGET_PROPERTY:LINKER_LANGUAGE>,D>:${_USED_VERSION_FLAG}${vers}>")
             endforeach()
         else()
-            set(_USED_EXTRA_FLAGS "${_USED_EXTRA_FLAGS} ${_USED_VERSION_FLAG}${vers}")
             add_compile_options("$<$<STREQUAL:$<TARGET_PROPERTY:LINKER_LANGUAGE>,D>:${_USED_VERSION_FLAG}${vers}>")
         endif()
     endforeach()
@@ -257,29 +268,23 @@ function(add_d_conditions)
     foreach(dbg IN LISTS ARG_DEBUG)
         if(ARG_TARGETS)
             foreach(tgt IN LISTS ARG_TARGETS)
-                set_property(TARGET ${tgt} APPEND_STRING PROPERTY COMPILE_FLAGS "${_USED_DEBUG_FLAG}${dbg} ")
+                target_compile_options(${tgt} PUBLIC "$<$<STREQUAL:$<TARGET_PROPERTY:LINKER_LANGUAGE>,D>:${_USED_DEBUG_FLAG}${dbg}>")
             endforeach()
         else()
-            set(_USED_EXTRA_FLAGS "${_USED_EXTRA_FLAGS} ${_USED_DEBUG_FLAG}${dbg}")
             add_compile_options("$<$<STREQUAL:$<TARGET_PROPERTY:LINKER_LANGUAGE>,D>:${_USED_DEBUG_FLAG}${dbg}>")
         endif()
     endforeach()
-
-    set(_USED_EXTRA_FLAGS "${_USED_EXTRA_FLAGS}" PARENT_SCOPE)
 endfunction()
 
 function(d_enforce_property)
     cmake_parse_arguments(ARG "" "" "TARGETS" ${ARGN})
     if(ARG_TARGETS)
         foreach(tgt IN LISTS ARG_TARGETS)
-            set_property(TARGET ${tgt} APPEND_STRING PROPERTY COMPILE_FLAGS "${_USED_ENFORCE_PROPERTY_FLAG} ")
+            target_compile_options(${tgt} PUBLIC "$<$<STREQUAL:$<TARGET_PROPERTY:LINKER_LANGUAGE>,D>:${_USED_ENFORCE_PROPERTY_FLAG}>")
         endforeach()
     else()
-        set(_USED_EXTRA_FLAGS "${_USED_EXTRA_FLAGS} ${_USED_ENFORCE_PROPERTY_FLAG}")
         add_compile_options("$<$<STREQUAL:$<TARGET_PROPERTY:LINKER_LANGUAGE>,D>:${_USED_ENFORCE_PROPERTY_FLAG}>")
     endif()
-
-    set(_USED_EXTRA_FLAGS "${_USED_EXTRA_FLAGS}" PARENT_SCOPE)
 endfunction()
 
 function(add_ddoc _target)
@@ -319,7 +324,22 @@ function(add_ddoc _target)
     endif()
 
     if(DEFINED ARG_VERSION)
+        get_directory_property(_opts_old COMPILE_OPTIONS)
         add_d_conditions(VERSION ${ARG_VERSION})
+        get_directory_property(_opts_new COMPILE_OPTIONS)
+        foreach(_opt IN LISTS _opts_new)
+            message(STATUS "{${_opt}}")
+            list(FIND _opts_old ${_opt} _at)
+            message(STATUS "(${_at})")
+            if(_at EQUAL -1)
+                if("${_opt}" MATCHES "\\$<\\$<STREQUAL:\\$<TARGET_PROPERTY:LINKER_LANGUAGE>,D>:(.+)>")
+                    list(APPEND versions "${CMAKE_MATCH_1}")
+                    message(STATUS "[${CMAKE_MATCH_1}]")
+                endif()
+            endif()
+        endforeach()
+    else()
+        set(versions)
     endif()
 
     foreach(src IN LISTS ARG_SOURCES)
@@ -340,6 +360,7 @@ function(add_ddoc _target)
     set(confdir "${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/${_target}.dir")
     foreach(tgt IN LISTS ARG_TARGETS)
         _process_flags(${tgt} srcs abs_srcs lst)
+        list(APPEND lst ${versions})
 
         # Create configure script
         configure_file(
@@ -407,19 +428,26 @@ endfunction()
 
 function(add_d_unittests _target)
     cmake_parse_arguments(ARG "" "TARGET;OUTPUT_DIRECTORY" "PARAMETERS;SOURCES" ${ARGN})
-    get_target_property(flags ${ARG_TARGET} COMPILE_FLAGS)
-    if(flags)
-        set(_USED_EXTRA_FLAGS "${_USED_EXTRA_FLAGS} ${flags}")
-    endif()
 
-    set(_USED_EXTRA_FLAGS "${_USED_EXTRA_FLAGS} ${_USED_UNITTEST_FLAG}")
     get_target_property(sources ${ARG_TARGET} SOURCES)
-    get_target_property(libs ${ARG_TARGET} LINK_LIBRARIES)
     add_executable(${_target} EXCLUDE_FROM_ALL ${sources} ${ARG_SOURCES})
+
+    get_target_property(libs ${ARG_TARGET} LINK_LIBRARIES)
     if(libs)
         target_link_libraries(${_target} ${libs})
     endif()
-    set_property(TARGET ${_target} PROPERTY COMPILE_FLAGS "${_USED_EXTRA_FLAGS}")
+
+    get_target_property(flags ${ARG_TARGET} COMPILE_FLAGS)
+    if(flags)
+        set_target_properties(${_target} PROPERTIES COMPILE_FLAGS "${flags} ${_USED_UNITTEST_FLAG} ")
+    else()
+        set_target_properties(${_target} PROPERTIES COMPILE_FLAGS "${_USED_UNITTEST_FLAG} ")
+    endif()
+
+    get_target_property(opts ${ARG_TARGET} COMPILE_OPTIONS)
+    if(opts)
+        target_compile_options(${_target} PUBLIC ${opts})
+    endif()
 
     if(CMAKE_TESTING_ENABLED AND NOT CROSS_COMPILING)
         add_test(NAME "${_target}_build" COMMAND ${CMAKE_COMMAND} --build "${CMAKE_CURRENT_BINARY_DIR}" --target ${_target})
@@ -447,11 +475,17 @@ function(_process_flags _target sources_var abs_sources_var flags_var)
     endforeach()
 
     get_target_property(flags ${_target} COMPILE_FLAGS)
-    if(flags)
-        set(flags "${flags} ${_USED_EXTRA_FLAGS}")
-    else()
-        set(flags "${_USED_EXTRA_FLAGS}")
+    if(NOT flags)
+        set(flags)
     endif()
+
+    get_target_property(opts ${_target} COMPILE_OPTIONS)
+    foreach(opt IN LISTS opts)
+        if("${opt}" MATCHES "\\$<\\$<STREQUAL:\\$<TARGET_PROPERTY:LINKER_LANGUAGE>,D>:(.+)>")
+            set(flags "${flags} ${CMAKE_MATCH_1}")
+        endif()
+    endforeach()
+
     separate_arguments(lst UNIX_COMMAND "${flags}")
 
     get_target_property(imps ${_target} INCLUDE_DIRECTORIES)
