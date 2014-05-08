@@ -567,6 +567,13 @@ void cmVisualStudio10TargetGenerator::WriteDProj()
       {
       (*this->BuildFileStream) << flags;
       }
+    std::vector<std::string> opts;
+    this->Target->GetCompileOptions(opts, *cfg);
+    for(std::vector<std::string>::iterator it = opts.begin();
+            it != opts.end(); ++it)
+      {
+      (*this->BuildFileStream) << " "<< *it;
+      }
     (*this->BuildFileStream) << "</additionalOptions>\n";
 
     // Need to write libpaths and libfiles
