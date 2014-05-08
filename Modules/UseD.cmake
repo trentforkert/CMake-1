@@ -82,7 +82,6 @@
 #       [EXCLUDE_FROM_ALL]
 #       [OUTPUT_DIRECTORY <dir>]
 #       [PACKAGE_SEPARATOR <sep>]
-#       [EXTENSION <ext>]
 #       [MACROS <macro_file1> [<macro_file2> ...] ]
 #       [ASSETS <asset_file1> [<asset_file2> ...] ]
 #       [SOURCES <extra_source1> [<extra_source2> ...] ]
@@ -114,16 +113,11 @@
 # The separator used in the names of the generated files can be specified
 # via ``PACKAGE_SEPARATOR``. If left unspecified, it defaults to a period.
 # For example, given a module ``pkg.sub.mod`` (in file ``pkg/sub/mod.d``),
-# The default is to generate a ``pkg.sub.mod.<ext>`` file. Providing
-# a ``PACKAGE_SEPARATOR`` of "_" would put the same file in
-# ``pkg_sub_mod.<ext>``. This also determines the names used in the
+# The default is to generate a ``pkg.sub.mod.html`` file. Providing
+# a ``PACKAGE_SEPARATOR`` of "/" would put the same file in
+# ``pkg/sub/mod.html``. This also determines the names used in the
 # generated ``MODULES`` macro file. This should be set to the same thing your
 # other Ddoc macros expect.
-#
-# The generated file extension can be specified via the ``EXTENSION`` argument.
-# It defaults to "html", which is the usual output format for Ddoc.
-# Note that this only determines the output extension; the contents
-# of the file depend on how your macros are defined.
 #
 # With the ``MACROS`` flag, additional macro files can be specified to define
 # more macros. This is useful, for instance, to generate Ddoc using bootDoc:
@@ -144,18 +138,12 @@
 #
 # Additional conditional compilation flags may be passed to via ``VERSION``.
 # This works by calling ``add_d_conditions(VERSION ...)``, and thus will
-# apply to every D compiler call by add_ddoc.
+# apply to every D compiler call by ``add_ddoc``.
 #
 # If desired, modules can be excluded from Ddoc generation, either by
-# giving sources manually to ``EXCLUDE_SOURCES``, or a regex against module
-# names provided to ``EXCLUDE_MODULES``. The module names here are the
-# canonical form before the separator is modified.
-#
-# This command can be called multiple times on the same targets, so that
-# you can generate different forms of documentation (HTML, man pages, etc.)
-# Further processing (such as compiling generated LaTeX to a PDF) is
-# beyond the scope of this command. Note, however, that different
-# ``<doc_target>`` will be needed for each call to ``add_ddoc``.
+# giving sources manually to ``EXCLUDE_SOURCES``, or a regular expression
+# against module names provided to ``EXCLUDE_MODULES``. The module names
+# here are the canonical form before the separator is modified.
 #
 # ::
 #
