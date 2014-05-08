@@ -44,7 +44,7 @@ foreach(line IN LISTS deps_lines)
                         ))
                 list(APPEND cmds COMMAND
                     "@CMAKE_D_COMPILER@" ${lst} @CMAKE_D_NO_OUTPUT_FLAG@
-                    "@_USED_DDOC_FILE_FLAG@@ARG_OUTPUT_DIRECTORY@/${srcmod_with_sep}.@ARG_EXTENSION@"
+                    "@_USED_DDOC_FILE_FLAG@@ARG_OUTPUT_DIRECTORY@/${srcmod_with_sep}.html"
                     "${src}"
                     "@_USED_DDOC_MACRO_FLAG@@confdir@/modules.ddoc"
                     @ddoc_files@)
