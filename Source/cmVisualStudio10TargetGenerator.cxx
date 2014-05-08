@@ -397,12 +397,12 @@ void cmVisualStudio10TargetGenerator::WriteDProj()
   std::vector<std::string> *configs =
     static_cast<cmGlobalVisualStudio7Generator *>
     (this->GlobalGenerator)->GetConfigurations();
-  for(std::vector<std::string>::iterator i = configs->begin();
-      i != configs->end(); ++i)
+  for(std::vector<std::string>::iterator cfg = configs->begin();
+      cfg != configs->end(); ++cfg)
     {
     this->WriteString("<Config name=\"", 1);
     (*this->BuildFileStream) <<
-        *i << "\" platform=\"" << this->Platform << "\">\n";
+        *cfg << "\" platform=\"" << this->Platform << "\">\n";
     this->WriteString("<outdir>$(ConfigurationName)</outdir>\n", 2);
     this->WriteString(
         "<objdir>$(TargetName).dir/$(ConfigurationName)</objdir>\n", 2);
@@ -439,7 +439,7 @@ void cmVisualStudio10TargetGenerator::WriteDProj()
     (*this->BuildFileStream) << "&quot;" <<
     this->Target->GetMakefile()->GetDefinition("CMAKE_D_COMPILER")
         << "&quot;</program>\n";
-    if(strcmp(i->c_str(), "Release") == 0)
+    if(strcmp(cfg->c_str(), "Release") == 0)
       {
       this->WriteString("<release>1</release>\n", 2);
       this->WriteString("<optimize>1</optimize>\n", 2);
@@ -448,14 +448,14 @@ void cmVisualStudio10TargetGenerator::WriteDProj()
       // Use the Dynamic C Runtime (MSVCRT)
       this->WriteString("<cRuntime>3</cRuntime>\n", 2);
       }
-    else if(strcmp(i->c_str(), "Debug") == 0)
+    else if(strcmp(cfg->c_str(), "Debug") == 0)
       {
       this->WriteString("<symdebug>1</symdebug>\n", 2);
       this->WriteString("<debuglevel>1</debuglevel>\n", 2);
       // Use the Dynamic Debug C Runtime (MSVCRTD)
       this->WriteString("<cRuntime>4</cRuntime>\n", 2);
       }
-    else if(strcmp(i->c_str(), "RelWithDebInfo") == 0)
+    else if(strcmp(cfg->c_str(), "RelWithDebInfo") == 0)
       {
       this->WriteString("<symdebug>1</symdebug>\n", 2);
       this->WriteString("<release>1</release>\n", 2);
@@ -464,7 +464,7 @@ void cmVisualStudio10TargetGenerator::WriteDProj()
       // Use the Dynamic C Runtime (MSVCRT)
       this->WriteString("<cRuntime>3</cRuntime>\n", 2);
       }
-    else if(strcmp(i->c_str(), "MinSizeRel") == 0)
+    else if(strcmp(cfg->c_str(), "MinSizeRel") == 0)
       {
       this->WriteString("<release>1</release>\n", 2);
       this->WriteString("<optimize>1</optimize>\n", 2);
@@ -475,7 +475,7 @@ void cmVisualStudio10TargetGenerator::WriteDProj()
 
     // Directory Property INCLUDE_DIRECTORIES
     std::vector<std::string> impList =
-        this->Target->GetIncludeDirectories(i->c_str());
+        this->Target->GetIncludeDirectories(cfg->c_str());
 
     impList.insert(impList.begin(), Target->GetMakefile()
           ->GetCurrentDirectory());
@@ -491,7 +491,7 @@ void cmVisualStudio10TargetGenerator::WriteDProj()
       }
 
     std::vector<std::string> textImpList =
-        this->Target->GetTextIncludeDirectories(i->c_str());
+        this->Target->GetTextIncludeDirectories(cfg->c_str());
     if(!textImpList.empty())
       {
       this->WriteString("<fileImppath>", 2);
@@ -503,7 +503,7 @@ void cmVisualStudio10TargetGenerator::WriteDProj()
       this->WriteString("</fileImppath>\n", 0);
       }
 
-    const char* name = this->Target->GetLocation(i->c_str());
+    const char* name = this->Target->GetLocation(cfg->c_str());
     if(name)
       {
       this->WriteString("<exefile>", 2);
@@ -530,7 +530,7 @@ void cmVisualStudio10TargetGenerator::WriteDProj()
      std::string path;
      if(tgt)
        {
-       path = tgt->GetFullPath(*i, true, true);
+       path = tgt->GetFullPath(*cfg, true, true);
        }
      else
        {
