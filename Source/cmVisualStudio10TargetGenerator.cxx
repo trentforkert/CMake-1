@@ -571,6 +571,40 @@ void cmVisualStudio10TargetGenerator::WriteDProj()
       }
     (*this->BuildFileStream) << "</libpaths>\n";
 
+    std::vector<cmCustomCommand> const prelink =
+        this->Target->GetPreLinkCommands();
+    std::vector<cmCustomCommand> const prebuild =
+        this->Target->GetPreBuildCommands();
+    std::vector<cmCustomCommand> const postbuild =
+        this->Target->GetPostBuildCommands();
+
+    this->WriteString("<preBuildCommand>", 2);
+    for(std::vector<cmCustomCommand>::const_iterator i = prelink.begin();
+            i != prelink.end(); ++i)
+      {
+      cmCustomCommandGenerator ccg(*i, *cfg, this->Makefile);
+      (*this->BuildFileStream) << "\n" << cmVS10EscapeXML(
+                            this->LocalGenerator->ConstructScript(ccg));
+      }
+    for(std::vector<cmCustomCommand>::const_iterator i = prebuild.begin();
+            i != prebuild.end(); ++i)
+      {
+      cmCustomCommandGenerator ccg(*i, *cfg, this->Makefile);
+      (*this->BuildFileStream) << "\n" << cmVS10EscapeXML(
+                            this->LocalGenerator->ConstructScript(ccg));
+      }
+    (*this->BuildFileStream) << "</preBuildCommand>\n";
+
+    this->WriteString("<postBuildCommand>", 2);
+    for(std::vector<cmCustomCommand>::const_iterator i = postbuild.begin();
+            i != postbuild.end(); ++i)
+      {
+      cmCustomCommandGenerator ccg(*i, *cfg, this->Makefile);
+      (*this->BuildFileStream) << "\n" << cmVS10EscapeXML(
+                            this->LocalGenerator->ConstructScript(ccg));
+      }
+    (*this->BuildFileStream) << "</postBuildCommand>\n";
+
     this->WriteString("</Config>\n", 1);
     }
   this->WriteString("<Folder name=\"", 1);
