@@ -814,8 +814,16 @@ void RegisterVisualStudioMacros(const std::string& macrosFile,
 bool cmGlobalVisualStudioGenerator::TargetIsDOnly(cmTarget const& target)
 {
   // check to see if this is a D build
+  {
+  // Issue diagnostic if the source files depend on the config.
+  std::vector<cmSourceFile*> sources;
+  if (!target.GetConfigCommonSourceFiles(sources))
+    {
+    return false;
+    }
+  }
   std::set<std::string> languages;
-  target.GetLanguages(languages);
+  target.GetLanguages(languages, "");
   if(languages.size() == 1)
     {
     if(*languages.begin() == "D")
