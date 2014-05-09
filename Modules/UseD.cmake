@@ -48,13 +48,15 @@
 # must be its own string, so if you want multiple flags on a single
 # test call, you need to write them as follows:
 #
-#    add_d_unittests(test_example
-#       TARGET example
-#       PARAMETERS
-#           "--run-test 1 --quiet"
-#           "--run-test 2 --quiet"
-#           "--run-test 3 --quiet"
-#    )
+# ::
+#
+#     add_d_unittests(test_example
+#        TARGET example
+#        PARAMETERS
+#            "--run-test 1 --quiet"
+#            "--run-test 2 --quiet"
+#            "--run-test 3 --quiet"
+#     )
 #
 # This will produce three tests which call ``test_example``, once for each
 # of the sets of parameters. Without the double-quotes, this would be
