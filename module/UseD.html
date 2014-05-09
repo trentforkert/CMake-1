@@ -1,0 +1,286 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>UseD &mdash; CMake 3.0.20140506-g0eb60 Documentation</title>
+    
+    <link rel="stylesheet" href="../_static/cmake.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '3.0.20140506-g0eb60',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/cmake-favicon.ico"/>
+    <link rel="top" title="CMake 3.0.20140506-g0eb60 Documentation" href="../index.html" />
+    <link rel="up" title="cmake-modules(7)" href="../manual/cmake-modules.7.html" />
+    <link rel="next" title="UseEcos" href="UseEcos.html" />
+    <link rel="prev" title="TestForSTDNamespace" href="TestForSTDNamespace.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="UseEcos.html" title="UseEcos"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="TestForSTDNamespace.html" title="TestForSTDNamespace"
+             accesskey="P">previous</a> |</li>
+  <li>
+    <img src="../_static/cmake-logo-16.png" alt=""
+         style="vertical-align: middle; margin-top: -2px" />
+  </li>
+  <li>
+    <a href="http://www.cmake.org/">CMake</a> &raquo;
+  </li>
+  <li>
+    <a href="../index.html">3.0.20140506-g0eb60 Documentation</a> &raquo;
+  </li>
+
+          <li><a href="../manual/cmake-modules.7.html" accesskey="U">cmake-modules(7)</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="used">
+<span id="module:UseD"></span><h1>UseD<a class="headerlink" href="#used" title="Permalink to this headline">¶</a></h1>
+<p>Use Module for D</p>
+<p>This module provides functions for D to complement core CMake functions.</p>
+<div class="highlight-python"><div class="highlight"><pre>add_d_conditions(
+   [TARGETS &lt;target1&gt; [&lt;target2&gt; ...] ]
+   [VERSION &lt;ident1&gt; [&lt;ident2&gt; ...] ]
+   [DEBUG &lt;ident1&gt; [&lt;ident2&gt; ...] ]
+)
+</pre></div>
+</div>
+<p>This command adds the specified identifiers to D&#8217;s version/debug flags.
+These are used to control conditional compilation similar to (but distinct
+from) C&#8217;s -Dfoo=bar flags. If any targets are specified, the identifiers
+will only be added for those targets. Otherwise, they follow usual CMake
+scope rules.</p>
+<p>These conditions are added to <a class="reference internal" href="../prop_tgt/COMPILE_OPTIONS.html#prop_tgt:COMPILE_OPTIONS" title="COMPILE_OPTIONS"><tt class="xref cmake cmake-prop_tgt docutils literal"><span class="pre">COMPILE_OPTIONS</span></tt></a> for targets
+or <a class="reference internal" href="../prop_dir/COMPILE_OPTIONS.html#prop_dir:COMPILE_OPTIONS" title="COMPILE_OPTIONS"><tt class="xref cmake cmake-prop_dir docutils literal"><span class="pre">COMPILE_OPTIONS</span></tt></a> if no target is specified. This allows
+an executable target to link to a library target that required version
+flags, with the executable automatically picking up the version flags
+so that the D compiler can generate code correctly.</p>
+<div class="highlight-python"><div class="highlight"><pre>add_d_unittests(&lt;unittest_target&gt;
+   TARGET &lt;target&gt;
+   [PARAMETERS &lt;param_string1&gt; [&lt;param_string2&gt; ...] ]
+   [SOURCES &lt;extra_source1&gt; [&lt;extra_source2&gt; ...] ]
+)
+</pre></div>
+</div>
+<p>Adds a unittest target. The executable target will be named
+<tt class="docutils literal"><span class="pre">&lt;unittest_target&gt;</span></tt>, so that you can add additional flags
+or link libraries to it as needed.</p>
+<p>The set of sources, flags and libraries used for <tt class="docutils literal"><span class="pre">&lt;unittest_target&gt;</span></tt>
+is determined by those on the provided <tt class="docutils literal"><span class="pre">&lt;target&gt;</span></tt>. At least two
+test targets are added, called <tt class="docutils literal"><span class="pre">&lt;unittest_target&gt;_build</span></tt> and
+<tt class="docutils literal"><span class="pre">&lt;unittest_target&gt;_run</span></tt>, which build and run the target respectively.</p>
+<p>By providing strings to <tt class="docutils literal"><span class="pre">PARAMETERS</span></tt>, you can specify that the
+<tt class="docutils literal"><span class="pre">&lt;unittest_target&gt;</span></tt> should be run with said flags. Each set of flags
+must be its own string, so if you want multiple flags on a single
+test call, you need to write them as follows:</p>
+<div class="highlight-python"><div class="highlight"><pre>add_d_unittests(test_example
+   TARGET example
+   PARAMETERS
+       &quot;--run-test 1 --quiet&quot;
+       &quot;--run-test 2 --quiet&quot;
+       &quot;--run-test 3 --quiet&quot;
+)
+</pre></div>
+</div>
+<p>This will produce three tests which call <tt class="docutils literal"><span class="pre">test_example</span></tt>, once for each
+of the sets of parameters. Without the double-quotes, this would be
+interpreted as 9 tests which call <tt class="docutils literal"><span class="pre">test_example</span></tt>.</p>
+<p>All test running targets are name <tt class="docutils literal"><span class="pre">&lt;unittest_target&gt;_run_&lt;num&gt;</span></tt> where
+<tt class="docutils literal"><span class="pre">&lt;num&gt;</span></tt> is an integer that begins at zero, and increments for each test
+added within this command. No attempt to pad the number with leading
+zeroes is made.</p>
+<p><tt class="docutils literal"><span class="pre">SOURCES</span></tt> allows you to specify additional source files needed to build
+<tt class="docutils literal"><span class="pre">&lt;unittest_target&gt;</span></tt>, if any. You may instead wish to add a library
+containing these sources, and link <tt class="docutils literal"><span class="pre">&lt;unittest_target&gt;</span></tt> to it
+using <a class="reference internal" href="../command/target_link_libraries.html#command:target_link_libraries" title="target_link_libraries"><tt class="xref cmake cmake-command docutils literal"><span class="pre">target_link_libraries()</span></tt></a>.</p>
+<p>Note: the executable target will be generated as long as this
+function is called, but the test targets will only be enabled
+if testing is enabled (for example, by calling <a class="reference internal" href="../command/enable_testing.html#command:enable_testing" title="enable_testing"><tt class="xref cmake cmake-command docutils literal"><span class="pre">enable_testing()</span></tt></a>).
+Tests will also not be generated when cross compiling.</p>
+<div class="highlight-python"><div class="highlight"><pre>add_ddoc(&lt;doc_target&gt;
+   TARGETS &lt;target&gt; [&lt;target2&gt; ...]
+   [EXCLUDE_FROM_ALL]
+   [OUTPUT_DIRECTORY &lt;dir&gt;]
+   [PACKAGE_SEPARATOR &lt;sep&gt;]
+   [MACROS &lt;macro_file1&gt; [&lt;macro_file2&gt; ...] ]
+   [ASSETS &lt;asset_file1&gt; [&lt;asset_file2&gt; ...] ]
+   [SOURCES &lt;extra_source1&gt; [&lt;extra_source2&gt; ...] ]
+   [VERSION &lt;ident1&gt; [&lt;ident2&gt; ...] ]
+   [EXCLUDE_SOURCES &lt;source1&gt; [&lt;source2&gt; ...] ]
+   [EXCLUDE_MODULES &lt;regex&gt;]
+)
+</pre></div>
+</div>
+<p>Adds a Ddoc generating target (named <tt class="docutils literal"><span class="pre">&lt;doc_target&gt;</span></tt>) for the specified
+targets. Compiler parameters and initial source list are derived from
+<tt class="docutils literal"><span class="pre">&lt;target&gt;</span></tt>. A Ddoc file containing a <tt class="docutils literal"><span class="pre">MODULES</span></tt> macro is automatically
+generated and used based on the modules include in the target.</p>
+<p>Additional targets, if specified, will be generated as part of the same
+documentation target. That is, all D modules from each listed target
+will be included in the same generated <tt class="docutils literal"><span class="pre">MODULES</span></tt> macro file.
+from the default target.</p>
+<p>By default, <tt class="docutils literal"><span class="pre">add_ddoc</span></tt> adds <tt class="docutils literal"><span class="pre">&lt;doc_target&gt;</span></tt> to the default build.
+This can be prevented by specifying <tt class="docutils literal"><span class="pre">EXCLUDE_FROM_ALL</span></tt>. Note that
+if <tt class="docutils literal"><span class="pre">EXCLUDE_FROM_ALL</span></tt> is set, the documentation cannot be installed.
+It is recommended to configure this such that it is an option for
+the user whether or not to generate (and install) documentation.</p>
+<p>The output directory can be specified via <tt class="docutils literal"><span class="pre">OUTPUT_DIRECTORY</span></tt>.
+The default output directory, if that parameter is omitted, is
+<tt class="docutils literal"><span class="pre">${PROJECT_BINARY_DIR}/ddoc</span></tt>.</p>
+<p>The separator used in the names of the generated files can be specified
+via <tt class="docutils literal"><span class="pre">PACKAGE_SEPARATOR</span></tt>. If left unspecified, it defaults to a period.
+For example, given a module <tt class="docutils literal"><span class="pre">pkg.sub.mod</span></tt> (in file <tt class="docutils literal"><span class="pre">pkg/sub/mod.d</span></tt>),
+The default is to generate a <tt class="docutils literal"><span class="pre">pkg.sub.mod.html</span></tt> file. Providing
+a <tt class="docutils literal"><span class="pre">PACKAGE_SEPARATOR</span></tt> of &#8220;/&#8221; would put the same file in
+<tt class="docutils literal"><span class="pre">pkg/sub/mod.html</span></tt>. This also determines the names used in the
+generated <tt class="docutils literal"><span class="pre">MODULES</span></tt> macro file. This should be set to the same thing your
+other Ddoc macros expect.</p>
+<p>With the <tt class="docutils literal"><span class="pre">MACROS</span></tt> flag, additional macro files can be specified to define
+more macros. This is useful, for instance, to generate Ddoc using bootDoc:
+simply point to the <tt class="docutils literal"><span class="pre">bootdoc.ddoc</span></tt> and <tt class="docutils literal"><span class="pre">settings.ddoc</span></tt> files.
+These files must have an extension of &#8220;ddoc&#8221;. Remember that a macro file
+containing a definition of <tt class="docutils literal"><span class="pre">MODULES</span></tt> is automatically generated and used.</p>
+<p>Asset files and directories can be specified via <tt class="docutils literal"><span class="pre">ASSETS</span></tt>. The files
+will be copied to the <tt class="docutils literal"><span class="pre">OUTPUT_DIRECTORY</span></tt> as is, from where they can
+be installed easily. These files can then be used by the generated
+Ddoc. For instance, you might add JavaScript, CSS and images with this.</p>
+<p>If needed, additional sources may be processed alongside the targets&#8217;
+sources by providing the <tt class="docutils literal"><span class="pre">SOURCES</span></tt> argument. This is primarily useful
+if you have a D source that only contains documentation, and that you
+do not include in any of your targets&#8217; sources. These sources will
+take on the same flags as the first specified target.</p>
+<p>Additional conditional compilation flags may be passed to via <tt class="docutils literal"><span class="pre">VERSION</span></tt>.
+This works by calling <tt class="docutils literal"><span class="pre">add_d_conditions(VERSION</span> <span class="pre">...)</span></tt>, and thus will
+apply to every D compiler call by <tt class="docutils literal"><span class="pre">add_ddoc</span></tt>.</p>
+<p>If desired, modules can be excluded from Ddoc generation, either by
+giving sources manually to <tt class="docutils literal"><span class="pre">EXCLUDE_SOURCES</span></tt>, or a regular expression
+against module names provided to <tt class="docutils literal"><span class="pre">EXCLUDE_MODULES</span></tt>. The module names
+here are the canonical form before the separator is modified.</p>
+<div class="highlight-python"><div class="highlight"><pre>add_d_headers(
+   TARGETS &lt;target&gt; [&lt;target2&gt; ...]
+   [OUTPUT_DIRECTORY &lt;dir&gt;]
+)
+</pre></div>
+</div>
+<p>Adds rules responsible for generating D headers from the sources
+of all the specified targets. These rules are added to the targets
+themselves as a post-build step. When using this, remember that
+this is not always a bug-free process. For instance, DMD v2.065 does
+not properly handle &#8220;auto&#8221; functions, instead dropping the return
+type all together. Older versions of D will leave implementations
+intact. These are also not appropriate for documentation,
+as all comments are stripped. Use <tt class="docutils literal"><span class="pre">add_ddoc</span></tt> for creating documentation.</p>
+<p>The output directory can be specified via <tt class="docutils literal"><span class="pre">OUTPUT_DIRECTORY</span></tt>. If not
+specified, it defaults to <tt class="docutils literal"><span class="pre">${PROJECT_BINARY_DIR}/import</span></tt>.</p>
+<div class="highlight-python"><div class="highlight"><pre>d_enforce_property(
+   [TARGETS &lt;target1&gt; [&lt;target2&gt; ...] ]
+)
+</pre></div>
+</div>
+<p>Instructs the D compiler to enforce D&#8217;s property semantics. This is
+(currently) disabled by default in D, and makes it so that methods
+annotated with <tt class="docutils literal"><span class="pre">&#64;property</span></tt> are the only methods that can be used
+as properties.</p>
+<p>As with <tt class="docutils literal"><span class="pre">add_d_conditions</span></tt>, this appends to <a class="reference internal" href="../prop_tgt/COMPILE_OPTIONS.html#prop_tgt:COMPILE_OPTIONS" title="COMPILE_OPTIONS"><tt class="xref cmake cmake-prop_tgt docutils literal"><span class="pre">COMPILE_OPTIONS</span></tt></a>
+for targets and <a class="reference internal" href="../prop_dir/COMPILE_OPTIONS.html#prop_dir:COMPILE_OPTIONS" title="COMPILE_OPTIONS"><tt class="xref cmake cmake-prop_dir docutils literal"><span class="pre">COMPILE_OPTIONS</span></tt></a> if no targets are specified.
+As such, linking to a library target that uses property enforcement
+will automatically instruct the linking target to also use property
+enforcement.</p>
+<p>This may cause compilation to fail on versions of D older than 2.057,
+due to a bug in Phobos, D&#8217;s standard library.</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="TestForSTDNamespace.html"
+                        title="previous chapter">TestForSTDNamespace</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="UseEcos.html"
+                        title="next chapter">UseEcos</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/module/UseD.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="UseEcos.html" title="UseEcos"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="TestForSTDNamespace.html" title="TestForSTDNamespace"
+             >previous</a> |</li>
+  <li>
+    <img src="../_static/cmake-logo-16.png" alt=""
+         style="vertical-align: middle; margin-top: -2px" />
+  </li>
+  <li>
+    <a href="http://www.cmake.org/">CMake</a> &raquo;
+  </li>
+  <li>
+    <a href="../index.html">3.0.20140506-g0eb60 Documentation</a> &raquo;
+  </li>
+
+          <li><a href="../manual/cmake-modules.7.html" >cmake-modules(7)</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2000-2014 Kitware, Inc..
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,186 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>CMake Release Notes &mdash; CMake 3.0.20140506-g0eb60 Documentation</title>
+    
+    <link rel="stylesheet" href="../_static/cmake.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '3.0.20140506-g0eb60',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/cmake-favicon.ico"/>
+    <link rel="top" title="CMake 3.0.20140506-g0eb60 Documentation" href="../index.html" />
+    <link rel="next" title="0-sample-topic" href="dev/0-sample-topic.html" />
+    <link rel="prev" title="CPACK_WARN_ON_ABSOLUTE_INSTALL_DESTINATION" href="../variable/CPACK_WARN_ON_ABSOLUTE_INSTALL_DESTINATION.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="dev/0-sample-topic.html" title="0-sample-topic"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../variable/CPACK_WARN_ON_ABSOLUTE_INSTALL_DESTINATION.html" title="CPACK_WARN_ON_ABSOLUTE_INSTALL_DESTINATION"
+             accesskey="P">previous</a> |</li>
+  <li>
+    <img src="../_static/cmake-logo-16.png" alt=""
+         style="vertical-align: middle; margin-top: -2px" />
+  </li>
+  <li>
+    <a href="http://www.cmake.org/">CMake</a> &raquo;
+  </li>
+  <li>
+    <a href="../index.html">3.0.20140506-g0eb60 Documentation</a> &raquo;
+  </li>
+ 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="cmake-release-notes">
+<h1>CMake Release Notes<a class="headerlink" href="#cmake-release-notes" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="changes-since-release">
+<h2>Changes Since Release<a class="headerlink" href="#changes-since-release" title="Permalink to this headline">¶</a></h2>
+<p>The following noteworthy changes have been made in this development
+version since the preceding release but have not yet been consolidated
+into notes for a specific release version:</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="dev/0-sample-topic.html">0-sample-topic</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev/CMP0052.html">CMP0052</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev/CMakeDetermineVSServicePack.html">CMakeDetermineVSServicePack</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev/ExternalData-missing-not-fatal.html">ExternalData-missing-not-fatal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev/ExternalProject-BUILD_ALWAYS.html">ExternalProject-BUILD_ALWAYS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev/ExternalProject-no-download-progress.html">ExternalProject-no-download-progress</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev/ExternalProject_exclude-from-all.html">ExternalProject_exclude-from-all</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev/FeatureSummary_combine_WHAT_values.html">FeatureSummary_combine_WHAT_values</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev/FindCUDA-cubin-fatbin.html">FindCUDA-cubin-fatbin</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev/FindGTest-AUTO-SOURCES.html">FindGTest-AUTO-SOURCES</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev/FindHg-WC_INFO.html">FindHg-WC_INFO</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev/FindPkgConfig-PKG_CONFIG.html">FindPkgConfig-PKG_CONFIG</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev/UseSWIG-guess_module_name.html">UseSWIG-guess_module_name</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev/add-FindOpenCL.html">add-FindOpenCL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev/add_custom_command-DEPENDS-genex.html">add_custom_command-DEPENDS-genex</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev/compile-language-features.html">target-language-features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev/cpack-deb-compression-types.html">cpack-deb-compression-types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev/ctest-coverage-extra.html">ctest-coverage-extra</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev/ctest-intel-coverage.html">ctest-intel-coverage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev/custom-ninja-deptypes.html">custom-ninja-deptypes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev/faster-parsers.html">faster-parsers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev/link-libraries-response-files.html">link-libraries-response-files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev/msvc-compiler-pdb-files.html">msvc-compiler-pdb-files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev/string-GENEX_STRIP.html">string-GENEX_STRIP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev/target-INTERFACE_SOURCES.html">target-INTERFACE_SOURCES</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev/target-SOURCES-genex.html">target-SOURCES-genex</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev/target-SOURCES-write.html">target-SOURCES-write.rst</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev/target_sources-command.html">target_sources-command</a></li>
+</ul>
+</div>
+</div>
+<div class="section" id="releases">
+<h2>Releases<a class="headerlink" href="#releases" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="3.0.0.html">3.0.0</a></li>
+</ul>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">CMake Release Notes</a><ul>
+<li><a class="reference internal" href="#changes-since-release">Changes Since Release</a></li>
+<li><a class="reference internal" href="#releases">Releases</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../variable/CPACK_WARN_ON_ABSOLUTE_INSTALL_DESTINATION.html"
+                        title="previous chapter">CPACK_WARN_ON_ABSOLUTE_INSTALL_DESTINATION</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="dev/0-sample-topic.html"
+                        title="next chapter">0-sample-topic</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/release/index.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="dev/0-sample-topic.html" title="0-sample-topic"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../variable/CPACK_WARN_ON_ABSOLUTE_INSTALL_DESTINATION.html" title="CPACK_WARN_ON_ABSOLUTE_INSTALL_DESTINATION"
+             >previous</a> |</li>
+  <li>
+    <img src="../_static/cmake-logo-16.png" alt=""
+         style="vertical-align: middle; margin-top: -2px" />
+  </li>
+  <li>
+    <a href="http://www.cmake.org/">CMake</a> &raquo;
+  </li>
+  <li>
+    <a href="../index.html">3.0.20140506-g0eb60 Documentation</a> &raquo;
+  </li>
+ 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2000-2014 Kitware, Inc..
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

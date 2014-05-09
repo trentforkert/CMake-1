@@ -1,0 +1,149 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>target-language-features &mdash; CMake 3.0.20140506-g0eb60 Documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/cmake.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '3.0.20140506-g0eb60',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/cmake-favicon.ico"/>
+    <link rel="top" title="CMake 3.0.20140506-g0eb60 Documentation" href="../../index.html" />
+    <link rel="up" title="CMake Release Notes" href="../index.html" />
+    <link rel="next" title="cpack-deb-compression-types" href="cpack-deb-compression-types.html" />
+    <link rel="prev" title="add_custom_command-DEPENDS-genex" href="add_custom_command-DEPENDS-genex.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="cpack-deb-compression-types.html" title="cpack-deb-compression-types"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="add_custom_command-DEPENDS-genex.html" title="add_custom_command-DEPENDS-genex"
+             accesskey="P">previous</a> |</li>
+  <li>
+    <img src="../../_static/cmake-logo-16.png" alt=""
+         style="vertical-align: middle; margin-top: -2px" />
+  </li>
+  <li>
+    <a href="http://www.cmake.org/">CMake</a> &raquo;
+  </li>
+  <li>
+    <a href="../../index.html">3.0.20140506-g0eb60 Documentation</a> &raquo;
+  </li>
+
+          <li><a href="../index.html" accesskey="U">CMake Release Notes</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="target-language-features">
+<h1>target-language-features<a class="headerlink" href="#target-language-features" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li>New <a class="reference internal" href="../../prop_tgt/CXX_STANDARD.html#prop_tgt:CXX_STANDARD" title="CXX_STANDARD"><tt class="xref cmake cmake-prop_tgt docutils literal"><span class="pre">CXX_STANDARD</span></tt></a> and <a class="reference internal" href="../../prop_tgt/CXX_EXTENSIONS.html#prop_tgt:CXX_EXTENSIONS" title="CXX_EXTENSIONS"><tt class="xref cmake cmake-prop_tgt docutils literal"><span class="pre">CXX_EXTENSIONS</span></tt></a> target
+properties may specify values which CMake uses to compute required
+compile options such as <tt class="docutils literal"><span class="pre">-std=c++11</span></tt> or <tt class="docutils literal"><span class="pre">-std=gnu++11</span></tt>. The
+<a class="reference internal" href="../../variable/CMAKE_CXX_STANDARD.html#variable:CMAKE_CXX_STANDARD" title="CMAKE_CXX_STANDARD"><tt class="xref cmake cmake-variable docutils literal"><span class="pre">CMAKE_CXX_STANDARD</span></tt></a> and <a class="reference internal" href="../../variable/CMAKE_CXX_EXTENSIONS.html#variable:CMAKE_CXX_EXTENSIONS" title="CMAKE_CXX_EXTENSIONS"><tt class="xref cmake cmake-variable docutils literal"><span class="pre">CMAKE_CXX_EXTENSIONS</span></tt></a>
+variables may be set to initialize the target properties.</li>
+<li>New <a class="reference internal" href="../../prop_tgt/COMPILE_FEATURES.html#prop_tgt:COMPILE_FEATURES" title="COMPILE_FEATURES"><tt class="xref cmake cmake-prop_tgt docutils literal"><span class="pre">COMPILE_FEATURES</span></tt></a> target property may contain a list
+of features required to compile a target.  CMake uses this
+information to ensure that the compiler in use is capable of building
+the target, and to add any necessary compile flags to support language
+features.</li>
+<li>New <a class="reference internal" href="../../command/target_compile_features.html#command:target_compile_features" title="target_compile_features"><tt class="xref cmake cmake-command docutils literal"><span class="pre">target_compile_features()</span></tt></a> command allows populating the
+<a class="reference internal" href="../../prop_tgt/COMPILE_FEATURES.html#prop_tgt:COMPILE_FEATURES" title="COMPILE_FEATURES"><tt class="xref cmake cmake-prop_tgt docutils literal"><span class="pre">COMPILE_FEATURES</span></tt></a> target property, just like any other
+build variable.</li>
+</ul>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="add_custom_command-DEPENDS-genex.html"
+                        title="previous chapter">add_custom_command-DEPENDS-genex</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="cpack-deb-compression-types.html"
+                        title="next chapter">cpack-deb-compression-types</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../_sources/release/dev/compile-language-features.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="cpack-deb-compression-types.html" title="cpack-deb-compression-types"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="add_custom_command-DEPENDS-genex.html" title="add_custom_command-DEPENDS-genex"
+             >previous</a> |</li>
+  <li>
+    <img src="../../_static/cmake-logo-16.png" alt=""
+         style="vertical-align: middle; margin-top: -2px" />
+  </li>
+  <li>
+    <a href="http://www.cmake.org/">CMake</a> &raquo;
+  </li>
+  <li>
+    <a href="../../index.html">3.0.20140506-g0eb60 Documentation</a> &raquo;
+  </li>
+
+          <li><a href="../index.html" >CMake Release Notes</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2000-2014 Kitware, Inc..
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>
