@@ -481,6 +481,34 @@ if(WIN32 AND NOT CYGWIN AND NOT BORLAND)
   install(TARGETS cmcldeps DESTINATION bin)
 endif()
 
+# Build ddeps D dependency scanner
+# for Ninja and Makefile generators
+set(DDEPS_SRCS
+  DDeps/ddeps.cxx
+  DDeps/ddeps_entities.h
+  DDeps/ddepsCache.cxx
+  DDeps/ddepsCache.h
+  DDeps/ddepsCacheFile.cxx
+  DDeps/ddepsCacheFile.h
+  DDeps/ddepsCacheManifest.cxx
+  DDeps/ddepsCacheManifest.h
+  DDeps/ddepsCacheMeta.cxx
+  DDeps/ddepsCacheMeta.h
+  DDeps/ddepsImport.h
+  DDeps/ddepsLexer.cxx
+  DDeps/ddepsLexer.h
+  DDeps/ddepsOptions.h
+  DDeps/ddepsModule.cxx
+  DDeps/ddepsModule.h
+  DDeps/ddepsParser.cxx
+  DDeps/ddepsScope.cxx
+  DDeps/ddepsScope.h
+  DDeps/ddepsTok.h
+  )
+add_executable(ddeps ${DDEPS_SRCS})
+target_link_libraries(ddeps CMakeLib)
+install(TARGETS ddeps DESTINATION bin)
+
 # create a library used by the command line and the GUI
 add_library(CMakeLib ${SRCS})
 target_link_libraries(CMakeLib cmsys

@@ -21,9 +21,7 @@
 /** \class cmDependsD
  * \brief Dependency scanner for D object files.
  *
- * Calls D compiler to do the dirty work, as properly scanning
- * D dependencies would otherwise require a nearly complete compiler
- * be implemented inside CMake.
+ * Calls DDeps to do the dirty work.
  */
 class cmDependsD: public cmDepends
 {
@@ -36,13 +34,6 @@ protected:
                                  const std::string& obj,
                                  std::ostream& makeDepends,
                                  std::ostream& internalDepends);
-
-  virtual bool Finalize(std::ostream& makeDepends,
-                        std::ostream& internalDepends);
-
-private:
-  static void EscapeSpaces(std::string&);
-  static void UnescapeParens(std::string&);
 };
 
 #endif

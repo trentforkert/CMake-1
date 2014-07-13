@@ -2051,29 +2051,24 @@ void cmLocalUnixMakefileGenerator3
         << cid << "\")\n";
       }
 
+    // TODO Update docs
     // We use the D compiler itself to perform dependency analysis
     // So, we need additional information made available
     if(l->first == "D")
       {
       // Read definitions from makefile
-      std::string dc =
-        this->Makefile->GetRequiredDefinition("CMAKE_D_COMPILER");
+      std::string ddeps =
+        this->Makefile->GetRequiredDefinition("CMAKE_DDEPS_EXECUTABLE");
 
-      const char* noOutputFlag =
-        this->Makefile->GetDefinition("CMAKE_D_NO_OUTPUT_FLAG");
-
-      const char* depsFileFlag =
-        this->Makefile->GetDefinition("CMAKE_D_DEPS_FILE_FLAG");
+      std::string ddeps_flags =
+        this->Makefile->GetRequiredDefinition("CMAKE_DDEPS_DEFAULT_VERSIONS");
+      cmSystemTools::ReplaceString(ddeps_flags, ";", "\\;");
 
       const char* iflag =
         this->Makefile->GetDefinition("CMAKE_INCLUDE_FLAG_D");
 
       const char* jflag =
         this->Makefile->GetDefinition("CMAKE_TEXT_INCLUDE_FLAG_D");
-
-      // Make sure current source dir is included
-      const char* ccsd =
-        this->Makefile->GetDefinition("CMAKE_CURRENT_SOURCE_DIR");
 
       // Read target's include directories
       std::vector<std::string> includes =
@@ -2087,15 +2082,11 @@ void cmLocalUnixMakefileGenerator3
       std::vector<std::string> options;
       target.GetCompileOptions(options, this->ConfigurationName);
 
-      // Only write CMAKE_D_DEPS_COMMAND if all variables are set
-      if(noOutputFlag && depsFileFlag && iflag && jflag && ccsd)
+      if(iflag && jflag)
         {
         cmakefileStream
           << "set(CMAKE_D_DEPS_COMMAND \""
-          << dc
-          << ";" << noOutputFlag
-          << ";" << depsFileFlag << target.GetSupportDirectory() << "/depends.d_deps"
-          << ";" << iflag << ccsd;
+          << ddeps << ";" << ddeps_flags << ";<OBJECT>;<SOURCE>";
         for(std::vector<std::string>::iterator it = includes.begin();
             it != includes.end(); it++ )
           {
@@ -2111,14 +2102,8 @@ void cmLocalUnixMakefileGenerator3
           {
           cmakefileStream << ";" << *it;
           }
-        std::vector<cmSourceFile*> srcs;
-        target.GetSourceFiles(srcs, this->ConfigurationName);
-        for(std::vector<cmSourceFile*>::iterator it = srcs.begin();
-                it != srcs.end(); ++it)
-        {
-            cmakefileStream << ";" << (*it)->GetFullPath();
-        }
-        cmakefileStream << "\")\n";
+        cmakefileStream
+          << "\")\n";
         }
       }
     }

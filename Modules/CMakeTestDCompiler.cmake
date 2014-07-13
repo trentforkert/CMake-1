@@ -27,7 +27,7 @@ unset(CMAKE_D_COMPILER_WORKS CACHE)
 if(NOT CMAKE_D_COMPILER_WORKS )
   PrintTestCompilerStatus("D" "")
   file(WRITE ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeTmp/testDCompiler.d
-    "int main(string[] args){ return cast(int) args.length - 1; }\n")
+    "module testDCompiler; int main(string[] args){ return cast(int) args.length - 1; }\n")
   try_compile(CMAKE_D_COMPILER_WORKS ${CMAKE_BINARY_DIR}
     ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeTmp/testDCompiler.d
     OUTPUT_VARIABLE __CMAKE_D_COMPILER_OUTPUT)
