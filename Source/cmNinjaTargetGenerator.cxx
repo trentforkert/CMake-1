@@ -408,8 +408,22 @@ cmNinjaTargetGenerator
   std::string deptype;
   std::string depfile;
   std::string cldeps;
+  std::string ddeps;
   std::string flags = "$FLAGS";
-  if (usingMSVC)
+  if (lang == "D")
+    {
+    deptype = "gcc";
+    depfile = "$DEP_FILE";
+    ddeps = "\"";
+    ddeps += mf->GetSafeDefinition("CMAKE_DDEPS_EXECUTABLE");
+    ddeps += "\"";
+    ddeps += " -o $DEP_FILE";
+    std::string defaultVersions =
+      mf->GetSafeDefinition("CMAKE_DDEPS_DEFAULT_VERSIONS");
+    ddeps += " \"" + defaultVersions + "\"";
+    ddeps += " $out $in -- ";
+    }
+  else if (usingMSVC)
     {
     if (!mf->GetIsSourceFileTryCompile() && lang == "RC")
       {
@@ -462,6 +476,7 @@ cmNinjaTargetGenerator
   cmSystemTools::ExpandListArgument(compileCmd, compileCmds);
 
   compileCmds.front().insert(0, cldeps);
+  compileCmds.front().insert(0, ddeps);
 
   for (std::vector<std::string>::iterator i = compileCmds.begin();
        i != compileCmds.end(); ++i)
