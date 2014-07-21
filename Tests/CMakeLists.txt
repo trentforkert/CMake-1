@@ -2668,6 +2668,14 @@ ${CMake_BINARY_DIR}/bin/cmake -DDIR=dev -P ${CMake_SOURCE_DIR}/Utilities/Release
     endif ()
   endif()
 
+  enable_language(D OPTIONAL)
+  if(CMAKE_D_COMPILER AND CMAKE_D_COMPILER_WORKS)
+    ADD_TEST_MACRO(DOnly DOnly)
+    ADD_TEST_MACRO(DC DC)
+    ADD_TEST_MACRO(UseD UseD)
+    ADD_TEST_MACRO(DTextIncludes DTextIncludes)
+  endif()
+
   if(CMAKE_Fortran_COMPILER)
     add_test(Fortran ${CMAKE_CTEST_COMMAND}
       --build-and-test

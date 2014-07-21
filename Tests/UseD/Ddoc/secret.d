@@ -1,0 +1,4 @@
+/++
+  Secret!
++/
+module secret;

@@ -1,0 +1,13 @@
+module headerChecker;
+
+import std.exception;
+import std.file;
+
+void checkHeaders()
+{
+  chdir("@PROJECT_BINARY_DIR@");
+  enforce(exists("import/hgl1.di"));
+  enforce(exists("import/hgl2.di"));
+  enforce(exists("headers/hgl1.di"));
+  enforce(exists("headers/hgl2.di"));
+}

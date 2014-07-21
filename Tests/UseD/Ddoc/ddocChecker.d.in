@@ -1,0 +1,22 @@
+module ddocChecker;
+
+import std.file;
+import std.exception;
+
+void checkDocs()
+{
+  chdir("@PROJECT_BINARY_DIR@");
+  enforce(exists("ddoc/foo.html"));
+  enforce(exists("ddoc/asset.txt"));
+  enforce(exists("ddoc/index.html"));
+  enforce(!exists("ddoc/secret.html"));
+  enforce(!exists("ddoc/internal.thing.html"));
+
+  enforce(exists("otherDocs/foo.html"));
+  enforce(exists("otherDocs/internal/thing.html"));
+  enforce(!exists("otherDocs/asset.txt"));
+  enforce(!exists("otherDocs/secret.html"));
+  enforce(!exists("otherDocs/index.html"));
+
+  enforce(!exists("noDocsHere/foo.html"));
+}

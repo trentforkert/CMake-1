@@ -1,0 +1,4 @@
+/++
+  Internal
++/
+module internal.thing;
