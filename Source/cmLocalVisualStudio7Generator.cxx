@@ -2004,7 +2004,7 @@ void cmLocalVisualStudio7Generator::WriteProjectSCC(std::ostream& fout,
 void cmLocalVisualStudio7Generator
 ::WriteProjectStartD(std::ostream& fout,
                      const std::string& libName,
-                     cmTarget& target)
+                     cmTarget&)
 {
   cmGlobalVisualStudio7Generator* gg =
     static_cast<cmGlobalVisualStudio7Generator*>(this->GlobalGenerator);

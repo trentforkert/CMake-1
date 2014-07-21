@@ -1431,10 +1431,10 @@ std::string cmLocalGenerator::GetIncludeFlags(
 //----------------------------------------------------------------------------
 std::string cmLocalGenerator::GetTextIncludeFlags(
                                      const std::vector<std::string> &includes,
-                                     cmGeneratorTarget* target,
+                                     cmGeneratorTarget*,
                                      const std::string& lang,
                                      bool forResponseFile,
-                                     const std::string& config)
+                                     const std::string&)
 {
   if(lang.empty())
     {
