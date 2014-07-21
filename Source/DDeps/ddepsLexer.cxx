@@ -10059,6 +10059,7 @@ Modify ddepsLexer.cxx
 Modify ddepsLexer.h
     - remove TABs
     - remove #line directives (avoids bogus warning on old Sun)
+    - remove unistd
 
 */
 
