@@ -1,2 +1,2 @@
-module aux;
+module extra;
 string foo = "Foo";

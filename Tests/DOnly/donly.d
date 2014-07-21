@@ -1,5 +1,5 @@
 module donly;
-import aux;
+import extra;
 
 import hello;
 import world;

@@ -7,7 +7,7 @@ set(_SHARED STATIC)
 
 add_library(hello STATIC hello.d)
 add_library(world ${_SHARED} world.d)
-add_executable(DOnly donly.d aux.d)
+add_executable(DOnly donly.d extra.d)
 target_link_libraries(DOnly hello world)
 
 # TODO: Adds unsupported compiler flags
