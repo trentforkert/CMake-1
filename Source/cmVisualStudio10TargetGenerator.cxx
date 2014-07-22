@@ -528,8 +528,6 @@ void cmVisualStudio10TargetGenerator::WriteDProj()
     std::vector<std::string> impList =
         this->Target->GetIncludeDirectories(cfg->c_str());
 
-    impList.insert(impList.begin(), Target->GetMakefile()
-          ->GetCurrentDirectory());
     if(!impList.empty())
       {
       this->WriteString("<imppath>", 2);

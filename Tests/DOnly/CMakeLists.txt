@@ -2,6 +2,8 @@
 cmake_minimum_required(VERSION 3.0)
 project(DOnly D)
 
+include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+
 # TODO: Support shared on compilers that support it
 set(_SHARED STATIC)
 

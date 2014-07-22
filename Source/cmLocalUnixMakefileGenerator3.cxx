@@ -2064,9 +2064,6 @@ void cmLocalUnixMakefileGenerator3
         this->Makefile->GetRequiredDefinition("CMAKE_DDEPS_DEFAULT_VERSIONS");
       cmSystemTools::ReplaceString(ddeps_flags, ";", "\\;");
 
-      std::string csd =
-        this->Makefile->GetRequiredDefinition("CMAKE_CURRENT_SOURCE_DIR");
-
       const char* iflag =
         this->Makefile->GetDefinition("CMAKE_INCLUDE_FLAG_D");
 
@@ -2076,8 +2073,6 @@ void cmLocalUnixMakefileGenerator3
       // Read target's include directories
       std::vector<std::string> includes =
         target.GetIncludeDirectories(this->ConfigurationName);
-
-      includes.push_back(csd);
 
       // Read target's text includes
       std::vector<std::string> text_includes =
