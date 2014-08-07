@@ -9,3 +9,8 @@ add_executable(DC main.d)
 
 target_link_libraries(DC clib)
 
+# extra tests from cmake-d
+# build lib first
+add_subdirectory(lib_1)
+add_subdirectory(app_1)
+add_subdirectory(app_2)
