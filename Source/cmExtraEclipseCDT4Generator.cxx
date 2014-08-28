@@ -67,6 +67,10 @@ void cmExtraEclipseCDT4Generator
       {
       this->Natures.insert("org.eclipse.cdt.core.cnature");
       }
+    else if (*lit == "D")
+      {
+      this->Natures.insert("org.dsource.ddt.ide.core.DeeNature");
+      }
     else if (*lit == "Java")
       {
       this->Natures.insert("org.eclipse.jdt.core.javanature");
