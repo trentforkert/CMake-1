@@ -1,2 +1,8 @@
+set(CMAKE_D_COMPILE_OPTIONS_PIC "-relocation-model=pic")
+set(CMAKE_SHARED_LIBRARY_D_FLAGS "-relocation-model=pic")
+set(CMAKE_SHARED_LIBRARY_CREATE_D_FLAGS "-shared")
 set(CMAKE_SHARED_LIBRARY_RUNTIME_D_FLAG "-L=-rpath=")
+set(CMAKE_SHARED_LIBRARY_RUNTIME_D_FLAG_SEP ":")
 set(CMAKE_SHARED_LIBRARY_RPATH_LINK_D_FLAG "-L=-rpath-link=")
+set(CMAKE_SHARED_LIBRARY_SONAME_D_FLAG "-L=-soname=")
+set(CMAKE_EXE_EXPORTS_D_FLAG "-L=--export-dynamic")
