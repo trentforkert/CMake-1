@@ -163,7 +163,7 @@ int main(int argc, char const* const* argv)
   for(std::vector<std::string>::iterator it = versionIdents.begin();
       it != versionIdents.end(); ++it)
     {
-    if(*it == "LLVM")
+    if(*it == "LDC")
       {
       arg.AddArgument("-I", argT::EQUAL_ARGUMENT, &includeDirs, "");
       arg.AddArgument("-J", argT::EQUAL_ARGUMENT, &textIncludeDirs, "");
