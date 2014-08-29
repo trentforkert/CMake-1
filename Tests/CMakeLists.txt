@@ -19,6 +19,7 @@ endmacro()
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/RegexEscapeString.cmake)
 
+include(${CMAKE_CURRENT_SOURCE_DIR}/CheckD.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/CheckFortran.cmake)
 
 # Fake a user home directory to avoid polluting the real one.
@@ -2668,8 +2669,11 @@ ${CMake_BINARY_DIR}/bin/cmake -DDIR=dev -P ${CMake_SOURCE_DIR}/Utilities/Release
     endif ()
   endif()
 
-  enable_language(D OPTIONAL)
-  if(CMAKE_D_COMPILER AND CMAKE_D_COMPILER_WORKS)
+  option(CMAKE_RUN_D_TESTS
+    "Set to ON if D tests should be forced to run.
+    By default, D tests run if a compiler is found." OFF)
+  mark_as_advanced(CMAKE_RUN_D_TESTS)
+  if(CMAKE_D_COMPILER OR CMAKE_RUN_D_TESTS)
     ADD_TEST_MACRO(DOnly DOnly)
     ADD_TEST_MACRO(DC DC)
     ADD_TEST_MACRO(UseD UseD)
