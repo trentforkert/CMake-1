@@ -112,7 +112,13 @@ if(CMAKE_GENERATOR MATCHES "Ninja|Makefiles" AND CMAKE_D_COMPILER AND CMAKE_COMM
   ")
 
   # TODO: "-c" works for all current D compilers, but maybe isn't portable?
-  execute_process(COMMAND ${CMAKE_D_COMPILER} ${CMAKE_D_COMPILER_ARG1} -c versions.d
+  set(raw_cmd "${CMAKE_D_COMPILER} ${CMAKE_D_COMPILER_ARG1} -c versions.d")
+  if(UNIX)
+    separate_arguments(cmd UNIX_COMMAND "${raw_cmd}")
+  else()
+    separate_arguments(cmd WINDOWS_COMMAND "${raw_cmd}")
+  endif()
+  execute_process(COMMAND ${cmd}
     WORKING_DIRECTORY ${predir}
     OUTPUT_VARIABLE outLine
     ERROR_VARIABLE errLine)
