@@ -111,7 +111,6 @@ if(CMAKE_CROSSCOMPILING
   endif()
 endif()
 
-include(${CMAKE_ROOT}/Modules/CMakeClDeps.cmake)
 include(${CMAKE_ROOT}/Modules/CMakeDDeps.cmake)
 include(CMakeFindBinUtils)
 if(MSVC_D_ARCHITECTURE_ID)
