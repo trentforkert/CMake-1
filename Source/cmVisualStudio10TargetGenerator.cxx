@@ -454,7 +454,10 @@ void cmVisualStudio10TargetGenerator::WriteDProj()
     this->WriteString("<Config name=\"", 1);
     (*this->BuildFileStream) <<
         *cfg << "\" platform=\"" << this->Platform << "\">\n";
-    this->WriteString("<outdir>$(ConfigurationName)</outdir>\n", 2);
+    this->WriteString("<outdir>", 2);
+    (*this->BuildFileStream) << 
+        this->Target->GetDirectory(*cfg) << "</outdir>\n";
+
     this->WriteString(
         "<objdir>$(TargetName).dir/$(ConfigurationName)</objdir>\n", 2);
     // Tell VisualD to compile then link. Otherwise, .obj files end up
@@ -556,7 +559,8 @@ void cmVisualStudio10TargetGenerator::WriteDProj()
     if(name)
       {
       this->WriteString("<exefile>", 2);
-      (*this->BuildFileStream) << "&quot;" << name << "&quot;</exefile>\n";
+      (*this->BuildFileStream) << 
+          "$(OutDir)/" << this->Target->GetFullName(*cfg) << "</exefile>\n";
       }
 
     this->WriteString("<additionalOptions>", 2);
