@@ -425,12 +425,11 @@ cmNinjaTargetGenerator
     depfile = "$DEP_FILE";
     ddeps = "\"";
     ddeps += mf->GetSafeDefinition("CMAKE_DDEPS_EXECUTABLE");
-    ddeps += "\"";
-    ddeps += " -o $DEP_FILE";
+    ddeps += "\" ninja";
     std::string defaultVersions =
       mf->GetSafeDefinition("CMAKE_DDEPS_DEFAULT_VERSIONS");
     ddeps += " \"" + defaultVersions + "\"";
-    ddeps += " $out $in -- ";
+    ddeps += " $in $DEP_FILE ";
     }
   else if (usingMSVC)
     {

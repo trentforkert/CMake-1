@@ -16,6 +16,12 @@
 #include <cmsys/CommandLineArguments.hxx>
 #include <cmSystemTools.h>
 
+enum DDepsArgsMode
+{
+    MAKE = 0,
+    NINJA = 1,
+};
+
 //----------------------------------------------------------------------------
 void Usage()
 {
@@ -106,49 +112,67 @@ int main(int argc, char const* const* argv)
   std::vector<std::string> debugIdents;
   std::vector<std::string> versionIdents;
   std::vector<std::string> cmd;
+  DDepsArgsMode mode;
 
   cmsys::Encoding::CommandLineArguments args =
             cmsys::Encoding::CommandLineArguments::Main(argc, argv);
   int ac = args.argc();
   char const* const* av = args.argv();
-  bool endParams = false;
   bool unittest = false;
 
-  if(ac < 4)
+  if(ac < 2)
     {
     Usage();
     return 1;
     }
 
   int i = 1;
-  if(av[i][0] == '-' && av[i][1] == 'o')
+  if(strncmp(av[i], "make", 4) == 0)
     {
     if(ac < 5)
       {
       Usage();
       return 1;
       }
-    output = av[i+1];
-    i+=2;
+    mode = MAKE;
     }
-  cmSystemTools::ExpandListArgument(av[i++], versionIdents);
-  obj = av[i++];
-  source = cmSystemTools::GetRealPath(av[i++]);
-
-  int startNonPosOpts = i;
-
-  for(; i < ac; i++)
+  else if(strncmp(av[i], "ninja", 5) == 0)
     {
-    if(strlen(av[i]) == 2
-        && av[i][0] == '-'
-        && av[i][1] == '-')
+    if(ac < 7)
       {
-      endParams = true;
-      break;
+      Usage();
+      return 1;
       }
+    mode = NINJA;
+    }
+  else
+    {
+    Usage();
+    return 1;
     }
 
-  startNonPosOpts --; // CommandLineArguments ignores argv[0]
+  ++i;
+
+  if( mode == MAKE || mode == NINJA )
+    {
+    cmSystemTools::ExpandListArgument(av[i++], versionIdents);
+    }
+
+  if( mode == MAKE || mode == NINJA )
+    {
+    source = cmSystemTools::GetRealPath(av[i++]);
+    }
+
+  if( mode == MAKE )
+    {
+    obj = av[i++];
+    }
+  else if( mode == NINJA )
+    {
+    output = av[i++];
+    }
+
+  int startNonPosOpts = i - 1; // CommandLineArguments ignores argv[0]
   cmsys::CommandLineArguments arg;
   arg.Initialize(ac - startNonPosOpts, &av[startNonPosOpts]);
   typedef cmsys::CommandLineArguments argT;
@@ -170,6 +194,7 @@ int main(int argc, char const* const* argv)
       arg.AddArgument("-d-version", argT::EQUAL_ARGUMENT, &versionIdents, "");
       arg.AddArgument("-d-debug", argT::EQUAL_ARGUMENT, &debugIdents, "");
       arg.AddArgument("-unittest", argT::NO_ARGUMENT, &unittest, "");
+      arg.AddArgument("-of", argT::EQUAL_ARGUMENT, &obj, "");
       flagsSet = true;
       break;
       }
@@ -180,6 +205,7 @@ int main(int argc, char const* const* argv)
       arg.AddArgument("-fversion", argT::EQUAL_ARGUMENT, &versionIdents, "");
       arg.AddArgument("-fdebug", argT::EQUAL_ARGUMENT, &debugIdents, "");
       arg.AddArgument("-funittest", argT::NO_ARGUMENT, &unittest, "");
+      arg.AddArgument("-o", argT::CONCAT_ARGUMENT, &obj, "");
       flagsSet = true;
       break;
       }
@@ -203,6 +229,7 @@ int main(int argc, char const* const* argv)
     arg.AddArgument("-version", argT::EQUAL_ARGUMENT, &versionIdents, "");
     arg.AddArgument("-debug", argT::EQUAL_ARGUMENT, &debugIdents, "");
     arg.AddArgument("-unittest", argT::NO_ARGUMENT, &unittest, "");
+    arg.AddArgument("-of", argT::CONCAT_ARGUMENT, &obj, "");
     }
   arg.StoreUnusedArguments(true);
 
@@ -216,10 +243,10 @@ int main(int argc, char const* const* argv)
   // "all" should always be defined
   versionIdents.push_back("all");
 
-  if(endParams)
+  if(mode == NINJA)
     {
     // Prepare the command
-    for(i++; i < ac; i++)
+    for(; i < ac; i++)
       {
       cmd.push_back(av[i]);
       }

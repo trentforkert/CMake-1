@@ -2086,7 +2086,7 @@ void cmLocalUnixMakefileGenerator3
         {
         cmakefileStream
           << "set(CMAKE_D_DEPS_COMMAND \""
-          << ddeps << ";" << ddeps_flags << ";<OBJECT>;<SOURCE>";
+          << ddeps << ";make;" << ddeps_flags << ";<SOURCE>;<OBJECT>";
         for(std::vector<std::string>::iterator it = includes.begin();
             it != includes.end(); it++ )
           {
