@@ -258,7 +258,9 @@ int main(int argc, char const* const* argv)
   // Run the compiler pass-through command if not empty
   if(!cmd.empty())
     {
-    cmSystemTools::RunSingleCommand(cmd);
+    int retval;
+    cmSystemTools::RunSingleCommand(cmd, 0, &retval, 0, cmSystemTools::OUTPUT_PASSTHROUGH);
+    return retval;
     }
 
 
