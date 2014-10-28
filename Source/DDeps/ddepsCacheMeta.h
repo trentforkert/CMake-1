@@ -35,7 +35,9 @@ public:
   virtual ~ddepsCacheMeta();
 
   // Write object dependency information for src
-  void WriteDependencyInfo(std::string const& src, std::string const& obj);
+  void WriteDependencyInfo(std::string const& src,
+                           std::string const& obj,
+                           bool writeInternalDeps=true);
 
 protected:
   // Required by ddepsCache

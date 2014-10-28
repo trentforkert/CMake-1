@@ -29,7 +29,7 @@ cmDependsD::~cmDependsD()
 bool cmDependsD::WriteDependencies(const std::set<std::string>& sources,
                                    const std::string& obj,
                                    std::ostream& makeDepends,
-                                   std::ostream&)
+                                   std::ostream& internalDepends)
 {
   // Make sure this is a scanning instance.
   if(sources.empty() || sources.begin()->empty())
@@ -69,7 +69,7 @@ bool cmDependsD::WriteDependencies(const std::set<std::string>& sources,
         // Restablish stdout, cerr
         std::cout.rdbuf(cout_buf);
         std::cerr.rdbuf(cerr_buf);
-        cmSystemTools::Error(errors.str().c_str());
+        SplitInternalDepends(errors, internalDepends, true);
         return false;
         }
       }
@@ -77,12 +77,45 @@ bool cmDependsD::WriteDependencies(const std::set<std::string>& sources,
   // Restablish stdout, cerr
   std::cout.rdbuf(cout_buf);
   std::cerr.rdbuf(cerr_buf);
-  {
-    std::string errstr = errors.str();
-    if(errstr.length() > 0)
-      {
-      cmSystemTools::Message(errstr.c_str());
-      }
-  }
+  SplitInternalDepends(errors, internalDepends, false);
   return true;
+}
+
+void cmDependsD::SplitInternalDepends(std::stringstream& errors,
+                                      std::ostream& internalDepends,
+                                      bool error)
+{
+    std::vector<cmsys::String> lines =
+        cmSystemTools::SplitString(errors.str().c_str(), '\n', false);
+
+    std::string errorString = "";
+
+    for(std::vector<cmsys::String>::const_iterator it =
+          lines.begin(); it != lines.end(); ++it)
+      {
+      if(cmSystemTools::StringStartsWith(it->c_str(), "intdeps:"))
+        {
+        internalDepends << it->substr(8) << std::endl;
+        }
+      else
+        {
+        if(it->length() > 0)
+          {
+          errorString += *it;
+          errorString += '\n';
+          }
+        }
+      }
+
+    if(errorString.length() > 0)
+      {
+      if(error)
+        {
+        cmSystemTools::Error(errorString.c_str());
+        }
+      else
+        {
+        cmSystemTools::Message(errorString.c_str());
+        }
+      }
 }

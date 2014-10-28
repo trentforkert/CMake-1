@@ -38,7 +38,9 @@ public:
   virtual ~ddepsCacheManifest();
 
   // Write the object dependency of obj, based on the source src
-  void WriteDependencyInfo(std::string const& src, std::string const& obj);
+  void WriteDependencyInfo(std::string const& src,
+                           std::string const& obj,
+                           bool writeInternalDeps=true);
 protected:
   virtual void WriteImpl(std::ostream& ofs) const;
   virtual void ReadImpl(std::istream& ifs);

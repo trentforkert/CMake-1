@@ -251,7 +251,9 @@ int main(int argc, char const* const* argv)
                         base,
                         *Options);
 
-    Meta.WriteDependencyInfo(source, obj);
+    bool writeInternalDeps = (mode == MAKE);
+
+    Meta.WriteDependencyInfo(source, obj, writeInternalDeps);
     }
 
   // Run the compiler pass-through command if not empty

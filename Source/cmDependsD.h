@@ -34,6 +34,9 @@ protected:
                                  const std::string& obj,
                                  std::ostream& makeDepends,
                                  std::ostream& internalDepends);
+  void SplitInternalDepends(std::stringstream& errors,
+                            std::ostream& internalDepends,
+                            bool error);
 };
 
 #endif

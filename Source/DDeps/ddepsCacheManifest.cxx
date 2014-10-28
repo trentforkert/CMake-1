@@ -53,7 +53,8 @@ ddepsCacheManifest::~ddepsCacheManifest()
 
 //----------------------------------------------------------------------------
 void ddepsCacheManifest::WriteDependencyInfo(std::string const& src,
-                                             std::string const& obj)
+                                             std::string const& obj,
+                                             bool writeInternalDeps)
 {
   std::set<std::string> encounteredModules;
   std::set<std::string> encounteredTexts;
@@ -116,6 +117,17 @@ void ddepsCacheManifest::WriteDependencyInfo(std::string const& src,
   // Prevent re-parsing src's module
   encounteredModules.insert(sourceModuleName);
 
+
+  // Write the current source as its own object dependency
+  std::cout << obj << ": " << sourceModule->GetRealPath();
+
+  if(writeInternalDeps)
+    {
+    std::cerr << "intdeps:" << obj << std::endl;
+    std::cerr << "intdeps: " << sourceModule->GetRealPath() << std::endl;
+    }
+
+
   // Get direct object dependencies
   sourceModule->GetObjDependencies(unprocessedModules,
                                    encounteredModules,
@@ -131,6 +143,11 @@ void ddepsCacheManifest::WriteDependencyInfo(std::string const& src,
       {
       // Write the dependency
       std::cout << obj << ": " << dependency->GetRealPath() << std::endl;
+
+      if(writeInternalDeps)
+        {
+        std::cerr << "intdeps: " << dependency->GetRealPath() << std::endl;
+        }
 
       // Recurse dependencies
       dependency->GetObjDependencies(unprocessedModules,
@@ -148,6 +165,11 @@ void ddepsCacheManifest::WriteDependencyInfo(std::string const& src,
     if(dependency)
       {
       std::cout << obj << ": " << dependency->GetRealPath() << std::endl;
+
+      if(writeInternalDeps)
+        {
+        std::cerr << "intdeps: " << dependency->GetRealPath() << std::endl;
+        }
       }
     }
 }
