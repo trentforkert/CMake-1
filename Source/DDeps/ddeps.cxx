@@ -25,6 +25,26 @@ enum DDepsArgsMode
 //----------------------------------------------------------------------------
 void Usage()
 {
+  /* The actual usage is as follows:
+   *    ddeps <mode> <arguments>
+   * Where <mode> is one of "ninja" or "make"
+   *    ddeps make <versions> <source> <object> <flags>
+   *    ddeps ninja <versions> <source> <depfile> <compiler-passthrough>
+   * <versions> is a semicolon separated list of built-in version conditions.
+   * <object> is the name of the object file to be used in the output.
+   * <flags> is a series of compiler flags for:
+   *    Include directories
+   *    Text include directories
+   *    Version conditions
+   *    Debug conditions
+   *    Unittest
+   *    Output file
+   *  The flags corresponding to DMD, GDC or LDC will be selected based
+   *  on which compiler's identifier is found in <versions>.
+   * <depfile> is the dependency file to write to instead of stdout/stderr.
+   * <compiler-passthrough> is the full compiler command line, which will be
+   *    run after ddeps scans for imports.
+   */
   std::cerr
     << "NOTE: This is intended for use internally by CMake,"
     << std::endl
@@ -32,64 +52,11 @@ void Usage()
     << std::endl
     << "and is subject to change without notice."
     << std::endl
-    << "Usage: ddeps [-o <depfile>] <version list> <object> <source> [flags]"
+    << "If you are seeing this without having called it directly,"
     << std::endl
-    << "             [-- <compiler-command>]"
+    << "please file a bug report at:"
     << std::endl
-    << std::endl
-    << "<version list> is a semicolon-separated list of version identifiers."
-    << std::endl
-    << "It is used to specify compiler-defined version identifiers, including"
-    << std::endl
-    << "the compiler vendor (DigitalMars, GNU, or LLVM), which determines the"
-    << std::endl
-    << "remaining flags supported."
-    << std::endl
-    << std::endl
-    << "<compiler-command> can specify a command to build the object. No"
-    << std::endl
-    << "additional flags are passed by ddeps, but ddeps will parse"
-    << std::endl
-    << "the flags it understands (below) from <compiler-command>."
-    << std::endl
-    << std::endl
-    << "Flags for DigitalMars"
-    << std::endl
-    << "  -I<include dir>    = Where to look for imports"
-    << std::endl
-    << "  -J<include dir>    = Where to look for text imports"
-    << std::endl
-    << "  -version=<ident>   = Parse version code identified by ident"
-    << std::endl
-    << "  -debug=<ident>     = Parse debug code identified by ident"
-    << std::endl
-    << "  -unittest          = Parse unittest code"
-    << std::endl
-    << std::endl
-    << "Flags for GNU"
-    << std::endl
-    << "  -I<include dir>    = Where to look for imports"
-    << std::endl
-    << "  -J<include dir>    = Where to look for text imports"
-    << std::endl
-    << "  -fversion=<ident>  = Parse version code identified by ident"
-    << std::endl
-    << "  -fdebug=<ident>    = Parse debug code identified by ident"
-    << std::endl
-    << "  -funittest         = Parse unittest code"
-    << std::endl
-    << std::endl
-    << "Flags for LLVM"
-    << std::endl
-    << "  -I=<include dir>   = Where to look for imports"
-    << std::endl
-    << "  -J=<include dir>   = Where to look for text imports"
-    << std::endl
-    << "  -d-version=<ident> = Parse version code identified by ident"
-    << std::endl
-    << "  -d-debug=<ident>   = Parse debug code identified by ident"
-    << std::endl
-    << "  -unittest          = Parse unittest code"
+    << " https://github.com/trentforkert/cmake/issues"
     << std::endl;
 }
 
