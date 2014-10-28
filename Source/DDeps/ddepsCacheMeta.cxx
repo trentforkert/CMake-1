@@ -21,10 +21,9 @@ const std::string ddepsCacheMeta::TEXT_IMPORT_TYPE = "text_import_path";
 
 //----------------------------------------------------------------------------
 ddepsCacheMeta::ddepsCacheMeta(std::string const& cachePath,
-                               std::string const& realPath,
                                std::string const& dir,
                                ddepsOptions& options):
-  ddepsCache(cachePath, realPath, cachePath + ".lock"),
+  ddepsCache(cachePath, "", cachePath + ".lock"),
   MetaCacheDir(dir),
   Options(options)
 {
@@ -215,4 +214,8 @@ std::string ddepsCacheMeta::GetCacheDir()
   return res;
 }
 
-
+//----------------------------------------------------------------------------
+void ddepsCacheMeta::OnOutdatedCache()
+{
+    // Do nothing
+}

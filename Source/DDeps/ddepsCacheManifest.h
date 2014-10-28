@@ -45,6 +45,7 @@ public:
 protected:
   virtual void WriteImpl(std::ostream& ofs) const;
   virtual void ReadImpl(std::istream& ifs);
+  virtual void OnOutdatedCache();
 
   static const std::string MODULE_TYPE;
   static const std::string TEXT_TYPE;

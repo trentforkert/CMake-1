@@ -182,3 +182,9 @@ void ddepsCacheFile::ParseSource()
     }
 }
 
+//----------------------------------------------------------------------------
+void ddepsCacheFile::OnOutdatedCache()
+{
+    // Do nothing. The file will be re-parsed as needed.
+}
+

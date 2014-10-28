@@ -244,10 +244,8 @@ int main(int argc, char const* const* argv)
     cmSystemTools::MakeDirectory(base.c_str());
 
     std::string cacheName = base + "/manifest";
-    std::string realName = "CMakeCache.txt";
 
     ddepsCacheMeta Meta(cacheName,
-                        realName,
                         base,
                         *Options);
 

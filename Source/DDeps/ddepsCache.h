@@ -69,6 +69,9 @@ protected:
   // Require implementation of cache file read
   virtual void ReadImpl(std::istream& in) =0;
 
+  // Called when a cache is older than the cached file
+  virtual void OnOutdatedCache() =0;
+
   // Define the delimiters
   static const char UNIT_DELIM='\x1F';
   static const char RECORD_DELIM='\x1E';

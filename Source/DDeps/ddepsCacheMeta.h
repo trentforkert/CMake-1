@@ -27,7 +27,6 @@ class ddepsCacheMeta: public ddepsCache
 public:
   // Constructor.
   ddepsCacheMeta(std::string const& cachePath,
-                 std::string const& realPath,
                  std::string const& dir,
                  ddepsOptions& options);
 
@@ -44,6 +43,7 @@ protected:
   // Required by ddepsCache
   virtual void WriteImpl(std::ostream& out) const;
   virtual void ReadImpl(std::istream& in);
+  virtual void OnOutdatedCache();
 
   // Define ident types
   static const std::string VERSION_TYPE;

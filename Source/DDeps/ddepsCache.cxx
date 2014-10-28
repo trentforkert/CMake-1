@@ -76,22 +76,29 @@ ddepsCache::~ddepsCache()
 void ddepsCache::Read()
 {
   // Only read cache if it is newer than the corresponding source file
-  int cmp_result;
-  if(cmSystemTools::FileTimeCompare(RealPath.c_str(),
+  //  *OR* if there is no corresponding file
+  int cmp_result = 0;
+  if(!cmSystemTools::FileTimeCompare(RealPath.c_str(),
                                     CachePath.c_str(),
                                     &cmp_result))
     {
-    if(cmp_result < 0)
+    cmp_result = 0;
+    }
+
+  if(cmp_result < 0 || RealPath == "")
+    {
+    // Read Cache data
+    cmsys::ifstream ifs(CachePath.c_str(), std::ifstream::binary);
+    if(ifs)
       {
-      // Read Cache data
-      cmsys::ifstream ifs(CachePath.c_str(), std::ifstream::binary);
-      if(ifs)
-        {
-        ReadImpl(ifs);
-        Loaded = true;
-        ifs.close();
-        }
+      ReadImpl(ifs);
+      Loaded = true;
+      ifs.close();
       }
+    }
+  else
+    {
+    OnOutdatedCache();
     }
 }
 

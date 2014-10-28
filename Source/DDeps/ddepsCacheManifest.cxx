@@ -27,7 +27,7 @@ ddepsCacheManifest::ddepsCacheManifest(std::string const& cachePath,
                                        std::string const& realPath,
                                        std::string const& cacheDir,
                                        ddepsOptions& options):
-  ddepsCache(cachePath, realPath, cachePath + ".lock"),
+  ddepsCache(cachePath, realPath, ""), // no lock
   ConfigDir(cacheDir),
   Options(options),
   NextId(0)
@@ -367,4 +367,12 @@ ddepsCacheFile* ddepsCacheManifest::CreateCacheFile(std::string const& path,
                             path,
                             id,
                             Options);
+}
+
+//----------------------------------------------------------------------------
+void ddepsCacheManifest::OnOutdatedCache()
+{
+    // Delete old cached data to force reparsing
+    cmSystemTools::RemoveADirectory(ConfigDir.c_str());
+    cmSystemTools::MakeDirectory(ConfigDir.c_str());
 }

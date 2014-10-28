@@ -61,6 +61,7 @@ protected:
   // Required by ddepsCache
   virtual void WriteImpl(std::ostream& ofs) const;
   virtual void ReadImpl(std::istream& ifs);
+  virtual void OnOutdatedCache();
 
   // Define the dependency types
   static const std::string TEXT_TYPE;
