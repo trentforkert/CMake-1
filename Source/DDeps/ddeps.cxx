@@ -252,8 +252,9 @@ int main(int argc, char const* const* argv)
                         *Options);
 
     bool writeInternalDeps = (mode == MAKE);
+    bool oneDepPerLine = (mode == MAKE);
 
-    Meta.WriteDependencyInfo(source, obj, writeInternalDeps);
+    Meta.WriteDependencyInfo(source, obj, writeInternalDeps, oneDepPerLine);
     }
 
   // Run the compiler pass-through command if not empty

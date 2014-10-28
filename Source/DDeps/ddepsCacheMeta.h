@@ -37,7 +37,8 @@ public:
   // Write object dependency information for src
   void WriteDependencyInfo(std::string const& src,
                            std::string const& obj,
-                           bool writeInternalDeps=true);
+                           bool writeInternalDeps=true,
+                           bool oneDepPerLine=true);
 
 protected:
   // Required by ddepsCache

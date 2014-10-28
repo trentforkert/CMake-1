@@ -46,14 +46,15 @@ ddepsCacheMeta::~ddepsCacheMeta()
 //----------------------------------------------------------------------------
 void ddepsCacheMeta::WriteDependencyInfo(std::string const& src,
                                          std::string const& obj,
-                                         bool writeInternalDeps)
+                                         bool writeInternalDeps,
+                                         bool oneDepPerLine)
 {
   std::string base = GetCacheDir();
   std::string cachePath = base + "/manifest";
   std::string realPath = "CMakeCache.txt";
 
   ddepsCacheManifest manifest(cachePath, realPath, base, Options);
-  manifest.WriteDependencyInfo(src, obj, writeInternalDeps);
+  manifest.WriteDependencyInfo(src, obj, writeInternalDeps, oneDepPerLine);
 }
 
 //----------------------------------------------------------------------------

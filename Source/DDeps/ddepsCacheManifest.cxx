@@ -54,7 +54,8 @@ ddepsCacheManifest::~ddepsCacheManifest()
 //----------------------------------------------------------------------------
 void ddepsCacheManifest::WriteDependencyInfo(std::string const& src,
                                              std::string const& obj,
-                                             bool writeInternalDeps)
+                                             bool writeInternalDeps,
+                                             bool oneDepPerLine)
 {
   std::set<std::string> encounteredModules;
   std::set<std::string> encounteredTexts;
@@ -142,7 +143,11 @@ void ddepsCacheManifest::WriteDependencyInfo(std::string const& src,
     if(dependency)
       {
       // Write the dependency
-      std::cout << obj << ": " << dependency->GetRealPath() << std::endl;
+      if(oneDepPerLine)
+        {
+        std::cout << std::endl << obj << ":";
+        }
+      std::cout << " " << dependency->GetRealPath();
 
       if(writeInternalDeps)
         {
@@ -164,7 +169,12 @@ void ddepsCacheManifest::WriteDependencyInfo(std::string const& src,
     ddepsCacheFile* dependency = GetText(*it);
     if(dependency)
       {
-      std::cout << obj << ": " << dependency->GetRealPath() << std::endl;
+      if(oneDepPerLine)
+        {
+        std::cout << std::endl << obj << ":";
+        }
+
+      std::cout << " " << dependency->GetRealPath();
 
       if(writeInternalDeps)
         {
@@ -172,6 +182,8 @@ void ddepsCacheManifest::WriteDependencyInfo(std::string const& src,
         }
       }
     }
+
+  std::cout << std::endl;
 }
 
 //----------------------------------------------------------------------------
