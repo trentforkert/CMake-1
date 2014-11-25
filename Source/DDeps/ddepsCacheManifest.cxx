@@ -309,7 +309,7 @@ std::string ddepsCacheManifest::FindModule(std::string const& name)
     {
     suffices.push_back(".di");
     suffices.push_back(".d");
-    suffices.push_back("/packages.d");
+    suffices.push_back("/package.d");
     }
 
   return FoundModules[name] = FindFile(Options.ModuleImportPaths,
