@@ -170,7 +170,7 @@ int main(int argc, char const* const* argv)
       arg.AddArgument("-I", argT::CONCAT_ARGUMENT, &includeDirs, "");
       arg.AddArgument("-J", argT::CONCAT_ARGUMENT, &textIncludeDirs, "");
       arg.AddArgument("-fversion", argT::EQUAL_ARGUMENT, &versionIdents, "");
-      arg.AddArgument("-fdebug", argT::EQUAL_ARGUMENT, &debugIdents, "");
+      arg.AddArgument("-fdebug=", argT::CONCAT_ARGUMENT, &debugIdents, "");
       arg.AddArgument("-funittest", argT::NO_ARGUMENT, &unittest, "");
       arg.AddArgument("-o", argT::CONCAT_ARGUMENT, &obj, "");
       flagsSet = true;
