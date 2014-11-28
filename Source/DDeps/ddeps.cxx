@@ -159,7 +159,7 @@ int main(int argc, char const* const* argv)
       arg.AddArgument("-I", argT::EQUAL_ARGUMENT, &includeDirs, "");
       arg.AddArgument("-J", argT::EQUAL_ARGUMENT, &textIncludeDirs, "");
       arg.AddArgument("-d-version", argT::EQUAL_ARGUMENT, &versionIdents, "");
-      arg.AddArgument("-d-debug", argT::EQUAL_ARGUMENT, &debugIdents, "");
+      arg.AddArgument("-d-debug=", argT::CONCAT_ARGUMENT, &debugIdents, "");
       arg.AddArgument("-unittest", argT::NO_ARGUMENT, &unittest, "");
       arg.AddArgument("-of", argT::EQUAL_ARGUMENT, &obj, "");
       flagsSet = true;
@@ -194,7 +194,7 @@ int main(int argc, char const* const* argv)
     arg.AddArgument("-I", argT::CONCAT_ARGUMENT, &includeDirs, "");
     arg.AddArgument("-J", argT::CONCAT_ARGUMENT, &textIncludeDirs, "");
     arg.AddArgument("-version", argT::EQUAL_ARGUMENT, &versionIdents, "");
-    arg.AddArgument("-debug", argT::EQUAL_ARGUMENT, &debugIdents, "");
+    arg.AddArgument("-debug=", argT::CONCAT_ARGUMENT, &debugIdents, "");
     arg.AddArgument("-unittest", argT::NO_ARGUMENT, &unittest, "");
     arg.AddArgument("-of", argT::CONCAT_ARGUMENT, &obj, "");
     }
