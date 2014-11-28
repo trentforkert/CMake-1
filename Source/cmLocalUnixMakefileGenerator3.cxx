@@ -2082,6 +2082,22 @@ void cmLocalUnixMakefileGenerator3
       std::vector<std::string> options;
       target.GetCompileOptions(options, this->ConfigurationName);
 
+      // Read target's other compile flags
+      std::string flags;
+      this->AddLanguageFlags(flags, l->first, this->ConfigurationName);
+      this->AddCompileOptions(flags, &target, l->first, this->ConfigurationName);
+
+      std::vector<cmSourceFile*> sources;
+      target.GetSourceFiles(sources, this->ConfigurationName);
+      if(!sources.empty())
+        {
+        const char* f = sources[0]->GetProperty("COMPILE_FLAGS");
+        if(f != NULL)
+          {
+          this->AppendFlags(flags, f);
+          }
+        }
+
       if(iflag && jflag)
         {
         cmakefileStream
@@ -2099,6 +2115,13 @@ void cmLocalUnixMakefileGenerator3
           }
         for(std::vector<std::string>::iterator it = options.begin();
             it != options.end(); it++)
+          {
+          cmakefileStream << ";" << *it;
+          }
+
+        std::vector<std::string> flagsv = cmSystemTools::ParseArguments(flags.c_str());
+        for(std::vector<std::string>::iterator it = flagsv.begin();
+            it != flagsv.end(); ++it)
           {
           cmakefileStream << ";" << *it;
           }
