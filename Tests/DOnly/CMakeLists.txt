@@ -14,3 +14,12 @@ target_link_libraries(DOnly hello world)
 
 # TODO: Adds unsupported compiler flags
 # add_library(testDModule MODULE testDModule.d)
+
+# extra tests from cmake-d
+# build lib first
+add_subdirectory(lib_1)
+add_subdirectory(app_1)
+add_subdirectory(app_2)
+add_subdirectory(app_3)
+add_subdirectory(app_4)
+add_subdirectory(app_5)
