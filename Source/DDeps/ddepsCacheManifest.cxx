@@ -323,13 +323,13 @@ std::string ddepsCacheManifest::FindFile(
                                   std::string const& name,
                                   std::vector<std::string> const& suffices)
 {
-  // Look in each directory in order
-  for(std::vector<std::string>::const_iterator dir = dirs.begin();
-      dir != dirs.end(); ++dir)
+  // Check each suffix in order
+  for(std::vector<std::string>::const_iterator suf = suffices.begin();
+      suf != suffices.end(); ++suf)
     {
-    // Check each suffix in order
-    for(std::vector<std::string>::const_iterator suf = suffices.begin();
-        suf != suffices.end(); ++suf)
+    // Look in each directory in order
+    for(std::vector<std::string>::const_iterator dir = dirs.begin();
+        dir != dirs.end(); ++dir)
       {
       // Accept the first match we find
       std::string path = *dir;
