@@ -34,7 +34,7 @@ ddepsModule::ddepsModule(std::string const& realPath,
     stringIsWysiwyg(false),
     stringIsHex(false)
 {
-  ScopeStack.push(ddepsScope());
+  ScopeStack.push(ddepsScope(options));
   CurrentLine = 1;
 
   OpenInputFile(Filename);
@@ -64,10 +64,7 @@ void ddepsModule::ParserError(const char* message) const
 //----------------------------------------------------------------------------
 void ddepsModule::PushScope()
 {
-  ddepsScope& top = ScopeStack.top();
-  ScopeStack.push(ddepsScope(top.Template,
-                             top.Public,
-                             top.RequirementsMet));
+  ScopeStack.push(ddepsScope(ScopeStack.top()));
 }
 
 //----------------------------------------------------------------------------

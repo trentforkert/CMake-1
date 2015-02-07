@@ -18,6 +18,8 @@ const std::string ddepsCacheMeta::VERSION_TYPE = "version";
 const std::string ddepsCacheMeta::DEBUG_TYPE = "debug";
 const std::string ddepsCacheMeta::MOD_IMPORT_TYPE = "module_import_path";
 const std::string ddepsCacheMeta::TEXT_IMPORT_TYPE = "text_import_path";
+const std::string ddepsCacheMeta::VERSION_LEVEL_TYPE = "version_level";
+const std::string ddepsCacheMeta::DEBUG_LEVEL_TYPE = "debug_level";
 
 //----------------------------------------------------------------------------
 ddepsCacheMeta::ddepsCacheMeta(std::string const& cachePath,
@@ -117,6 +119,17 @@ void ddepsCacheMeta::WriteImpl(std::ostream& out) const
       out << TEXT_IMPORT_TYPE << UNIT_DELIM << *dir;
       firstInGroup = false;
       }
+
+    // Write version level
+    out << RECORD_DELIM
+        << VERSION_LEVEL_TYPE
+        << UNIT_DELIM
+        << (*it)->MaxVersionLevel;
+    // Write debug level
+    out << RECORD_DELIM
+        << DEBUG_LEVEL_TYPE
+        << UNIT_DELIM
+        << (*it)->MaxDebugLevel;
     }
 }
 
@@ -168,6 +181,22 @@ void ddepsCacheMeta::ReadImpl(std::istream& in)
       else if(type == TEXT_IMPORT_TYPE)
         {
         options->TextImportPaths.push_back(ident);
+        }
+      else if(type == VERSION_LEVEL_TYPE)
+        {
+        int level = atoi(ident.c_str());
+        if(level > options->MaxVersionLevel)
+          {
+          options->MaxVersionLevel = level;
+          }
+        }
+      else if(type == DEBUG_LEVEL_TYPE)
+        {
+        int level = atoi(ident.c_str());
+        if(level > options->MaxDebugLevel)
+          {
+          options->MaxDebugLevel = level;
+          }
         }
       ident.clear();
       }

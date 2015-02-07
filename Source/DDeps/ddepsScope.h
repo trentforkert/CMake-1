@@ -12,6 +12,7 @@
 #ifndef ddepsScope_h
 #define ddepsScope_h
 
+#include "ddepsOptions.h"
 #include "cmStandardIncludes.h"
 
 // Represents a "scope" for the parser.
@@ -23,10 +24,12 @@
 //  complicated parser.
 class ddepsScope
 {
+public:
+  ddepsScope(ddepsOptions const& options);
+  ddepsScope(ddepsScope const& parent);
 private:
   // This is only accessible from ddepsModule
   friend class ddepsModule;
-  ddepsScope(bool inTemplate=false, bool pub=false, bool reqs=true);
   int UnclaimedParenExprSeq;
   size_t MaxVersionLevel;
   size_t MaxDebugLevel;

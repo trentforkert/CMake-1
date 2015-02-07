@@ -23,19 +23,42 @@ public:
                std::vector<std::string> const& debugs,
                std::vector<std::string> const& includes,
                std::vector<std::string> const& textIncludes)
+      : MaxVersionLevel(0), MaxDebugLevel(0)
   {
     // Transfer version identifiers to a set to avoid repeats
     // Order doesn't matter for version identifiers.
     std::vector<std::string>::const_iterator it;
     for(it = versions.begin(); it != versions.end(); ++it)
       {
-      VersionIdents.insert(*it);
+      if('0' <= (*it)[0] && (*it)[0] <= '9')
+        {
+        int level = atoi(it->c_str());
+        if( level > MaxVersionLevel )
+          {
+          MaxVersionLevel = level;
+          }
+        }
+      else
+        {
+        VersionIdents.insert(*it);
+        }
       }
 
     // Ditto for debug identifiers
     for(it = debugs.begin(); it != debugs.end(); ++it)
       {
-      DebugIdents.insert(*it);
+      if('0' <= (*it)[0] && (*it)[0] <= '9')
+        {
+        int level = atoi(it->c_str());
+        if( level > MaxDebugLevel )
+          {
+          MaxDebugLevel = level;
+          }
+        }
+      else
+        {
+        DebugIdents.insert(*it);
+        }
       }
 
     // Order does matter for (text) include directories
@@ -48,13 +71,17 @@ public:
     return (    VersionIdents == rhs.VersionIdents
             &&  DebugIdents == rhs.DebugIdents
             &&  ModuleImportPaths == rhs.ModuleImportPaths
-            &&  TextImportPaths == rhs.TextImportPaths);
+            &&  TextImportPaths == rhs.TextImportPaths
+            &&  MaxVersionLevel == rhs.MaxDebugLevel
+            &&  MaxDebugLevel == rhs.MaxDebugLevel);
   }
 
   std::set<std::string> VersionIdents;
   std::set<std::string> DebugIdents;
   std::vector<std::string> ModuleImportPaths;
   std::vector<std::string> TextImportPaths;
+  int MaxVersionLevel;
+  int MaxDebugLevel;
 };
 
 #endif

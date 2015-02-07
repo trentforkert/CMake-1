@@ -12,14 +12,25 @@
 #include "ddepsScope.h"
 
 //----------------------------------------------------------------------------
-ddepsScope::ddepsScope(bool inTemplate, bool pub, bool reqs)
+ddepsScope::ddepsScope(ddepsScope const& parent)
   : UnclaimedParenExprSeq(-1),
-    MaxVersionLevel(0),
-    MaxDebugLevel(0),
-    Template(inTemplate),
+    MaxVersionLevel(parent.MaxVersionLevel),
+    MaxDebugLevel(parent.MaxDebugLevel),
+    Template(parent.Template),
     EndlessScope(false),
-    Public(pub),
-    RequirementsMet(reqs)
+    Public(parent.Public),
+    RequirementsMet(parent.RequirementsMet)
 {
 }
 
+//----------------------------------------------------------------------------
+ddepsScope::ddepsScope(ddepsOptions const& options)
+  : UnclaimedParenExprSeq(-1),
+    MaxVersionLevel(options.MaxVersionLevel),
+    MaxDebugLevel(options.MaxDebugLevel),
+    Template(false),
+    EndlessScope(false),
+    Public(false),
+    RequirementsMet(true)
+{
+}

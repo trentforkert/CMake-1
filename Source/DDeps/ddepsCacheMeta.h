@@ -50,6 +50,8 @@ protected:
   static const std::string DEBUG_TYPE;
   static const std::string MOD_IMPORT_TYPE;
   static const std::string TEXT_IMPORT_TYPE;
+  static const std::string VERSION_LEVEL_TYPE;
+  static const std::string DEBUG_LEVEL_TYPE;
 
 private:
   // Determines and returns the path to the cache directory that
