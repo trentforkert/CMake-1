@@ -86,6 +86,7 @@ int main(int argc, char const* const* argv)
   int ac = args.argc();
   char const* const* av = args.argv();
   bool unittest = false;
+  bool debug = false;
 
   if(ac < 2)
     {
@@ -160,6 +161,7 @@ int main(int argc, char const* const* argv)
       arg.AddArgument("-J", argT::EQUAL_ARGUMENT, &textIncludeDirs, "");
       arg.AddArgument("-d-version", argT::EQUAL_ARGUMENT, &versionIdents, "");
       arg.AddArgument("-d-debug=", argT::CONCAT_ARGUMENT, &debugIdents, "");
+      arg.AddArgument("-d-debug", argT::NO_ARGUMENT, &debug, "");
       arg.AddArgument("-unittest", argT::NO_ARGUMENT, &unittest, "");
       arg.AddArgument("-of", argT::EQUAL_ARGUMENT, &obj, "");
       flagsSet = true;
@@ -171,6 +173,7 @@ int main(int argc, char const* const* argv)
       arg.AddArgument("-J", argT::CONCAT_ARGUMENT, &textIncludeDirs, "");
       arg.AddArgument("-fversion", argT::EQUAL_ARGUMENT, &versionIdents, "");
       arg.AddArgument("-fdebug=", argT::CONCAT_ARGUMENT, &debugIdents, "");
+      arg.AddArgument("-fdebug", argT::NO_ARGUMENT, &debug, "");
       arg.AddArgument("-funittest", argT::NO_ARGUMENT, &unittest, "");
       arg.AddArgument("-o", argT::CONCAT_ARGUMENT, &obj, "");
       flagsSet = true;
@@ -195,6 +198,7 @@ int main(int argc, char const* const* argv)
     arg.AddArgument("-J", argT::CONCAT_ARGUMENT, &textIncludeDirs, "");
     arg.AddArgument("-version", argT::EQUAL_ARGUMENT, &versionIdents, "");
     arg.AddArgument("-debug=", argT::CONCAT_ARGUMENT, &debugIdents, "");
+    arg.AddArgument("-debug", argT::NO_ARGUMENT, &debug, "");
     arg.AddArgument("-unittest", argT::NO_ARGUMENT, &unittest, "");
     arg.AddArgument("-of", argT::CONCAT_ARGUMENT, &obj, "");
     }
@@ -236,7 +240,8 @@ int main(int argc, char const* const* argv)
     ddepsOptions* Options = new ddepsOptions(versionIdents,
                                              debugIdents,
                                              includeDirs,
-                                             textIncludeDirs);
+                                             textIncludeDirs,
+                                             debug);
 
     std::string base = ".ddeps_cache";
 

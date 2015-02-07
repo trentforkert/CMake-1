@@ -20,6 +20,7 @@ const std::string ddepsCacheMeta::MOD_IMPORT_TYPE = "module_import_path";
 const std::string ddepsCacheMeta::TEXT_IMPORT_TYPE = "text_import_path";
 const std::string ddepsCacheMeta::VERSION_LEVEL_TYPE = "version_level";
 const std::string ddepsCacheMeta::DEBUG_LEVEL_TYPE = "debug_level";
+const std::string ddepsCacheMeta::DEBUG_FLAG_TYPE = "debug_flag";
 
 //----------------------------------------------------------------------------
 ddepsCacheMeta::ddepsCacheMeta(std::string const& cachePath,
@@ -130,6 +131,14 @@ void ddepsCacheMeta::WriteImpl(std::ostream& out) const
         << DEBUG_LEVEL_TYPE
         << UNIT_DELIM
         << (*it)->MaxDebugLevel;
+    // Note debug flag
+    if((*it)->DebugFlag)
+      {
+      out << RECORD_DELIM
+          << DEBUG_FLAG_TYPE
+          << UNIT_DELIM
+          << (*it)->DebugFlag;
+      }
     }
 }
 
@@ -197,6 +206,10 @@ void ddepsCacheMeta::ReadImpl(std::istream& in)
           {
           options->MaxDebugLevel = level;
           }
+        }
+      else if(type == DEBUG_FLAG_TYPE)
+        {
+        options->DebugFlag = true;
         }
       ident.clear();
       }

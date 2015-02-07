@@ -37,6 +37,7 @@ private:
   bool EndlessScope;
   bool Public;
   bool RequirementsMet;
+  bool DebugFlag;
 };
 
 #endif

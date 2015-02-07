@@ -204,6 +204,19 @@ void ddepsModule::DeclareDebugLevel(std::string const& num)
 }
 
 //----------------------------------------------------------------------------
+void ddepsModule::RequireDebugFlag()
+{
+  if( ScopeStack.top().RequirementsMet )
+    {
+    // D allows either -debug or -debug=<number> to enable debug { } blocks
+    if( !ScopeStack.top().DebugFlag && ScopeStack.top().MaxDebugLevel == 0 )
+      {
+      ScopeStack.top().RequirementsMet = false;
+      }
+    }
+}
+
+//----------------------------------------------------------------------------
 void ddepsModule::AddPossibleTextImport(std::string const& imp)
 {
   if(ScopeStack.top().RequirementsMet)

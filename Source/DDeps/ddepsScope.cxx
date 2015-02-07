@@ -19,7 +19,8 @@ ddepsScope::ddepsScope(ddepsScope const& parent)
     Template(parent.Template),
     EndlessScope(false),
     Public(parent.Public),
-    RequirementsMet(parent.RequirementsMet)
+    RequirementsMet(parent.RequirementsMet),
+    DebugFlag(parent.DebugFlag)
 {
 }
 
@@ -31,6 +32,7 @@ ddepsScope::ddepsScope(ddepsOptions const& options)
     Template(false),
     EndlessScope(false),
     Public(false),
-    RequirementsMet(true)
+    RequirementsMet(true),
+    DebugFlag(options.DebugFlag)
 {
 }

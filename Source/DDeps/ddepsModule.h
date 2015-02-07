@@ -59,6 +59,7 @@ public:
   void DeclareDebug(std::string const& vers);
   void RequireDebugLevel(std::string const& num);
   void DeclareDebugLevel(std::string const& num);
+  void RequireDebugFlag();
 
   void AddPossibleTextImport(std::string const&);
   void AcceptTextImportIfValid();

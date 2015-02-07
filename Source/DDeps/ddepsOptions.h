@@ -22,8 +22,9 @@ public:
   ddepsOptions(std::vector<std::string> const& versions,
                std::vector<std::string> const& debugs,
                std::vector<std::string> const& includes,
-               std::vector<std::string> const& textIncludes)
-      : MaxVersionLevel(0), MaxDebugLevel(0)
+               std::vector<std::string> const& textIncludes,
+               bool debug)
+      : MaxVersionLevel(0), MaxDebugLevel(0), DebugFlag(debug)
   {
     // Transfer version identifiers to a set to avoid repeats
     // Order doesn't matter for version identifiers.
@@ -73,7 +74,8 @@ public:
             &&  ModuleImportPaths == rhs.ModuleImportPaths
             &&  TextImportPaths == rhs.TextImportPaths
             &&  MaxVersionLevel == rhs.MaxDebugLevel
-            &&  MaxDebugLevel == rhs.MaxDebugLevel);
+            &&  MaxDebugLevel == rhs.MaxDebugLevel
+            &&  DebugFlag == rhs.DebugFlag);
   }
 
   std::set<std::string> VersionIdents;
@@ -82,6 +84,7 @@ public:
   std::vector<std::string> TextImportPaths;
   int MaxVersionLevel;
   int MaxDebugLevel;
+  bool DebugFlag;
 };
 
 #endif
