@@ -35,7 +35,7 @@ Modify ddepsParser.cxx:
 #define YYLEX_PARAM yyscanner
 #define YYERROR_VERBOSE 1
 #define yyGetParser (ddeps_yyget_extra(yyscanner))
-#define ddeps_yyerror(x) \
+#define ddeps_yyerror(y,x) \
         yyGetParser->ParserError(x)
 
 
@@ -57,6 +57,8 @@ YY_DECL;
 
 /* Generate a reentrant parser object */
 %pure-parser
+%lex-param {yyscan_t yyscanner}
+%parse-param {yyscan_t yyscanner}
 
 /*-------------------------------------------------------------------------*/
 /* Tokens*/
@@ -212,10 +214,20 @@ Constraint: dp_IF ParenExpr
 SuperClasses: dp_COLON ClassNames
             ;
 
-ClassNames: ClassName
-          | ClassNames dp_COMMA ClassName
+ClassNames: ClassNameWithProtection
+          | ClassNames dp_COMMA ClassNameWithProtection
           | /*empty*/
           ;
+
+ClassNameWithProtection: ClassName
+                       | InheritanceProtection ClassName
+                       ;
+
+InheritanceProtection: dp_PUBLIC
+                     | dp_PROTECTED
+                     | dp_PACKAGE
+                     | dp_PRIVATE
+                     ;
 
 ClassName: ClassFullyQualifiedName
          | ClassFullyQualifiedName dp_EXCLAIM ParenExpr
@@ -459,7 +471,7 @@ VersionCondition: dp_VERSION dp_PARENSTART Identifier dp_PARENEND
 DebugCondition: dp_DEBUG
               {
                 yyGetParser->PushScope();
-                yyGetParser->RequireDebug("");
+                yyGetParser->RequireDebugFlag();
               }
               | dp_DEBUG dp_PARENSTART Identifier dp_PARENEND
               {

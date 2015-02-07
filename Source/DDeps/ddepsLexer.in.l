@@ -28,7 +28,7 @@ Modify ddepsLexer.cxx
         yy_fatal_error, ddeps_yyalloc, ddeps_yyrealloc, ddeps_yyfree,
         yy_try_nul_trans
     - remove the line in yy_try_NUL_trans that declars 'yyg'
-    - remove "yyscanner = NULL" from end of ddepsLexer_yylex_destroy
+    - remove "yyscanner = NULL" from end of ddeps_yylex_destroy
     - remove the yyunput method (declaration and definition)
     - remove all YY_BREAK lines occurring right after return statements
     - change while ( 1 ) to for(;;)
@@ -237,7 +237,7 @@ x\" {
   yyextra->StartNestedTokenString();
 }
 
-<token_string>"}" {
+<token_string>"}"[cwd]? {
   if(yyextra->EndNestedTokenString())
   {
     BEGIN(INITIAL);
@@ -321,7 +321,7 @@ q\" {
   yyextra->SetCharDelimiter(yytext[0]);
 }
 
-<ident_delimited_string>\n{ident}\" {
+<ident_delimited_string>\n{ident}\"[cwd]? {
   if( yyextra->CheckDelimitedStringIdent(yytext) )
   {
     BEGIN(INITIAL);
@@ -345,7 +345,7 @@ q\" {
   yyextra->IncrementLine();
 }
 
-<nested_delimited_string>.\" {
+<nested_delimited_string>.\"[cwd]? {
   if( yyextra->CheckCharDelimiter(yytext[0]) )
   {
     if(yyextra->EndNestedDelimitedString())
@@ -378,7 +378,7 @@ q\" {
   yyextra->IncrementLine();
 }
 
-<char_delimited_string>.\" {
+<char_delimited_string>.\"[cwd]? {
   if ( yyextra->CheckCharDelimiter(yytext[0]) )
   {
     BEGIN(INITIAL);
