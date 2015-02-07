@@ -322,8 +322,8 @@ void ddepsModule::StopSavingStrings()
 //----------------------------------------------------------------------------
 void ddepsModule::SetHexString()
 {
-  stringIsWysiwyg = true;
-  stringIsHex = false;
+  stringIsWysiwyg = false;
+  stringIsHex = true;
 }
 
 //----------------------------------------------------------------------------
@@ -406,7 +406,7 @@ void ddepsModule::SetDelimitedStringIdent(std::string const& str)
 bool ddepsModule::CheckDelimitedStringIdent(std::string const& str)
 {
   // Cut the newline and the double quote
-  return strDelim == str.substr(1, str.length() - 2);
+  return strDelim == str.substr(1, str.find("\"") - 1);
 }
 
 //----------------------------------------------------------------------------
@@ -650,7 +650,7 @@ std::string ddepsModule::InterpretHexString(std::string const& str)
       x |= (str[i] - 'a' + 10);
       digitsEncountered ++;
       }
-    else if('0' << str[i] && str[i] <= '9')
+    else if('0' <= str[i] && str[i] <= '9')
       {
       x <<= 4;
       x |= (str[i] - '0');
@@ -661,6 +661,7 @@ std::string ddepsModule::InterpretHexString(std::string const& str)
       {
         result += x;
         x = 0;
+        digitsEncountered = 0;
       }
     }
 
