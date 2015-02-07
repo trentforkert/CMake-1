@@ -2674,10 +2674,7 @@ ${CMake_BINARY_DIR}/bin/cmake -DDIR=dev -P ${CMake_SOURCE_DIR}/Utilities/Release
     By default, D tests run if a compiler is found." OFF)
   mark_as_advanced(CMAKE_RUN_D_TESTS)
   if(CMAKE_D_COMPILER OR CMAKE_RUN_D_TESTS)
-    ADD_TEST_MACRO(DOnly DOnly)
-    ADD_TEST_MACRO(DC DC)
-    ADD_TEST_MACRO(UseD UseD)
-    ADD_TEST_MACRO(DTextIncludes DTextIncludes)
+    add_subdirectory(D)
   endif()
 
   if(CMAKE_Fortran_COMPILER)
