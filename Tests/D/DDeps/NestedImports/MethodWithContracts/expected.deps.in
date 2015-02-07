@@ -1,0 +1,9 @@
+NestedImports/MethodWithContracts.o: @source_dir@/a.d
+NestedImports/MethodWithContracts.o: @import_dir@/b.d
+NestedImports/MethodWithContracts.o: @import_dir@/c.d
+NestedImports/MethodWithContracts.o: @import_dir@/d.d
+NestedImports/MethodWithContracts.o: @import_dir@/e.d
+NestedImports/MethodWithContracts.o: @import_dir@/f.d
+NestedImports/MethodWithContracts.o: @import_dir@/g.d
+NestedImports/MethodWithContracts.o: @import_dir@/h.d
+NestedImports/MethodWithContracts.o: @import_dir@/i.d

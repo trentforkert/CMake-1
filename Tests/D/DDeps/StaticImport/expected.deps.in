@@ -1,0 +1,4 @@
+StaticImport.o: @source_dir@/a.d
+StaticImport.o: @import_dir@/b.d
+StaticImport.o: @import_dir@/c.d
+StaticImport.o: @import_dir@/d.d

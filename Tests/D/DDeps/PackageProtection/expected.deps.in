@@ -1,0 +1,4 @@
+PackageProtection.o: @source_dir@/a.d
+PackageProtection.o: @source_dir@/pkg/package.d
+PackageProtection.o: @source_dir@/pkg/sub/mod1.d
+PackageProtection.o: @source_dir@/pkg/sub/mod2.d

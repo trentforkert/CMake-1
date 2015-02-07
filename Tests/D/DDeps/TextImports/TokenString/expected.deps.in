@@ -1,0 +1,5 @@
+TextImports/TokenString.o: @source_dir@/a.d
+TextImports/TokenString.o: @texts_dir@/test1.txt
+TextImports/TokenString.o: @texts_dir@/test2.txt
+TextImports/TokenString.o: @texts_dir@/test3.txt
+TextImports/TokenString.o: @texts_dir@/test4.txt

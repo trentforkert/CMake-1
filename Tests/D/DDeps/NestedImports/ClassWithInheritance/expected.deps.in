@@ -1,0 +1,3 @@
+NestedImports/ClassWithInheritance.o: @source_dir@/a.d
+NestedImports/ClassWithInheritance.o: @import_dir@/b.d
+NestedImports/ClassWithInheritance.o: @import_dir@/c.d

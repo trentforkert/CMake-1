@@ -1,0 +1,5 @@
+TextImports/IdentDelimitedString.o: @source_dir@/a.d
+TextImports/IdentDelimitedString.o: @texts_dir@/test1.txt
+TextImports/IdentDelimitedString.o: @texts_dir@/test2.txt
+TextImports/IdentDelimitedString.o: @texts_dir@/test3.txt
+TextImports/IdentDelimitedString.o: @texts_dir@/test4.txt

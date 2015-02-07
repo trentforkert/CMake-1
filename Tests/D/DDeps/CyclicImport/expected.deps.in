@@ -1,0 +1,3 @@
+CyclicImport.o: @source_dir@/a.d
+CyclicImport.o: @source_dir@/one.d
+CyclicImport.o: @source_dir@/two.d

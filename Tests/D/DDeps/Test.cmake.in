@@ -1,0 +1,34 @@
+string(REPLACE "." "/" TEST_PATH ${TEST})
+set(import_dir "@CMAKE_CURRENT_SOURCE_DIR@/import")
+set(texts_dir "@CMAKE_CURRENT_SOURCE_DIR@/texts")
+set(source_dir "@CMAKE_CURRENT_SOURCE_DIR@/${TEST_PATH}")
+set(binary_dir "@CMAKE_CURRENT_BINARY_DIR@/${TEST_PATH}-build")
+
+file(REMOVE_RECURSE "${binary_dir}")
+file(MAKE_DIRECTORY "${binary_dir}")
+
+if(EXISTS ${source_dir}/expected.deps.in)
+    configure_file(${source_dir}/expected.deps.in
+                   ${binary_dir}/expected.deps @ONLY)
+    file(READ ${binary_dir}/expected.deps expectedDeps)
+else()
+    set(expectedDeps "${TEST_PATH}.o: ${source_dir}/a.d\n${TEST_PATH}.o: ${import_dir}/b.d\n")
+endif()
+
+execute_process(
+    COMMAND ${DDEPS} make DigitalMars ${source_dir}/a.d ${TEST_PATH}.o -I${import_dir} -I${source_dir} -J${texts_dir} ${ARGS}
+    WORKING_DIRECTORY "${binary_dir}"
+    OUTPUT_VARIABLE actualDeps
+    RESULT_VARIABLE result
+    TIMEOUT 10
+)
+
+if(result)
+    message(STATUS "Source dir: ${source_dir}")
+    message(STATUS "Binary dir: ${binary_dir}")
+    message(STATUS "DDeps: ${DDEPS}")
+    message(STATUS "Output: ${actualDeps}")
+    message(FATAL_ERROR "CMake failed to configure ${TEST}")
+elseif(NOT "${actualDeps}" STREQUAL "${expectedDeps}")
+    message(FATAL_ERROR "${TEST} failed")
+endif()

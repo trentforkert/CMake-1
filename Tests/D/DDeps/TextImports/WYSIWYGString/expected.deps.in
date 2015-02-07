@@ -1,0 +1,5 @@
+TextImports/WYSIWYGString.o: @source_dir@/a.d
+TextImports/WYSIWYGString.o: @texts_dir@/test1.txt
+TextImports/WYSIWYGString.o: @texts_dir@/test2.txt
+TextImports/WYSIWYGString.o: @texts_dir@/test3.txt
+TextImports/WYSIWYGString.o: @texts_dir@/test4.txt

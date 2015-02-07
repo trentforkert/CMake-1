@@ -1,0 +1,3 @@
+ConditionalImports/VersionBlock.o: @source_dir@/a.d
+ConditionalImports/VersionBlock.o: @import_dir@/b.d
+ConditionalImports/VersionBlock.o: @import_dir@/d.d

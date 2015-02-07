@@ -1,0 +1,4 @@
+ImportPropagation.o: @source_dir@/a.d
+ImportPropagation.o: @source_dir@/one.d
+ImportPropagation.o: @source_dir@/three.d
+ImportPropagation.o: @source_dir@/four.d

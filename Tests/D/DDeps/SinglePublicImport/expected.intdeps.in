@@ -1,0 +1,3 @@
+SinglePublicImport.o:
+ @source_dir@/a.d
+ @source_dir@/b.d

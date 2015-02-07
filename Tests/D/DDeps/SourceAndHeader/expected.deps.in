@@ -1,0 +1,2 @@
+SourceAndHeader.o: @source_dir@/a.d
+SourceAndHeader.o: @source_dir@/one.di

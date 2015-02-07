@@ -1,0 +1,2 @@
+ImportHeader.o: @source_dir@/a.d
+ImportHeader.o: @source_dir@/b.di

@@ -1,0 +1,5 @@
+TextImports/RegularStringWithEscapes.o: @source_dir@/a.d
+TextImports/RegularStringWithEscapes.o: @texts_dir@/test1.txt
+TextImports/RegularStringWithEscapes.o: @texts_dir@/test2.txt
+TextImports/RegularStringWithEscapes.o: @texts_dir@/test3.txt
+TextImports/RegularStringWithEscapes.o: @texts_dir@/test4.txt
